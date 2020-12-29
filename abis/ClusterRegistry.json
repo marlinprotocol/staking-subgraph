@@ -1,0 +1,337 @@
+[
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "name": "_networkId",
+        "type": "bytes32"
+      }
+    ],
+    "name": "switchNetwork",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "name": "_cluster",
+        "type": "address"
+      }
+    ],
+    "name": "getRewardAddress",
+    "outputs": [
+      {
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "name": "_networkId",
+        "type": "bytes32"
+      },
+      {
+        "name": "_commission",
+        "type": "uint256"
+      },
+      {
+        "name": "_rewardAddress",
+        "type": "address"
+      },
+      {
+        "name": "_clientKey",
+        "type": "address"
+      }
+    ],
+    "name": "register",
+    "outputs": [
+      {
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "name": "_cluster",
+        "type": "address"
+      }
+    ],
+    "name": "isClusterValid",
+    "outputs": [
+      {
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "name": "_commission",
+        "type": "uint256"
+      },
+      {
+        "name": "_networkId",
+        "type": "bytes32"
+      },
+      {
+        "name": "_rewardAddress",
+        "type": "address"
+      },
+      {
+        "name": "_clientKey",
+        "type": "address"
+      }
+    ],
+    "name": "updateCluster",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [],
+    "name": "initialize",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "name": "_rewardAddress",
+        "type": "address"
+      }
+    ],
+    "name": "updateRewardAddress",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "name": "_commission",
+        "type": "uint256"
+      }
+    ],
+    "name": "updateCommission",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "name": "clusters",
+    "outputs": [
+      {
+        "name": "commission",
+        "type": "uint256"
+      },
+      {
+        "name": "rewardAddress",
+        "type": "address"
+      },
+      {
+        "name": "clientKey",
+        "type": "address"
+      },
+      {
+        "name": "networkId",
+        "type": "bytes32"
+      },
+      {
+        "name": "status",
+        "type": "uint8"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "name": "_clientKey",
+        "type": "address"
+      }
+    ],
+    "name": "updateClientKey",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [],
+    "name": "unregister",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "name": "_cluster",
+        "type": "address"
+      }
+    ],
+    "name": "getCommission",
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "name": "cluster",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "name": "networkId",
+        "type": "bytes32"
+      },
+      {
+        "indexed": false,
+        "name": "commission",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "name": "rewardAddress",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "name": "clientKey",
+        "type": "address"
+      }
+    ],
+    "name": "ClusterRegistered",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "name": "cluster",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "name": "updatedCommission",
+        "type": "uint256"
+      }
+    ],
+    "name": "CommissionUpdated",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "name": "cluster",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "name": "updatedRewardAddress",
+        "type": "address"
+      }
+    ],
+    "name": "RewardAddressUpdated",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "name": "cluster",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "name": "networkId",
+        "type": "bytes32"
+      }
+    ],
+    "name": "NetworkSwitched",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "name": "cluster",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "name": "clientKey",
+        "type": "address"
+      }
+    ],
+    "name": "ClientKeyUpdated",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "name": "cluster",
+        "type": "address"
+      }
+    ],
+    "name": "ClusterUnregistered",
+    "type": "event"
+  }
+]

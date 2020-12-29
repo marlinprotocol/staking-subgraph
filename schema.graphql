@@ -1,0 +1,37 @@
+enum Status {
+  NOT_REGISTERED
+  REGISTERED
+}
+
+type Cluster @entity {
+  id: ID!
+  commission: BigInt!
+  rewardAddress: Bytes!
+  clientKey: Bytes!
+  networkId: Bytes!
+  status: Status!
+  delegators: [Bytes!]
+  totalDelegations: BigInt!
+}
+
+type Stash @entity {
+  id: ID!
+  stashId: Bytes!
+  staker: Bytes!
+  delegatedCluster: Cluster!
+  undelegatesAt: BigInt!
+  tokensDelegated: [Bytes!]
+  tokensDelegatedAmount: [BigInt!]
+}
+
+type Token @entity {
+  id: ID!
+  tokenId: Bytes!
+  tokenAddress: Bytes!
+}
+
+type Network @entity {
+  id: ID!
+  networkId: Bytes!
+  rewardPerEpoch: BigInt!
+}

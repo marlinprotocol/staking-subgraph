@@ -1,0 +1,96 @@
+specVersion: 0.0.2
+description: Marlin Staking Subgraph
+repository: https://github.com/marlinprotocol/staking-subgraph
+schema:
+  file: ./schema.graphql
+dataSources:
+  - kind: ethereum/contract
+    name: ClusterRegistry
+    network: kovan
+    source:
+      address: '0xe26471d14286d1ad302F845e07DC7814813435b2'
+      abi: ClusterRegistry
+      startBlock: 22790216
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.4
+      language: wasm/assemblyscript
+      file: ./src/mapping.ts
+      entities:
+        - Cluster
+      abis:
+        - name: ClusterRegistry
+          file: ./abis/ClusterRegistry.json
+      eventHandlers:
+        - event: ClusterRegistered(address,bytes32,uint256,address,address)
+          handler: handleClusterRegistered
+        - event: CommissionUpdated(address,uint256)
+          handler: handleCommissionUpdated
+        - event: RewardAddressUpdated(address,address)
+          handler: handleRewardAddressUpdated
+        - event: NetworkSwitched(address,bytes32)
+          handler: handleNetworkSwitched
+        - event: ClientKeyUpdated(address,address)
+          handler: handleClientKeyUpdated
+        - event: ClusterUnregistered(address)
+          handler: handleClusterUnregistered
+  - kind: ethereum/contract
+    name: StakeManager
+    network: kovan
+    source:
+      address: '0xAAd952DD1F1E1902256d50173Ba8f672A951E78e'
+      abi: StakeManager
+      startBlock: 22790210
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.4
+      language: wasm/assemblyscript
+      file: ./src/mapping.ts
+      entities:
+        - Cluster
+      abis:
+        - name: StakeManager
+          file: ./abis/StakeManager.json
+      eventHandlers:
+        - event: StashCreated(indexed address,bytes32,uint256,bytes32[],uint256[])
+          handler: handleStashCreated
+        - event: StashDelegated(bytes32,address)
+          handler: handleStashDelegated
+        - event: StashUndelegated(bytes32,address,uint256)
+          handler: handleStashUndelegated
+        - event: StashWithdrawn(bytes32,bytes32[],uint256[])
+          handler: handleStashWithdrawn
+        - event: StashClosed(bytes32,indexed address)
+          handler: handleStashClosed
+        - event: AddedToStash(bytes32,address,bytes32[],uint256[])
+          handler: handleAddedToStash
+        - event: TokenAdded(bytes32,address)
+          handler: handleTokeAdded
+        - event: TokenRemoved(bytes32)
+          handler: handleTokenRemoved
+        - event: TokenUpdated(bytes32,address)
+          handler: handleTokenUpdated
+  - kind: ethereum/contract
+    name: ClusterRewards
+    network: kovan
+    source:
+      address: '0x554351A0192af78377a5074AA262BD18539dEeE2'
+      abi: ClusterRewards
+      startBlock: 22790219
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.4
+      language: wasm/assemblyscript
+      file: ./src/mapping.ts
+      entities:
+        - Cluster
+      abis:
+        - name: ClusterRewards
+          file: ./abis/ClusterRewards.json
+      eventHandlers:
+        - event: NetworkAdded(bytes32,uint256)
+          handler: handleNetworkAdded
+        - event: NetworkRemoved(bytes32)
+          handler: handleNetworkRemoved
+        - event: NetworkRewardUpdated(bytes32,uint256)
+          handler: handleNetworkRewardUpdated
