@@ -11,6 +11,7 @@ import {
   CommissionUpdated,
   RewardAddressUpdated,
   NetworkSwitched,
+  ClientKeyUpdated,
   ClusterUnregistered,
 } from '../generated/ClusterRegistry/ClusterRegistry';
 import {
@@ -30,7 +31,7 @@ import {
 export function handleClusterRegistered(
   event: ClusterRegistered
 ): void {
-  let id = event.params.cluster.toString();
+  let id = event.params.cluster.toHexString();
   let cluster = Cluster.load(id);
   if (cluster == null) {
     cluster = new Cluster(id);
@@ -46,7 +47,7 @@ export function handleClusterRegistered(
 export function handleCommissionUpdated(
   event: CommissionUpdated
 ): void {
-  let id = event.params.cluster.toString();
+  let id = event.params.cluster.toHexString();
   let cluster = Cluster.load(id);
   cluster.commission = event.params.updatedCommission;
   cluster.save();
@@ -70,6 +71,15 @@ export function handleNetworkSwitched(
   cluster.save();
 }
 
+export function handleClientKeyUpdated(
+  event: ClientKeyUpdated
+): void {
+  let id = event.params.cluster.toHexString();
+  let cluster = Cluster.load(id);
+  cluster.clientKey = event.params.clientKey;
+  cluster.save();
+}
+
 export function handleClusterUnregistered(
   event: ClusterUnregistered
 ): void {
@@ -82,7 +92,7 @@ export function handleClusterUnregistered(
 export function handleStashCreated(
   event: StashCreated
 ): void {
-  let id = event.params.stashId.toString();
+  let id = event.params.stashId.toHexString();
   let stash = Stash.load(id);
   if (stash == null) {
     stash = new Stash(id);
@@ -98,7 +108,7 @@ export function handleStashCreated(
 export function handleStashDelegated(
   event: StashDelegated
 ): void {
-  let id = event.params.stashId.toString();
+  let id = event.params.stashId.toHexString();
   let stash = Stash.load(id);
   if (stash == null) {
     stash = new Stash(id);
@@ -111,7 +121,7 @@ export function handleStashDelegated(
 export function handleStashUndelegated(
   event: StashUndelegated
 ): void {
-  let id = event.params.stashId.toString();
+  let id = event.params.stashId.toHexString();
   let stash = Stash.load(id);
   stash.delegatedCluster = ZERO_ADDRESS;
   stash.undelegatesAt = event.params.undelegatesAt;
@@ -121,7 +131,7 @@ export function handleStashUndelegated(
 export function handleTokenAdded(
   event: TokenAdded
 ): void {
-  let id = event.params.tokenId.toString();
+  let id = event.params.tokenId.toHexString();
   let token = Token.load(id);
   if (token == null) {
     token = new Token(id);
@@ -135,7 +145,7 @@ export function handleTokenAdded(
 export function handleTokenRemoved(
   event: TokenRemoved
 ): void {
-  let id = event.params.tokenId.toString();
+  let id = event.params.tokenId.toHexString();
   let token = Token.load(id);
   token.tokenId = new Bytes(0);
   token.tokenAddress = new Bytes(0);
@@ -145,7 +155,7 @@ export function handleTokenRemoved(
 export function handleTokenUpdated(
   event: TokenUpdated
 ): void {
-  let id = event.params.tokenId.toString();
+  let id = event.params.tokenId.toHexString();
   let token = Token.load(id);
   token.tokenAddress = event.params.tokenAddress;
   token.save();
@@ -155,7 +165,7 @@ export function handleTokenUpdated(
 export function handleNetworkAdded(
   event: NetworkAdded
 ): void {
-  let id = event.params.networkId.toString();
+  let id = event.params.networkId.toHexString();
   let network = Network.load(id);
   if (network == null) {
     network = new Network(id);
@@ -169,7 +179,7 @@ export function handleNetworkAdded(
 export function handleNetworkRemoved(
   event: NetworkRemoved
 ): void {
-  let id = event.params.networkId.toString();
+  let id = event.params.networkId.toHexString();
   let network = Network.load(id);
   network.networkId = new Bytes(0);
   network.rewardPerEpoch = BIGINT_ZERO;
@@ -179,7 +189,7 @@ export function handleNetworkRemoved(
 export function handleNetworkRewardUpdated(
   event: NetworkRewardUpdated
 ): void {
-  let id = event.params.networkId.toString();
+  let id = event.params.networkId.toHexString();
   let network = Network.load(id);
   network.rewardPerEpoch = event.params.updatedRewardPerEpoch;
   network.save();

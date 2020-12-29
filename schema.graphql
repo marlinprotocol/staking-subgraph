@@ -11,15 +11,15 @@ type Cluster @entity {
   networkId: Bytes!
   status: Status!
   delegators: [Bytes!]
-  totalDelegations: BigInt!
+  totalDelegations: BigInt
 }
 
 type Stash @entity {
   id: ID!
   stashId: Bytes!
   staker: Bytes!
-  delegatedCluster: Cluster!
-  undelegatesAt: BigInt!
+  delegatedCluster: Cluster
+  undelegatesAt: BigInt
   tokensDelegated: [Bytes!]
   tokensDelegatedAmount: [BigInt!]
 }
