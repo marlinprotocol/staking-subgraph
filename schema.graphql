@@ -50,3 +50,16 @@ type Delegation @entity {
   amount: BigInt!
   cluster: Cluster!
 }
+
+type Delegator @entity {
+  id: ID!
+  address: String!
+  totalDelegations: [DelegatorToken!]! @derivedFrom(field: "delegator")
+}
+
+type DelegatorToken @entity {
+  id: ID!
+  token: Token!
+  amount: BigInt!
+  delegator: Delegator!
+}

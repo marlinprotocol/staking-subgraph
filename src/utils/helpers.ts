@@ -8,6 +8,8 @@ import {
     Stash,
     Delegation,
     TokenData,
+    Delegator,
+    DelegatorToken,
 } from '../../generated/schema';
 import { BIGINT_ZERO } from './constants';
 
@@ -75,6 +77,13 @@ export function updateStashTokens(
         } else {
             tokenData.save();
         }
+
+        updateDelegatorTokens(
+            stash.staker.toHexString(),
+            tokens[i].toHexString(),
+            amounts[i],
+            action,
+        );
     };
 }
 
@@ -141,3 +150,44 @@ export function updateClusterDelegatorInfo(
 
     cluster.save();
 };
+
+export function updateDelegatorTokens(
+    delegatorId: string,
+    token: string,
+    amount: BigInt,
+    action: string,
+): void {
+    let delegator = Delegator.load(delegatorId);
+
+    if (delegator == null) {
+        delegator = new Delegator(delegatorId);
+        delegator.address = delegatorId;
+        delegator.save();
+    }
+
+    let delegatorTokenId = delegatorId + token;
+    let delegatorToken = DelegatorToken.load(delegatorTokenId);
+
+    if (action === "add") {
+        if (delegatorToken == null) {
+            delegatorToken = new DelegatorToken(delegatorTokenId);
+            delegatorToken.delegator = delegatorId;
+            delegatorToken.token = token;
+            delegatorToken.amount = BIGINT_ZERO;
+        }
+
+        delegatorToken.amount = delegatorToken.amount.plus(
+            amount
+        );
+    } else if (action == "withdraw") {
+        delegatorToken.amount = delegatorToken.amount.minus(
+            amount
+        );
+    }
+
+    if (delegatorToken.amount == BIGINT_ZERO) {
+        store.remove("DelegatorToken", delegatorTokenId);
+    } else {
+        delegatorToken.save();
+    }
+}
