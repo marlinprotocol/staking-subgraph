@@ -1,7 +1,10 @@
-import { Bytes } from "@graphprotocol/graph-ts";
-import { Cluster, Stash, Token, Network } from '../generated/schema';
 import {
-  BIGINT_ZERO,
+  Bytes, BigInt, store,
+} from "@graphprotocol/graph-ts";
+import {
+  Cluster, Stash, Token, Network,
+} from '../generated/schema';
+import {
   ZERO_ADDRESS,
   STATUS_REGISTERED,
   STATUS_NOT_REGISTERED,
@@ -18,6 +21,9 @@ import {
   StashCreated,
   StashDelegated,
   StashUndelegated,
+  AddedToStash,
+  StashWithdrawn,
+  StashClosed,
   TokenAdded,
   TokenRemoved,
   TokenUpdated,
@@ -27,6 +33,10 @@ import {
   NetworkRemoved,
   NetworkRewardUpdated,
 } from '../generated/ClusterRewards/ClusterRewards';
+import {
+  updateStashTokens,
+  updateClusterDelegatorInfo,
+} from "./utils/helpers";
 
 export function handleClusterRegistered(
   event: ClusterRegistered
@@ -41,6 +51,7 @@ export function handleClusterRegistered(
   cluster.clientKey = event.params.clientKey;
   cluster.networkId = event.params.networkId;
   cluster.status = STATUS_REGISTERED;
+  cluster.delegators = [];
   cluster.save();
 }
 
@@ -100,9 +111,14 @@ export function handleStashCreated(
 
   stash.stashId = event.params.stashId;
   stash.staker = event.params.creator;
-  stash.tokensDelegated = event.params.tokens as Bytes[];
-  stash.tokensDelegatedAmount = event.params.amounts;
+  stash.tokensDelegatedId = [];
+  stash.tokensDelegatedAmount = [];
   stash.save();
+
+  let tokens = event.params.tokens as Bytes[];
+  let amounts = event.params.amounts as BigInt[];
+
+  updateStashTokens(id, tokens, amounts, "add");
 }
 
 export function handleStashDelegated(
@@ -116,6 +132,12 @@ export function handleStashDelegated(
 
   stash.delegatedCluster = event.params.delegatedCluster.toHexString();
   stash.save();
+
+  updateClusterDelegatorInfo(
+    event.params.stashId.toHexString(),
+    event.params.delegatedCluster.toHexString(),
+    "delegated",
+  );
 }
 
 export function handleStashUndelegated(
@@ -123,9 +145,43 @@ export function handleStashUndelegated(
 ): void {
   let id = event.params.stashId.toHexString();
   let stash = Stash.load(id);
+
+  updateClusterDelegatorInfo(
+    id,
+    stash.delegatedCluster,
+    "undelegated",
+  );
+
   stash.delegatedCluster = ZERO_ADDRESS;
   stash.undelegatesAt = event.params.undelegatesAt;
   stash.save();
+}
+
+export function handleAddedToStash(
+  event: AddedToStash
+): void {
+  let id = event.params.stashId.toHexString();
+
+  let tokens = event.params.tokens as Bytes[];
+  let amounts = event.params.amounts as BigInt[];
+  updateStashTokens(id, tokens, amounts, "add");
+}
+
+export function handleStashWithdrawn(
+  event: StashWithdrawn
+): void {
+  let id = event.params.stashId.toHexString();
+
+  let tokens = event.params.tokens as Bytes[];
+  let amounts = event.params.amounts as BigInt[];
+  updateStashTokens(id, tokens, amounts, "withdraw");
+}
+
+export function handleStashClosed(
+  event: StashClosed
+): void {
+  let id = event.params.stashId.toHexString();
+  store.remove('Stash', id);
 }
 
 export function handleTokenAdded(
@@ -156,11 +212,8 @@ export function handleTokenUpdated(
   event: TokenUpdated
 ): void {
   let id = event.params.tokenId.toHexString();
-  let token = Token.load(id);
-  token.tokenAddress = event.params.tokenAddress;
-  token.save();
+  store.remove('Token', id);
 }
-
 
 export function handleNetworkAdded(
   event: NetworkAdded
@@ -180,10 +233,7 @@ export function handleNetworkRemoved(
   event: NetworkRemoved
 ): void {
   let id = event.params.networkId.toHexString();
-  let network = Network.load(id);
-  network.networkId = new Bytes(0);
-  network.rewardPerEpoch = BIGINT_ZERO;
-  network.save();
+  store.remove('Network', id);
 }
 
 export function handleNetworkRewardUpdated(

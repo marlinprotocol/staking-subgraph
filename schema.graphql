@@ -10,8 +10,8 @@ type Cluster @entity {
   clientKey: Bytes!
   networkId: Bytes!
   status: Status!
-  delegators: [Bytes!]
-  totalDelegations: BigInt
+  delegators: [String!]!
+  totalDelegations: [Delegation!] @derivedFrom(field: "cluster")
 }
 
 type Stash @entity {
@@ -20,7 +20,8 @@ type Stash @entity {
   staker: Bytes!
   delegatedCluster: Cluster
   undelegatesAt: BigInt
-  tokensDelegated: [Bytes!]
+  tokensDelegated: [TokenData!]! @derivedFrom(field: "stash")
+  tokensDelegatedId: [Bytes!]
   tokensDelegatedAmount: [BigInt!]
 }
 
@@ -34,4 +35,18 @@ type Network @entity {
   id: ID!
   networkId: Bytes!
   rewardPerEpoch: BigInt!
+}
+
+type TokenData @entity {
+  id: ID!
+  token: Token!
+  amount: BigInt!
+  stash: Stash!
+}
+
+type Delegation @entity {
+  id: ID!
+  token: Token!
+  amount: BigInt!
+  cluster: Cluster!
 }
