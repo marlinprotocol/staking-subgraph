@@ -8,6 +8,7 @@ import {
   ZERO_ADDRESS,
   STATUS_REGISTERED,
   STATUS_NOT_REGISTERED,
+  BIGINT_ZERO,
 } from "./utils/constants";
 import {
   ClusterRegistered,
@@ -16,6 +17,9 @@ import {
   NetworkSwitched,
   ClientKeyUpdated,
   ClusterUnregistered,
+  NetworkSwitchRequested,
+  CommissionUpdateRequested,
+  ClusterUnregisterRequested,
 } from '../generated/ClusterRegistry/ClusterRegistry';
 import {
   StashCreated,
@@ -61,6 +65,8 @@ export function handleCommissionUpdated(
   let id = event.params.cluster.toHexString();
   let cluster = Cluster.load(id);
   cluster.commission = event.params.updatedCommission;
+  cluster.updatedCommission = BIGINT_ZERO;
+  cluster.commissionUpdatesAt = BIGINT_ZERO;
   cluster.save();
 }
 
@@ -79,6 +85,8 @@ export function handleNetworkSwitched(
   let id = event.params.cluster.toHexString();
   let cluster = Cluster.load(id);
   cluster.networkId = event.params.networkId;
+  cluster.updatedNetwork = new Bytes(0);
+  cluster.networkUpdatesAt = BIGINT_ZERO;
   cluster.save();
 }
 
@@ -243,4 +251,33 @@ export function handleNetworkRewardUpdated(
   let network = Network.load(id);
   network.rewardPerEpoch = event.params.updatedRewardPerEpoch;
   network.save();
+}
+
+export function handleNetworkSwitchRequested(
+  event: NetworkSwitchRequested
+): void {
+  let id = event.params.cluster.toHexString();
+  let cluster = Cluster.load(id);
+  cluster.updatedNetwork = event.params.networkId;
+  cluster.networkUpdatesAt = event.params.effectiveBlock;
+  cluster.save();
+}
+
+export function handleCommissionUpdateRequested(
+  event: CommissionUpdateRequested
+): void {
+  let id = event.params.cluster.toHexString();
+  let cluster = Cluster.load(id);
+  cluster.updatedCommission = event.params.commissionAfterUpdate;
+  cluster.commissionUpdatesAt = event.params.effectiveBlock;
+  cluster.save();
+}
+
+export function handleClusterUnregisterRequested(
+  event: ClusterUnregisterRequested
+): void {
+  let id = event.params.cluster.toHexString();
+  let cluster = Cluster.load(id);
+  cluster.clusterUnregistersAt = event.params.effectiveBlock;
+  cluster.save();
 }

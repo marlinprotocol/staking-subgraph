@@ -12,6 +12,11 @@ type Cluster @entity {
   status: Status!
   delegators: [String!]!
   totalDelegations: [Delegation!] @derivedFrom(field: "cluster")
+  updatedCommission: BigInt
+  commissionUpdatesAt: BigInt
+  updatedNetwork: Bytes
+  networkUpdatesAt: BigInt
+  clusterUnregistersAt: BigInt
 }
 
 type Stash @entity {
