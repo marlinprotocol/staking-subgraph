@@ -56,6 +56,7 @@ export function handleClusterRegistered(
   cluster.networkId = event.params.networkId;
   cluster.status = STATUS_REGISTERED;
   cluster.delegators = [];
+  cluster.clusterUnregistersAt = BIGINT_ZERO;
   cluster.save();
 }
 
