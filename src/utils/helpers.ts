@@ -2,6 +2,7 @@ import {
     Bytes,
     BigInt,
     store,
+    Address,
 } from "@graphprotocol/graph-ts";
 import {
     Cluster,
@@ -10,8 +11,23 @@ import {
     TokenData,
     Delegator,
     DelegatorToken,
+    Network,
 } from '../../generated/schema';
-import { BIGINT_ZERO } from './constants';
+import {
+    ClusterRewards as ClusterRewardsContract,
+} from '../../generated/ClusterRewards/ClusterRewards';
+import {
+    RewardDelegators as RewardDelegatorsContract,
+} from '../../generated/RewardDelegators/RewardDelegators';
+import {
+    BIGINT_ZERO,
+    CLUSTER_REWARDS_ADDRESS,
+    REWARD_DELEGATOR_ADDRESS,
+} from './constants';
+
+let clusterRewardsContract = ClusterRewardsContract.bind(
+    CLUSTER_REWARDS_ADDRESS
+);
 
 export function updateStashTokens(
     stashId: string,
@@ -102,24 +118,6 @@ export function updateClusterDelegatorInfo(
         let delegators = cluster.delegators;
         delegators.push(stash.staker.toHexString());
         cluster.delegators = delegators;
-
-        for (let i = 0; i < tokens.length; i++) {
-            let id = tokens[i].toHexString() + cluster.id;
-            let delegation = Delegation.load(id);
-
-            if (delegation == null) {
-                delegation = new Delegation(id);
-                delegation.token = tokens[i].toHexString();
-                delegation.cluster = cluster.id;
-                delegation.amount = BIGINT_ZERO;
-            }
-
-            delegation.amount = delegation.amount.plus(
-                amounts[i]
-            );
-
-            delegation.save();
-        }
     } else if (operation === "undelegated") {
         let index = cluster.delegators.indexOf(
             stash.staker.toHexString()
@@ -130,7 +128,43 @@ export function updateClusterDelegatorInfo(
             delegators.splice(index, 1);
             cluster.delegators = delegators;
         }
+    }
 
+    cluster.save();
+
+    updateClusterDelegation(
+        clusterId,
+        tokens,
+        amounts,
+        operation,
+    );
+};
+
+export function updateClusterDelegation(
+    clusterId: string,
+    tokens: Bytes[],
+    amounts: BigInt[],
+    operation: string,
+): void {
+    if (operation === "delegated") {
+        for (let i = 0; i < tokens.length; i++) {
+            let id = tokens[i].toHexString() + clusterId;
+            let delegation = Delegation.load(id);
+
+            if (delegation == null) {
+                delegation = new Delegation(id);
+                delegation.token = tokens[i].toHexString();
+                delegation.cluster = clusterId;
+                delegation.amount = BIGINT_ZERO;
+            }
+
+            delegation.amount = delegation.amount.plus(
+                amounts[i]
+            );
+
+            delegation.save();
+        }
+    } else if (operation === "undelegated") {
         for (let i = 0; i < tokens.length; i++) {
             let id = tokens[i].toHexString() + clusterId;
 
@@ -147,8 +181,6 @@ export function updateClusterDelegatorInfo(
             }
         }
     }
-
-    cluster.save();
 };
 
 export function updateDelegatorTokens(
@@ -162,6 +194,7 @@ export function updateDelegatorTokens(
     if (delegator == null) {
         delegator = new Delegator(delegatorId);
         delegator.address = delegatorId;
+        delegator.pendingRewards = BIGINT_ZERO;
         delegator.save();
     }
 
@@ -191,3 +224,97 @@ export function updateDelegatorTokens(
         delegatorToken.save();
     }
 }
+
+export function updateNetworkClusters(
+    networkId: Bytes,
+    clusterId: Bytes,
+    operation: string,
+): void {
+    if (operation === "changed") {
+        let cluster = Cluster.load(clusterId.toHexString());
+        let existingNetworkId = cluster.networkId;
+
+        let existingNetwork = Network.load(
+            existingNetworkId.toHexString()
+        );
+        let index = existingNetwork.clusters.indexOf(
+            clusterId
+        );
+
+        if (index > -1) {
+            let networkClusters = existingNetwork.clusters as Bytes[];
+            networkClusters.splice(index, 1);
+            existingNetwork.clusters = networkClusters;
+            existingNetwork.save();
+        }
+    }
+
+    let networkIdString = networkId.toHexString();
+    let network = Network.load(networkIdString);
+
+    if (network == null) {
+        network = new Network(networkIdString);
+        network.networkId = networkId;
+        network.clusters = [];
+    }
+
+    let clustedIndex = network.clusters.indexOf(
+        clusterId
+    );
+
+    if (clustedIndex < 0) {
+        let clusters = network.clusters;
+        clusters.push(clusterId);
+        network.clusters = clusters;
+        network.save();
+    }
+}
+
+export function updateNetworkClustersReward(
+    networkId: string,
+): void {
+    let network = Network.load(networkId);
+    let clusters = network.clusters as Bytes[];
+    for (let i = 0; i < clusters.length; i++) {
+        let cluster = Cluster.load(clusters[i].toHexString());
+        let reward = clusterRewardsContract.clusterRewards(
+            Address.fromString(
+                clusters[i].toHexString()
+            )
+        );
+
+        cluster.pendingRewards = reward;
+        cluster.save();
+    }
+};
+
+export function updateClusterDelegatorsReward(
+    clusterId: string,
+): void {
+    let cluster = Cluster.load(clusterId);
+    let delegators = cluster.delegators as string[];
+    let contract = RewardDelegatorsContract.bind(
+        REWARD_DELEGATOR_ADDRESS
+    );
+
+    for (let i = 0; i < delegators.length; i++) {
+        let delegator = Delegator.load(delegators[i]);
+        let reward = contract.withdrawRewards(
+            Address.fromString(delegators[i]),
+            Address.fromString(clusterId)
+        );
+
+        delegator.pendingRewards = delegator.pendingRewards
+            .plus(reward);
+
+        delegator.save();
+    }
+};
+
+export function updateClusterPendingReward(
+    clusterId: string,
+): void {
+    let cluster = Cluster.load(clusterId);
+    cluster.pendingRewards = BIGINT_ZERO;
+    cluster.save();
+};
