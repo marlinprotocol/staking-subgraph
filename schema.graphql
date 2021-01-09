@@ -17,13 +17,14 @@ type Cluster @entity {
   updatedNetwork: Bytes
   networkUpdatesAt: BigInt
   clusterUnregistersAt: BigInt
+  pendingRewards: BigInt!
 }
 
 type Stash @entity {
   id: ID!
   stashId: Bytes!
   staker: Bytes!
-  delegatedCluster: Cluster
+  delegatedCluster: String!
   undelegatesAt: BigInt
   tokensDelegated: [TokenData!]! @derivedFrom(field: "stash")
   tokensDelegatedId: [Bytes!]
@@ -34,12 +35,14 @@ type Token @entity {
   id: ID!
   tokenId: Bytes!
   tokenAddress: Bytes!
+  rewardFactor: BigInt!
 }
 
 type Network @entity {
   id: ID!
   networkId: Bytes!
-  rewardPerEpoch: BigInt!
+  rewardPerEpoch: BigInt
+  clusters: [Bytes!]!
 }
 
 type TokenData @entity {
@@ -60,6 +63,7 @@ type Delegator @entity {
   id: ID!
   address: String!
   totalDelegations: [DelegatorToken!]! @derivedFrom(field: "delegator")
+  pendingRewards: BigInt!
 }
 
 type DelegatorToken @entity {
