@@ -5,7 +5,6 @@ import {
   Cluster, Stash, Token, Network, Delegator,
 } from '../generated/schema';
 import {
-  ZERO_ADDRESS,
   STATUS_REGISTERED,
   STATUS_NOT_REGISTERED,
   BIGINT_ZERO,
@@ -53,6 +52,7 @@ import {
   updateClusterPendingReward,
   updateNetworkClustersReward,
   updateClusterDelegatorsReward,
+  updateDelegatorTotalDelegation,
 } from "./utils/helpers";
 
 export function handleClusterRegistered(
@@ -176,6 +176,13 @@ export function handleStashDelegated(
     event.params.delegatedCluster.toHexString(),
     "delegated",
   );
+
+  updateDelegatorTotalDelegation(
+    stash.staker,
+    stash.tokensDelegatedId as Bytes[],
+    stash.tokensDelegatedAmount as BigInt[],
+    "delegated",
+  );
 }
 
 export function handleStashUndelegated(
@@ -190,9 +197,16 @@ export function handleStashUndelegated(
     "undelegated",
   );
 
-  stash.delegatedCluster = ZERO_ADDRESS;
+  stash.delegatedCluster = null;
   stash.undelegatesAt = event.params.undelegatesAt;
   stash.save();
+
+  updateDelegatorTotalDelegation(
+    stash.staker,
+    stash.tokensDelegatedId as Bytes[],
+    stash.tokensDelegatedAmount as BigInt[],
+    "undelegated",
+  );
 }
 
 export function handleAddedToStash(

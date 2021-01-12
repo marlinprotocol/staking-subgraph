@@ -39,6 +39,7 @@ export function updateStashTokens(
         let tokenDataId = tokens[i].toHexString() + stashId;
         let tokenData = TokenData.load(tokenDataId);
         let stash = Stash.load(stashId);
+        let delegatedCluster = stash.delegatedCluster;
         let tokensDelegatedId = stash.tokensDelegatedId as Bytes[];
         let tokensDelegatedAmount = stash.tokensDelegatedAmount as BigInt[];
 
@@ -94,12 +95,14 @@ export function updateStashTokens(
             tokenData.save();
         }
 
-        updateDelegatorTokens(
-            stash.staker.toHexString(),
-            tokens[i].toHexString(),
-            amounts[i],
-            action,
-        );
+        if (delegatedCluster.length > 0) {
+            updateDelegatorTokens(
+                stash.staker.toHexString(),
+                tokens[i].toHexString(),
+                amounts[i],
+                action,
+            );
+        }
     };
 }
 
@@ -180,6 +183,25 @@ export function updateClusterDelegation(
                 delegation.save();
             }
         }
+    }
+};
+
+export function updateDelegatorTotalDelegation(
+    delegatorId: Bytes,
+    tokens: Bytes[],
+    amounts: BigInt[],
+    action: string,
+): void {
+    for (let i = 0; i < tokens.length; i++) {
+        let operation = action == "delegated" ?
+            "add" : "withdraw";
+
+        updateDelegatorTokens(
+            delegatorId.toHexString(),
+            tokens[i].toHexString(),
+            amounts[i],
+            operation,
+        );
     }
 };
 
