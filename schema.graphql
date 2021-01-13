@@ -42,7 +42,7 @@ type Network @entity {
   id: ID!
   networkId: Bytes!
   rewardPerEpoch: BigInt
-  clusters: [Bytes!]!
+  clusters: [String!]!
 }
 
 type TokenData @entity {
@@ -71,4 +71,9 @@ type DelegatorToken @entity {
   token: Token!
   amount: BigInt!
   delegator: Delegator!
+}
+
+type State @entity {
+  id: ID!
+  clusters: [String!]!
 }

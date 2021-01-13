@@ -1,22 +1,17 @@
 import {
-  Bytes, BigInt, store,
+  Bytes, BigInt, store, ethereum,
 } from "@graphprotocol/graph-ts";
 import {
-  Cluster, Stash, Token, Network, Delegator,
+  Cluster, Stash, Token, Network, Delegator, State,
 } from '../generated/schema';
 import {
-  ZERO_ADDRESS,
   STATUS_REGISTERED,
-  STATUS_NOT_REGISTERED,
   BIGINT_ZERO,
 } from "./utils/constants";
 import {
   ClusterRegistered,
-  CommissionUpdated,
   RewardAddressUpdated,
-  NetworkSwitched,
   ClientKeyUpdated,
-  ClusterUnregistered,
   NetworkSwitchRequested,
   CommissionUpdateRequested,
   ClusterUnregisterRequested,
@@ -47,7 +42,9 @@ import {
 } from '../generated/RewardDelegators/RewardDelegators';
 import {
   updateStashTokens,
+  updateClustersInfo,
   updateNetworkClusters,
+  updateAllClustersList,
   updateClusterDelegation,
   updateClusterDelegatorInfo,
   updateClusterPendingReward,
@@ -70,26 +67,22 @@ export function handleClusterRegistered(
   cluster.networkId = event.params.networkId;
   cluster.status = STATUS_REGISTERED;
   cluster.delegators = [];
-  cluster.clusterUnregistersAt = BIGINT_ZERO;
+  cluster.clusterUnregistersAt = null;
   cluster.pendingRewards = BIGINT_ZERO;
-  cluster.save();
-
-  updateNetworkClusters(
-    event.params.networkId,
-    event.params.cluster,
-    "add",
-  );
-}
-
-export function handleCommissionUpdated(
-  event: CommissionUpdated
-): void {
-  let id = event.params.cluster.toHexString();
-  let cluster = Cluster.load(id);
-  cluster.commission = event.params.updatedCommission;
-  cluster.updatedCommission = BIGINT_ZERO;
+  cluster.updatedNetwork = null;
+  cluster.networkUpdatesAt = BIGINT_ZERO;
+  cluster.updatedCommission = null;
   cluster.commissionUpdatesAt = BIGINT_ZERO;
   cluster.save();
+
+  updateAllClustersList(event.params.cluster);
+
+  updateNetworkClusters(
+    new Bytes(0),
+    event.params.networkId,
+    event.params.cluster.toHexString(),
+    "add",
+  );
 }
 
 export function handleRewardAddressUpdated(
@@ -101,38 +94,12 @@ export function handleRewardAddressUpdated(
   cluster.save();
 }
 
-export function handleNetworkSwitched(
-  event: NetworkSwitched
-): void {
-  let id = event.params.cluster.toHexString();
-  let cluster = Cluster.load(id);
-  cluster.networkId = event.params.networkId;
-  cluster.updatedNetwork = new Bytes(0);
-  cluster.networkUpdatesAt = BIGINT_ZERO;
-  cluster.save();
-
-  updateNetworkClusters(
-    event.params.networkId,
-    event.params.cluster,
-    "changed",
-  );
-}
-
 export function handleClientKeyUpdated(
   event: ClientKeyUpdated
 ): void {
   let id = event.params.cluster.toHexString();
   let cluster = Cluster.load(id);
   cluster.clientKey = event.params.clientKey;
-  cluster.save();
-}
-
-export function handleClusterUnregistered(
-  event: ClusterUnregistered
-): void {
-  let id = event.params.cluster.toHexString();
-  let cluster = Cluster.load(id);
-  cluster.status = STATUS_NOT_REGISTERED;
   cluster.save();
 }
 
@@ -385,4 +352,20 @@ export function handleRewardsWithdrawn(
   let delegator = Delegator.load(delegatorId);
   delegator.pendingRewards = BIGINT_ZERO;
   delegator.save();
+}
+
+export function handleBlock(
+  block: ethereum.Block
+): void {
+  let blockNumber = block.number;
+  let state = State.load("clusters");
+
+  if (state == null) {
+    state = new State("clusters");
+    state.clusters = [];
+    state.save();
+  }
+
+  let clusters = state.clusters as string[];
+  updateClustersInfo(blockNumber, clusters);
 }

@@ -12,6 +12,7 @@ import {
     Delegator,
     DelegatorToken,
     Network,
+    State,
 } from '../../generated/schema';
 import {
     ClusterRewards as ClusterRewardsContract,
@@ -23,6 +24,7 @@ import {
     BIGINT_ZERO,
     CLUSTER_REWARDS_ADDRESS,
     REWARD_DELEGATOR_ADDRESS,
+    STATUS_NOT_REGISTERED,
 } from './constants';
 
 let clusterRewardsContract = ClusterRewardsContract.bind(
@@ -117,7 +119,10 @@ export function updateClusterDelegatorInfo(
     let tokens = stash.tokensDelegatedId as Bytes[];
     let amounts = stash.tokensDelegatedAmount as BigInt[];
 
-    if (operation === "delegated") {
+    if (
+        operation === "delegated" &&
+        !cluster.delegators.includes(stash.staker.toHexString())
+    ) {
         let delegators = cluster.delegators;
         delegators.push(stash.staker.toHexString());
         cluster.delegators = delegators;
@@ -248,14 +253,12 @@ export function updateDelegatorTokens(
 }
 
 export function updateNetworkClusters(
-    networkId: Bytes,
-    clusterId: Bytes,
+    existingNetworkId: Bytes,
+    updatedNetworkId: Bytes,
+    clusterId: string,
     operation: string,
 ): void {
-    if (operation === "changed") {
-        let cluster = Cluster.load(clusterId.toHexString());
-        let existingNetworkId = cluster.networkId;
-
+    if (operation !== "add") {
         let existingNetwork = Network.load(
             existingNetworkId.toHexString()
         );
@@ -264,31 +267,33 @@ export function updateNetworkClusters(
         );
 
         if (index > -1) {
-            let networkClusters = existingNetwork.clusters as Bytes[];
+            let networkClusters = existingNetwork.clusters as string[];
             networkClusters.splice(index, 1);
             existingNetwork.clusters = networkClusters;
             existingNetwork.save();
         }
     }
 
-    let networkIdString = networkId.toHexString();
-    let network = Network.load(networkIdString);
+    if (operation !== "unregistered") {
+        let networkIdString = updatedNetworkId.toHexString();
+        let network = Network.load(networkIdString);
 
-    if (network == null) {
-        network = new Network(networkIdString);
-        network.networkId = networkId;
-        network.clusters = [];
-    }
+        if (network == null) {
+            network = new Network(networkIdString);
+            network.networkId = updatedNetworkId;
+            network.clusters = [];
+        }
 
-    let clustedIndex = network.clusters.indexOf(
-        clusterId
-    );
+        let clustedIndex = network.clusters.indexOf(
+            clusterId
+        );
 
-    if (clustedIndex < 0) {
-        let clusters = network.clusters;
-        clusters.push(clusterId);
-        network.clusters = clusters;
-        network.save();
+        if (clustedIndex < 0) {
+            let clusters = network.clusters;
+            clusters.push(clusterId);
+            network.clusters = clusters;
+            network.save();
+        }
     }
 }
 
@@ -296,12 +301,12 @@ export function updateNetworkClustersReward(
     networkId: string,
 ): void {
     let network = Network.load(networkId);
-    let clusters = network.clusters as Bytes[];
+    let clusters = network.clusters as string[];
     for (let i = 0; i < clusters.length; i++) {
-        let cluster = Cluster.load(clusters[i].toHexString());
+        let cluster = Cluster.load(clusters[i]);
         let reward = clusterRewardsContract.clusterRewards(
             Address.fromString(
-                clusters[i].toHexString()
+                clusters[i]
             )
         );
 
@@ -340,3 +345,74 @@ export function updateClusterPendingReward(
     cluster.pendingRewards = BIGINT_ZERO;
     cluster.save();
 };
+
+export function updateAllClustersList(
+    clusterId: Bytes
+): void {
+    let state = State.load("clusters");
+    if (state == null) {
+        state = new State("clusters");
+        state.clusters = [];
+    }
+
+    let clusters = state.clusters;
+    clusters.push(clusterId.toHexString());
+    state.clusters = clusters;
+
+    state.save();
+}
+
+export function updateClustersInfo(
+    blockNumber: BigInt,
+    clusters: string[]
+): void {
+    if (clusters.length > 0) {
+        for (let i = 0; i < clusters.length; i++) {
+            let cluster = Cluster.load(clusters[i]);
+
+            let networkUpdateBlock =
+                cluster.networkUpdatesAt as BigInt;
+            let commissionUpdateBlock =
+                cluster.commissionUpdatesAt as BigInt;
+
+            if (
+                networkUpdateBlock.gt(BIGINT_ZERO) &&
+                blockNumber.ge(networkUpdateBlock)
+            ) {
+                updateNetworkClusters(
+                    cluster.networkId,
+                    cluster.updatedNetwork as Bytes,
+                    clusters[i],
+                    "changed",
+                );
+
+                cluster.networkId = cluster.updatedNetwork as Bytes;
+                cluster.updatedNetwork = null;
+                cluster.networkUpdatesAt = BIGINT_ZERO;
+            }
+
+            if (
+                commissionUpdateBlock.gt(BIGINT_ZERO) &&
+                blockNumber.ge(commissionUpdateBlock)
+            ) {
+                cluster.commission = cluster.updatedCommission as BigInt;
+                cluster.updatedCommission = null;
+                cluster.commissionUpdatesAt = BIGINT_ZERO;
+            }
+
+            if (cluster.clusterUnregistersAt) {
+                cluster.status = STATUS_NOT_REGISTERED;
+                cluster.clusterUnregistersAt = null;
+
+                updateNetworkClusters(
+                    cluster.networkId,
+                    new Bytes(0),
+                    clusters[i],
+                    "unregistered",
+                );
+            }
+
+            cluster.save();
+        };
+    }
+}
