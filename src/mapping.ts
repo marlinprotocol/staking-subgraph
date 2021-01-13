@@ -67,12 +67,12 @@ export function handleClusterRegistered(
   cluster.networkId = event.params.networkId;
   cluster.status = STATUS_REGISTERED;
   cluster.delegators = [];
-  cluster.clusterUnregistersAt = null;
   cluster.pendingRewards = BIGINT_ZERO;
   cluster.updatedNetwork = null;
   cluster.networkUpdatesAt = BIGINT_ZERO;
   cluster.updatedCommission = null;
   cluster.commissionUpdatesAt = BIGINT_ZERO;
+  cluster.clusterUnregistersAt = BIGINT_ZERO;
   cluster.save();
 
   updateAllClustersList(event.params.cluster);

@@ -374,6 +374,8 @@ export function updateClustersInfo(
                 cluster.networkUpdatesAt as BigInt;
             let commissionUpdateBlock =
                 cluster.commissionUpdatesAt as BigInt;
+            let unregisterBlock =
+                cluster.clusterUnregistersAt as BigInt;
 
             if (
                 networkUpdateBlock.gt(BIGINT_ZERO) &&
@@ -400,9 +402,12 @@ export function updateClustersInfo(
                 cluster.commissionUpdatesAt = BIGINT_ZERO;
             }
 
-            if (cluster.clusterUnregistersAt) {
+            if (
+                unregisterBlock.gt(BIGINT_ZERO) &&
+                blockNumber.ge(unregisterBlock)
+            ) {
                 cluster.status = STATUS_NOT_REGISTERED;
-                cluster.clusterUnregistersAt = null;
+                cluster.clusterUnregistersAt = BIGINT_ZERO;
 
                 updateNetworkClusters(
                     cluster.networkId,
