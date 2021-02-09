@@ -36,6 +36,7 @@ type Token @entity {
   tokenId: Bytes!
   tokenAddress: Bytes!
   rewardFactor: BigInt!
+  enabled: Boolean!
 }
 
 type Network @entity {

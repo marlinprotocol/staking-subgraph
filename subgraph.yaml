@@ -8,9 +8,9 @@ dataSources:
     name: ClusterRegistry
     network: kovan
     source:
-      address: '0x38a1dA1193252267B21751EF5834dE3BE75CAAc7'
+      address: '0x0B3a1C61988cBfEAb687A2A8B2A2Ac5109a6b0Ce'
       abi: ClusterRegistry
-      startBlock: 22996000
+      startBlock: 23366200
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.4
@@ -40,9 +40,9 @@ dataSources:
     name: StakeManager
     network: kovan
     source:
-      address: '0x9c26078Ee79480632d1D175f486915fc6424e09d'
+      address: '0x6E4601488588D82c47E6b83a1636afAEDd1C566e'
       abi: StakeManager
-      startBlock: 22996000
+      startBlock: 23366200
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.4
@@ -76,9 +76,9 @@ dataSources:
     name: ClusterRewards
     network: kovan
     source:
-      address: '0x93E2dEE22FCb46592d66BbE3b23ee8D1CaeF1b59'
+      address: '0xA83aD48E2c963a2dF6adcC710Ba520a97d237dCc'
       abi: ClusterRewards
-      startBlock: 22996000
+      startBlock: 23366200
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.4
@@ -102,9 +102,9 @@ dataSources:
     name: RewardDelegators
     network: kovan
     source:
-      address: '0xbCAeD62eb275353747bFB9F18B41297eAaB7FB31'
+      address: '0x802E91F47e09E23eB253Ffcc97665497e12ec93D'
       abi: RewardDelegators
-      startBlock: 22996000
+      startBlock: 23366200
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.4

@@ -224,6 +224,7 @@ export function handleTokenAdded(
   token.tokenId = event.params.tokenId;
   token.tokenAddress = event.params.tokenAddress;
   token.rewardFactor = BIGINT_ZERO;
+  token.enabled = true;
   token.save();
 }
 
@@ -231,8 +232,9 @@ export function handleTokenRemoved(
   event: TokenRemoved
 ): void {
   let id = event.params.tokenId.toHexString();
-  store.remove('Token', id);
-}
+  let token = Token.load(id);
+  token.enabled = false;
+  token.save();}
 
 export function handleTokenUpdated(
   event: TokenUpdated
