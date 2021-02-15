@@ -26,6 +26,8 @@ import {
   TokenAdded,
   TokenRemoved,
   TokenUpdated,
+  Redelegated,
+  RedelegationRequested,
 } from '../generated/StakeManager/StakeManager';
 import {
   NetworkAdded,
@@ -234,7 +236,8 @@ export function handleTokenRemoved(
   let id = event.params.tokenId.toHexString();
   let token = Token.load(id);
   token.enabled = false;
-  token.save();}
+  token.save();
+}
 
 export function handleTokenUpdated(
   event: TokenUpdated
@@ -244,6 +247,44 @@ export function handleTokenUpdated(
   token.tokenId = event.params.tokenId;
   token.tokenAddress = event.params.tokenAddress;
   token.save();
+}
+
+export function handleRedelegated(
+  event: Redelegated
+): void {
+  let id = event.params.stashId.toHexString();
+  let stash = Stash.load(id);
+
+  updateClusterDelegatorInfo(
+    event.params.stashId.toHexString(),
+    stash.delegatedCluster,
+    "undelegated",
+  );
+
+  stash.delegatedCluster = event.params
+    .updatedCluster.toHexString();
+  stash.redelegationUpdateBlock = null;
+  stash.redelegationUpdatedCluster = null;
+  stash.save();
+
+  updateClusterDelegatorInfo(
+    event.params.stashId.toHexString(),
+    event.params.updatedCluster.toHexString(),
+    "delegated",
+  );
+}
+
+export function handleRedelegationRequested(
+  event: RedelegationRequested
+): void {
+  let id = event.params.stashId.toHexString();
+  let stash = Stash.load(id);
+
+  stash.redelegationUpdateBlock = event.params
+    .redelegatesAt;
+  stash.redelegationUpdatedCluster = event.params
+    .updatedCluster.toHexString();
+  stash.save();
 }
 
 export function handleNetworkAdded(

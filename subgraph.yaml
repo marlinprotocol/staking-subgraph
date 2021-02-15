@@ -72,6 +72,10 @@ dataSources:
           handler: handleTokenRemoved
         - event: TokenUpdated(bytes32,address)
           handler: handleTokenUpdated
+        - event: RedelegationRequested(bytes32,address,address,uint256)
+          handler: handleRedelegationRequested
+        - event: Redelegated(bytes32,address)
+          handler: handleRedelegated
   - kind: ethereum/contract
     name: ClusterRewards
     network: kovan
