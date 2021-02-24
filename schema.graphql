@@ -66,7 +66,8 @@ type Delegator @entity {
   id: ID!
   address: String!
   totalDelegations: [DelegatorToken!]! @derivedFrom(field: "delegator")
-  pendingRewards: BigInt!
+  pendingRewards: [DelegatorReward!]! @derivedFrom(field: "delegator")
+  rewardWithdrawl: [RewardWithdrawl!]! @derivedFrom(field: "delegator")
 }
 
 type DelegatorToken @entity {
@@ -79,4 +80,19 @@ type DelegatorToken @entity {
 type State @entity {
   id: ID!
   clusters: [String!]!
+}
+
+type DelegatorReward @entity {
+  id: ID!
+  amount: BigInt!
+  cluster: Cluster!
+  delegator: Delegator!
+}
+
+type RewardWithdrawl @entity {
+  id: ID!
+  amount: BigInt!
+  cluster: Cluster!
+  delegator: Delegator!
+  timestamp: BigInt!
 }

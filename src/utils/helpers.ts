@@ -13,6 +13,7 @@ import {
     DelegatorToken,
     Network,
     State,
+    DelegatorReward,
 } from '../../generated/schema';
 import {
     ClusterRewards as ClusterRewardsContract,
@@ -221,7 +222,6 @@ export function updateDelegatorTokens(
     if (delegator == null) {
         delegator = new Delegator(delegatorId);
         delegator.address = delegatorId;
-        delegator.pendingRewards = BIGINT_ZERO;
         delegator.save();
     }
 
@@ -325,16 +325,29 @@ export function updateClusterDelegatorsReward(
     );
 
     for (let i = 0; i < delegators.length; i++) {
-        let delegator = Delegator.load(delegators[i]);
+        let delegatorRewardId = delegators[i] + clusterId;
+        let delegatorReward = DelegatorReward.load(
+            delegatorRewardId
+        );
+
+        if (delegatorReward == null) {
+            delegatorReward = new DelegatorReward(
+                delegatorRewardId
+            );
+            delegatorReward.cluster = clusterId;
+            delegatorReward.amount = BIGINT_ZERO;
+            delegatorReward.delegator = delegators[i];
+        }
+
         let reward = contract.withdrawRewards(
             Address.fromString(delegators[i]),
             Address.fromString(clusterId)
         );
 
-        delegator.pendingRewards = delegator.pendingRewards
-            .plus(reward);
+        delegatorReward.amount = delegatorReward
+            .amount.plus(reward);
 
-        delegator.save();
+        delegatorReward.save();
     }
 };
 
