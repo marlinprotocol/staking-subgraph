@@ -120,6 +120,7 @@ export function handleStashCreated(
   stash.delegatedCluster = null;
   stash.tokensDelegatedId = [];
   stash.tokensDelegatedAmount = [];
+  stash.isActive = true;
   stash.save();
 
   let tokens = event.params.tokens as Bytes[];

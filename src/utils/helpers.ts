@@ -38,13 +38,15 @@ export function updateStashTokens(
     amounts: BigInt[],
     action: string,
 ): void {
+    let stash = Stash.load(stashId);
+    let delegatedCluster = stash.delegatedCluster;
+    let tokensDelegatedId = stash.tokensDelegatedId as Bytes[];
+    let tokensDelegatedAmount = stash.tokensDelegatedAmount as BigInt[];
+    let temp = BIGINT_ZERO;
+
     for (let i = 0; i < tokens.length; i++) {
         let tokenDataId = tokens[i].toHexString() + stashId;
         let tokenData = TokenData.load(tokenDataId);
-        let stash = Stash.load(stashId);
-        let delegatedCluster = stash.delegatedCluster;
-        let tokensDelegatedId = stash.tokensDelegatedId as Bytes[];
-        let tokensDelegatedAmount = stash.tokensDelegatedAmount as BigInt[];
 
         if (action === "add") {
             if (tokenData == null) {
@@ -74,8 +76,6 @@ export function updateStashTokens(
 
                 stash.tokensDelegatedAmount = tokensDelegatedAmount;
             }
-
-            stash.save();
         } else if (action === "withdraw") {
             tokenData.amount = tokenData.amount.minus(
                 amounts[i]
@@ -89,7 +89,6 @@ export function updateStashTokens(
                 .minus(amounts[i]);
 
             stash.tokensDelegatedAmount = tokensDelegatedAmount;
-            stash.save();
         }
 
         if (tokenData.amount == BIGINT_ZERO) {
@@ -107,6 +106,19 @@ export function updateStashTokens(
             );
         }
     };
+
+    for (let i = 0; i < tokensDelegatedId.length; i++) {
+        temp = temp.plus(tokensDelegatedAmount[i]);
+
+        if (
+            temp == BIGINT_ZERO &&
+            i == tokensDelegatedId.length - 1
+        ) {
+            stash.isActive = false;
+        }
+    }
+
+    stash.save();
 }
 
 export function updateClusterDelegatorInfo(
