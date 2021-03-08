@@ -66,6 +66,7 @@ type Delegation @entity {
 type Delegator @entity {
   id: ID!
   address: String!
+  totalPendingReward: BigInt!
   totalDelegations: [DelegatorToken!]! @derivedFrom(field: "delegator")
   pendingRewards: [DelegatorReward!]! @derivedFrom(field: "delegator")
   rewardWithdrawl: [RewardWithdrawl!]! @derivedFrom(field: "delegator")
