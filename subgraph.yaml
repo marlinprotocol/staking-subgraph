@@ -24,22 +24,18 @@ dataSources:
       eventHandlers:
         - event: ClusterRegistered(address,bytes32,uint256,address,address)
           handler: handleClusterRegistered
-        - event: CommissionUpdated(address,uint256,uint256)
-          handler: handleCommissionUpdated
         - event: RewardAddressUpdated(address,address)
           handler: handleRewardAddressUpdated
-        - event: NetworkSwitched(address,bytes32,uint256)
-          handler: handleNetworkSwitched
         - event: ClientKeyUpdated(address,address)
           handler: handleClientKeyUpdated
-        - event: ClusterUnregistered(address,uint256)
-          handler: handleClusterUnregistered
         - event: CommissionUpdateRequested(address,uint256,uint256)
           handler: handleCommissionUpdateRequested
         - event: NetworkSwitchRequested(address,bytes32,uint256)
           handler: handleNetworkSwitchRequested
         - event: ClusterUnregisterRequested(address,uint256)
           handler: handleClusterUnregisterRequested
+      blockHandlers:
+        - handler: handleBlock
   - kind: ethereum/contract
     name: StakeManager
     network: mainnet
@@ -76,6 +72,10 @@ dataSources:
           handler: handleTokenRemoved
         - event: TokenUpdated(bytes32,address)
           handler: handleTokenUpdated
+        - event: RedelegationRequested(bytes32,address,address,uint256)
+          handler: handleRedelegationRequested
+        - event: Redelegated(bytes32,address)
+          handler: handleRedelegated
   - kind: ethereum/contract
     name: ClusterRewards
     network: mainnet

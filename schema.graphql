@@ -29,6 +29,9 @@ type Stash @entity {
   tokensDelegated: [TokenData!]! @derivedFrom(field: "stash")
   tokensDelegatedId: [Bytes!]
   tokensDelegatedAmount: [BigInt!]
+  redelegationUpdateBlock: BigInt
+  redelegationUpdatedCluster: String
+  isActive: Boolean!
 }
 
 type Token @entity {
@@ -36,13 +39,14 @@ type Token @entity {
   tokenId: Bytes!
   tokenAddress: Bytes!
   rewardFactor: BigInt!
+  enabled: Boolean!
 }
 
 type Network @entity {
   id: ID!
   networkId: Bytes!
   rewardPerEpoch: BigInt
-  clusters: [Bytes!]!
+  clusters: [String!]!
 }
 
 type TokenData @entity {
@@ -63,7 +67,8 @@ type Delegator @entity {
   id: ID!
   address: String!
   totalDelegations: [DelegatorToken!]! @derivedFrom(field: "delegator")
-  pendingRewards: BigInt!
+  pendingRewards: [DelegatorReward!]! @derivedFrom(field: "delegator")
+  rewardWithdrawl: [RewardWithdrawl!]! @derivedFrom(field: "delegator")
 }
 
 type DelegatorToken @entity {
@@ -71,4 +76,24 @@ type DelegatorToken @entity {
   token: Token!
   amount: BigInt!
   delegator: Delegator!
+}
+
+type State @entity {
+  id: ID!
+  clusters: [String!]!
+}
+
+type DelegatorReward @entity {
+  id: ID!
+  amount: BigInt!
+  cluster: Cluster!
+  delegator: Delegator!
+}
+
+type RewardWithdrawl @entity {
+  id: ID!
+  amount: BigInt!
+  cluster: Cluster!
+  delegator: Delegator!
+  timestamp: BigInt!
 }
