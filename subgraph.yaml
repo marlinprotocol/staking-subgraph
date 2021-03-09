@@ -8,7 +8,7 @@ dataSources:
     name: ClusterRegistry
     network: mainnet
     source:
-      address: '0x5B7B5632149653B974e75b18F7B02dEeEac38E47'
+      address: "0x5B7B5632149653B974e75b18F7B02dEeEac38E47"
       abi: ClusterRegistry
       startBlock: 11579000
     mapping:
@@ -40,7 +40,7 @@ dataSources:
     name: StakeManager
     network: mainnet
     source:
-      address: '0xCBB94D13fB90C28368E4358f3EccE248ae4B6c82'
+      address: "0xCBB94D13fB90C28368E4358f3EccE248ae4B6c82"
       abi: StakeManager
       startBlock: 11579000
     mapping:
@@ -80,7 +80,7 @@ dataSources:
     name: ClusterRewards
     network: mainnet
     source:
-      address: '0x5124324e4f185C55dff566A71d8666fEf0297cd7'
+      address: "0x5124324e4f185C55dff566A71d8666fEf0297cd7"
       abi: ClusterRewards
       startBlock: 11579000
     mapping:
@@ -93,6 +93,8 @@ dataSources:
       abis:
         - name: ClusterRewards
           file: ./abis/ClusterRewards.json
+        - name: RewardDelegators
+          file: ./abis/RewardDelegators.json
       eventHandlers:
         - event: NetworkAdded(bytes32,uint256)
           handler: handleNetworkAdded
@@ -106,7 +108,7 @@ dataSources:
     name: RewardDelegators
     network: mainnet
     source:
-      address: '0x513FB60037240205A0CF17C260257097D747BD46'
+      address: "0x513FB60037240205A0CF17C260257097D747BD46"
       abi: RewardDelegators
       startBlock: 11579000
     mapping:

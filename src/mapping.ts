@@ -2,8 +2,9 @@ import {
   Bytes, BigInt, store, ethereum,
 } from "@graphprotocol/graph-ts";
 import {
-  Cluster, Stash, Token, Network,
-  State, RewardWithdrawl, DelegatorReward,
+  Cluster, Stash, Token,
+  Network, State, RewardWithdrawl,
+  DelegatorReward, Delegator,
 } from '../generated/schema';
 import {
   STATUS_REGISTERED,
@@ -387,7 +388,7 @@ export function handleClusterRewardDistributed(
 ): void {
   let id = event.params.cluster.toHexString();
   updateClusterPendingReward(id);
-  updateClusterDelegatorsReward(id);
+  // updateClusterDelegatorsReward(id);
 }
 
 export function handleRewardsWithdrawn(
@@ -402,6 +403,11 @@ export function handleRewardsWithdrawn(
 
   delegatorReward.amount = BIGINT_ZERO;
   delegatorReward.save();
+
+  let delegator = Delegator.load(delegatorId);
+  delegator.totalPendingReward = delegator
+    .totalPendingReward.minus(event.params.rewards);
+  delegator.save();
 
   let rewardWithdrawl = new RewardWithdrawl(
     delegatorId + event.block.timestamp.toString()

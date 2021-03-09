@@ -32,6 +32,10 @@ let clusterRewardsContract = ClusterRewardsContract.bind(
     CLUSTER_REWARDS_ADDRESS
 );
 
+let rewardDelegatorContract = RewardDelegatorsContract.bind(
+    REWARD_DELEGATOR_ADDRESS
+);
+
 export function updateStashTokens(
     stashId: string,
     tokens: Bytes[],
@@ -132,10 +136,7 @@ export function updateClusterDelegatorInfo(
     let tokens = stash.tokensDelegatedId as Bytes[];
     let amounts = stash.tokensDelegatedAmount as BigInt[];
 
-    if (
-        operation === "delegated" &&
-        !cluster.delegators.includes(stash.staker.toHexString())
-    ) {
+    if (operation === "delegated") {
         let delegators = cluster.delegators;
         delegators.push(stash.staker.toHexString());
         cluster.delegators = delegators;
@@ -234,6 +235,7 @@ export function updateDelegatorTokens(
     if (delegator == null) {
         delegator = new Delegator(delegatorId);
         delegator.address = delegatorId;
+        delegator.totalPendingReward = BIGINT_ZERO;
         delegator.save();
     }
 
@@ -322,8 +324,12 @@ export function updateNetworkClustersReward(
             )
         );
 
-        cluster.pendingRewards = reward;
+        cluster.pendingRewards = (reward.times(cluster.commission))
+            .div(BigInt.fromI32(100));
+
         cluster.save();
+
+        updateClusterDelegatorsReward(clusters[i]);
     }
 };
 
@@ -332,9 +338,6 @@ export function updateClusterDelegatorsReward(
 ): void {
     let cluster = Cluster.load(clusterId);
     let delegators = cluster.delegators as string[];
-    let contract = RewardDelegatorsContract.bind(
-        REWARD_DELEGATOR_ADDRESS
-    );
 
     for (let i = 0; i < delegators.length; i++) {
         let delegatorRewardId = delegators[i] + clusterId;
@@ -351,14 +354,20 @@ export function updateClusterDelegatorsReward(
             delegatorReward.delegator = delegators[i];
         }
 
-        let reward = contract.withdrawRewards(
+        let reward = rewardDelegatorContract.withdrawRewards(
             Address.fromString(delegators[i]),
             Address.fromString(clusterId)
         );
 
+        let delegator = Delegator.load(delegators[i]);
+
+        delegator.totalPendingReward = delegator
+            .totalPendingReward.plus(reward);
+
         delegatorReward.amount = delegatorReward
             .amount.plus(reward);
 
+        delegator.save();
         delegatorReward.save();
     }
 };
