@@ -388,7 +388,6 @@ export function handleClusterRewardDistributed(
 ): void {
   let id = event.params.cluster.toHexString();
   updateClusterPendingReward(id);
-  // updateClusterDelegatorsReward(id);
 }
 
 export function handleRewardsWithdrawn(
@@ -405,8 +404,12 @@ export function handleRewardsWithdrawn(
   delegatorReward.save();
 
   let delegator = Delegator.load(delegatorId);
+  let amount = delegator.totalPendingReward.ge(
+    event.params.rewards
+  ) ? event.params.rewards : BIGINT_ZERO;
+
   delegator.totalPendingReward = delegator
-    .totalPendingReward.minus(event.params.rewards);
+    .totalPendingReward.minus(amount);
   delegator.save();
 
   let rewardWithdrawl = new RewardWithdrawl(

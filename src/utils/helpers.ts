@@ -318,6 +318,7 @@ export function updateNetworkClustersReward(
     let clusters = network.clusters as string[];
     for (let i = 0; i < clusters.length; i++) {
         let cluster = Cluster.load(clusters[i]);
+
         let reward = clusterRewardsContract.clusterRewards(
             Address.fromString(
                 clusters[i]
@@ -354,18 +355,23 @@ export function updateClusterDelegatorsReward(
             delegatorReward.delegator = delegators[i];
         }
 
-        let reward = rewardDelegatorContract.withdrawRewards(
+        let result = rewardDelegatorContract.try_withdrawRewards(
             Address.fromString(delegators[i]),
             Address.fromString(clusterId)
         );
 
+        let reward = BIGINT_ZERO;
+        if (!result.reverted) {
+            reward = result.value;
+        }
+
         let delegator = Delegator.load(delegators[i]);
 
         delegator.totalPendingReward = delegator
-            .totalPendingReward.plus(reward);
+            .totalPendingReward.plus(reward)
+            .minus(delegatorReward.amount);
 
-        delegatorReward.amount = delegatorReward
-            .amount.plus(reward);
+        delegatorReward.amount = reward;
 
         delegator.save();
         delegatorReward.save();
