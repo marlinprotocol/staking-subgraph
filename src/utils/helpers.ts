@@ -378,14 +378,6 @@ export function updateClusterDelegatorsReward(
     }
 };
 
-export function updateClusterPendingReward(
-    clusterId: string,
-): void {
-    let cluster = Cluster.load(clusterId);
-    cluster.pendingRewards = BIGINT_ZERO;
-    cluster.save();
-};
-
 export function updateAllClustersList(
     clusterId: Bytes
 ): void {

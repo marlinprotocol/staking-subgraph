@@ -18,6 +18,7 @@ type Cluster @entity {
   networkUpdatesAt: BigInt
   clusterUnregistersAt: BigInt
   pendingRewards: BigInt!
+  historicalRewardWithdrawl: [RewardWithdrawl!]! @derivedFrom(field: "cluster")
 }
 
 type Stash @entity {
@@ -69,7 +70,7 @@ type Delegator @entity {
   totalPendingReward: BigInt!
   totalDelegations: [DelegatorToken!]! @derivedFrom(field: "delegator")
   pendingRewards: [DelegatorReward!]! @derivedFrom(field: "delegator")
-  rewardWithdrawl: [RewardWithdrawl!]! @derivedFrom(field: "delegator")
+  historicalRewardWithdrawl: [RewardWithdrawl!]! @derivedFrom(field: "delegator")
 }
 
 type DelegatorToken @entity {
@@ -95,6 +96,6 @@ type RewardWithdrawl @entity {
   id: ID!
   amount: BigInt!
   cluster: Cluster!
-  delegator: Delegator!
+  delegator: Delegator
   timestamp: BigInt!
 }
