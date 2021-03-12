@@ -3,8 +3,8 @@ import {
 } from "@graphprotocol/graph-ts";
 import {
   Cluster, Stash, Token,
-  Network, State, RewardWithdrawl,
-  DelegatorReward, Delegator,
+  State, DelegatorReward,
+  Delegator, Network, RewardWithdrawl,
 } from '../generated/schema';
 import {
   STATUS_REGISTERED,
@@ -51,9 +51,7 @@ import {
   updateAllClustersList,
   updateClusterDelegation,
   updateClusterDelegatorInfo,
-  updateClusterPendingReward,
   updateNetworkClustersReward,
-  updateClusterDelegatorsReward,
   updateDelegatorTotalDelegation,
 } from "./utils/helpers";
 
@@ -386,8 +384,21 @@ export function handleClusterRewarded(
 export function handleClusterRewardDistributed(
   event: ClusterRewardDistributed
 ): void {
-  let id = event.params.cluster.toHexString();
-  updateClusterPendingReward(id);
+  let clusterId = event.params.cluster.toHexString();
+  let cluster = Cluster.load(clusterId);
+
+  let clutserRewardWithdrawl = new RewardWithdrawl(
+    event.transaction.hash.toHexString()
+  );
+
+  clutserRewardWithdrawl.cluster = clusterId;
+  clutserRewardWithdrawl.amount = cluster.pendingRewards;
+  clutserRewardWithdrawl.timestamp = event.block.timestamp;
+  clutserRewardWithdrawl.delegator = null;
+  clutserRewardWithdrawl.save();
+
+  cluster.pendingRewards = BIGINT_ZERO;
+  cluster.save();
 }
 
 export function handleRewardsWithdrawn(
@@ -413,7 +424,7 @@ export function handleRewardsWithdrawn(
   delegator.save();
 
   let rewardWithdrawl = new RewardWithdrawl(
-    delegatorId + event.block.timestamp.toString()
+    event.transaction.hash.toHexString()
   );
 
   rewardWithdrawl.cluster = event.params.cluster
