@@ -75,7 +75,7 @@ export function updateStashTokens(
                     tokens[i]
                 );
 
-                tokensDelegatedAmount[index] = tokensDelegatedAmount[i]
+                tokensDelegatedAmount[index] = tokensDelegatedAmount[index]
                     .plus(amounts[i]);
 
                 stash.tokensDelegatedAmount = tokensDelegatedAmount;
@@ -89,7 +89,7 @@ export function updateStashTokens(
                 tokens[i]
             );
 
-            tokensDelegatedAmount[index] = tokensDelegatedAmount[i]
+            tokensDelegatedAmount[index] = tokensDelegatedAmount[index]
                 .minus(amounts[i]);
 
             stash.tokensDelegatedAmount = tokensDelegatedAmount;
