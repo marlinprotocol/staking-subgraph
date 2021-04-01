@@ -63,3 +63,5 @@ typings/
 # Remove build
 build
 generated
+
+.DS_Store
