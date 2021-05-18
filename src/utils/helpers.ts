@@ -55,6 +55,7 @@ export function updateStashTokens(
         if (action === "add") {
             if (tokenData == null) {
                 tokenData = new TokenData(tokenDataId);
+                // TokenData.token is of type Token how store Bytes?
                 tokenData.token = tokens[i].toHexString();
                 tokenData.stash = stashId;
                 tokenData.amount = BIGINT_ZERO;

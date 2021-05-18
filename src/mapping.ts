@@ -20,6 +20,8 @@ import {
 } from '../generated/ClusterRegistry/ClusterRegistry';
 import {
   StashCreated,
+  StashSplit,
+  StashesMerged,
   StashDelegated,
   StashUndelegated,
   AddedToStash,
@@ -30,6 +32,7 @@ import {
   TokenUpdated,
   Redelegated,
   RedelegationRequested,
+  RedelegationCancelled,
 } from '../generated/StakeManager/StakeManager';
 import {
   NetworkAdded,
@@ -128,6 +131,51 @@ export function handleStashCreated(
   updateStashTokens(id, tokens, amounts, "add");
 }
 
+export function handleStashSplit(
+  event: StashSplit
+): void {
+  let oldStashId = event.params._stashId.toHexString();
+  let newStashId = event.params._newStashId.toHexString();
+  let oldStash = Stash.load(oldStashId);
+  let newStash = Stash.load(newStashId);
+
+  // this check not necessary
+  if (newStash == null) {
+    newStash = new Stash(newStashId);
+    newStash.stashId = event.params._newStashId;
+    newStash.staker = oldStash.staker;
+    newStash.delegatedCluster = oldStash.delegatedCluster;
+    newStash.tokensDelegatedId = [];
+    newStash.tokensDelegatedAmount = [];
+    newStash.isActive = true;
+    newStash.save();
+  }
+  let tokens = event.params._splitTokens as Bytes[];
+  let amounts = event.params._splitAmounts as BigInt[];
+  updateStashTokens(oldStashId, tokens, amounts, "withdraw");
+  updateStashTokens(newStashId, tokens, amounts, "add");
+}
+
+export function handleStashesMerged(
+  event: StashesMerged
+): void {
+  let stashId1 = event.params._stashId1.toHexString();
+  let stashId2 = event.params._stashId2.toHexString();
+  let stash2 = Stash.load(stashId2);
+
+  updateStashTokens(stashId1,
+    stash2.tokensDelegatedId,
+    stash2.tokensDelegatedAmount,
+    "add"
+  );
+  updateStashTokens(stashId2,
+    stash2.tokensDelegatedId,
+    stash2.tokensDelegatedAmount,
+    "withdraw"
+  );
+  store.remove('Stash', stashId2);
+}
+
 export function handleStashDelegated(
   event: StashDelegated
 ): void {
@@ -178,6 +226,23 @@ export function handleStashUndelegated(
     stash.tokensDelegatedAmount as BigInt[],
     "undelegated",
   );
+}
+
+export function handleStashUndelegationCancelled(
+  event: StashUndelegated
+): void {
+  let id = event.params.stashId.toHexString();
+  let stash = Stash.load(id);
+
+  updateClusterDelegatorInfo(
+    id,
+    "0xFFfFfFffFFfffFFfFFfFFFFFffFFFffffFfFFFfF",
+    "delegated",
+  );
+
+  stash.delegatedCluster = "0xFFfFfFffFFfffFFfFFfFFFFFffFFFffffFfFFFfF";
+  stash.undelegatesAt = null;
+  stash.save();
 }
 
 export function handleAddedToStash(
@@ -273,6 +338,16 @@ export function handleRedelegated(
     event.params.updatedCluster.toHexString(),
     "delegated",
   );
+}
+
+export function handleRedelegationCancelled(
+  event: RedelegationCancelled
+): void {
+  let id = event.params._stashId.toHexString();
+  let stash = Stash.load(id);
+  stash.redelegationUpdateBlock = null;
+  stash.redelegationUpdatedCluster = null;
+  stash.save();
 }
 
 export function handleRedelegationRequested(

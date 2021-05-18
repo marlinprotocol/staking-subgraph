@@ -1,126 +1,281 @@
 [
   {
-    "constant": false,
+    "anonymous": false,
     "inputs": [
       {
-        "name": "_networkId",
-        "type": "bytes32"
-      }
-    ],
-    "name": "switchNetwork",
-    "outputs": [],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "constant": true,
-    "inputs": [
-      {
-        "name": "_cluster",
-        "type": "address"
-      }
-    ],
-    "name": "getRewardAddress",
-    "outputs": [
-      {
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "constant": true,
-    "inputs": [
-      {
-        "name": "_cluster",
-        "type": "address"
-      }
-    ],
-    "name": "getClientKey",
-    "outputs": [
-      {
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "constant": false,
-    "inputs": [
-      {
-        "name": "_cluster",
-        "type": "address"
-      }
-    ],
-    "name": "getCluster",
-    "outputs": [
-      {
-        "name": "commission",
-        "type": "uint256"
-      },
-      {
-        "name": "rewardAddress",
+        "indexed": true,
+        "internalType": "address",
+        "name": "cluster",
         "type": "address"
       },
       {
+        "indexed": false,
+        "internalType": "address",
         "name": "clientKey",
         "type": "address"
+      }
+    ],
+    "name": "ClientKeyUpdated",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "cluster",
+        "type": "address"
       },
       {
+        "indexed": true,
+        "internalType": "bytes32",
         "name": "networkId",
         "type": "bytes32"
       },
       {
-        "name": "isValidCluster",
-        "type": "bool"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "constant": false,
-    "inputs": [
-      {
-        "name": "_networkId",
-        "type": "bytes32"
-      },
-      {
-        "name": "_commission",
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "commission",
         "type": "uint256"
       },
       {
-        "name": "_rewardAddress",
+        "indexed": false,
+        "internalType": "address",
+        "name": "rewardAddress",
         "type": "address"
       },
       {
-        "name": "_clientKey",
+        "indexed": false,
+        "internalType": "address",
+        "name": "clientKey",
         "type": "address"
       }
     ],
-    "name": "register",
+    "name": "ClusterRegistered",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "cluster",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "effectiveBlock",
+        "type": "uint256"
+      }
+    ],
+    "name": "ClusterUnregisterRequested",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "cluster",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "updatedAt",
+        "type": "uint256"
+      }
+    ],
+    "name": "ClusterUnregistered",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "cluster",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "commissionAfterUpdate",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "effectiveBlock",
+        "type": "uint256"
+      }
+    ],
+    "name": "CommissionUpdateRequested",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "cluster",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "updatedCommission",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "updatedAt",
+        "type": "uint256"
+      }
+    ],
+    "name": "CommissionUpdated",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "bytes32",
+        "name": "selector",
+        "type": "bytes32"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "prevLockTime",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "updatedLockTime",
+        "type": "uint256"
+      }
+    ],
+    "name": "LockTimeUpdated",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "cluster",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "bytes32",
+        "name": "networkId",
+        "type": "bytes32"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "effectiveBlock",
+        "type": "uint256"
+      }
+    ],
+    "name": "NetworkSwitchRequested",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "cluster",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "bytes32",
+        "name": "networkId",
+        "type": "bytes32"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "updatedAt",
+        "type": "uint256"
+      }
+    ],
+    "name": "NetworkSwitched",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "previousOwner",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "newOwner",
+        "type": "address"
+      }
+    ],
+    "name": "OwnershipTransferred",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "cluster",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "updatedRewardAddress",
+        "type": "address"
+      }
+    ],
+    "name": "RewardAddressUpdated",
+    "type": "event"
+  },
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "isOwner",
     "outputs": [
       {
+        "internalType": "bool",
         "name": "",
         "type": "bool"
       }
     ],
     "payable": false,
-    "stateMutability": "nonpayable",
+    "stateMutability": "view",
     "type": "function"
   },
   {
     "constant": true,
     "inputs": [
       {
+        "internalType": "bytes32",
         "name": "",
         "type": "bytes32"
       }
@@ -128,6 +283,7 @@
     "name": "lockWaitTime",
     "outputs": [
       {
+        "internalType": "uint256",
         "name": "",
         "type": "uint256"
       }
@@ -137,22 +293,44 @@
     "type": "function"
   },
   {
-    "constant": false,
+    "constant": true,
     "inputs": [
       {
-        "name": "_cluster",
-        "type": "address"
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
       }
     ],
-    "name": "isClusterValid",
+    "name": "locks",
     "outputs": [
       {
-        "name": "",
-        "type": "bool"
+        "internalType": "uint256",
+        "name": "unlockBlock",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "iValue",
+        "type": "uint256"
       }
     ],
     "payable": false,
-    "stateMutability": "nonpayable",
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "owner",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -168,65 +346,12 @@
     "constant": false,
     "inputs": [
       {
-        "name": "_commission",
-        "type": "uint256"
-      },
-      {
-        "name": "_networkId",
-        "type": "bytes32"
-      },
-      {
-        "name": "_rewardAddress",
-        "type": "address"
-      },
-      {
-        "name": "_clientKey",
+        "internalType": "address",
+        "name": "newOwner",
         "type": "address"
       }
     ],
-    "name": "updateCluster",
-    "outputs": [],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "constant": true,
-    "inputs": [],
-    "name": "owner",
-    "outputs": [
-      {
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "constant": true,
-    "inputs": [],
-    "name": "isOwner",
-    "outputs": [
-      {
-        "name": "",
-        "type": "bool"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "constant": false,
-    "inputs": [
-      {
-        "name": "_rewardAddress",
-        "type": "address"
-      }
-    ],
-    "name": "updateRewardAddress",
+    "name": "transferOwnership",
     "outputs": [],
     "payable": false,
     "stateMutability": "nonpayable",
@@ -236,34 +361,7 @@
     "constant": false,
     "inputs": [
       {
-        "name": "_commission",
-        "type": "uint256"
-      }
-    ],
-    "name": "updateCommission",
-    "outputs": [],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "constant": false,
-    "inputs": [
-      {
-        "name": "_clientKey",
-        "type": "address"
-      }
-    ],
-    "name": "updateClientKey",
-    "outputs": [],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "constant": false,
-    "inputs": [
-      {
+        "internalType": "address",
         "name": "sender",
         "type": "address"
       }
@@ -278,19 +376,168 @@
     "constant": false,
     "inputs": [
       {
+        "internalType": "bytes32[]",
         "name": "_selectors",
         "type": "bytes32[]"
       },
       {
+        "internalType": "uint256[]",
         "name": "_lockWaitTimes",
         "type": "uint256[]"
       },
       {
+        "internalType": "address",
         "name": "_owner",
         "type": "address"
       }
     ],
     "name": "initialize",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "_selector",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_updatedWaitTime",
+        "type": "uint256"
+      }
+    ],
+    "name": "updateLockWaitTime",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "_networkId",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_commission",
+        "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "_rewardAddress",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_clientKey",
+        "type": "address"
+      }
+    ],
+    "name": "register",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_commission",
+        "type": "uint256"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "_networkId",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "address",
+        "name": "_rewardAddress",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_clientKey",
+        "type": "address"
+      }
+    ],
+    "name": "updateCluster",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_commission",
+        "type": "uint256"
+      }
+    ],
+    "name": "updateCommission",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "_networkId",
+        "type": "bytes32"
+      }
+    ],
+    "name": "switchNetwork",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_rewardAddress",
+        "type": "address"
+      }
+    ],
+    "name": "updateRewardAddress",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_clientKey",
+        "type": "address"
+      }
+    ],
+    "name": "updateClientKey",
     "outputs": [],
     "payable": false,
     "stateMutability": "nonpayable",
@@ -306,22 +553,104 @@
     "type": "function"
   },
   {
-    "constant": true,
+    "constant": false,
     "inputs": [
       {
+        "internalType": "address",
+        "name": "_cluster",
+        "type": "address"
+      }
+    ],
+    "name": "isClusterValid",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_cluster",
+        "type": "address"
+      }
+    ],
+    "name": "getCommission",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_cluster",
+        "type": "address"
+      }
+    ],
+    "name": "getNetwork",
+    "outputs": [
+      {
+        "internalType": "bytes32",
         "name": "",
         "type": "bytes32"
       }
     ],
-    "name": "locks",
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_cluster",
+        "type": "address"
+      }
+    ],
+    "name": "getRewardAddress",
     "outputs": [
       {
-        "name": "unlockBlock",
-        "type": "uint256"
-      },
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
       {
-        "name": "iValue",
-        "type": "uint256"
+        "internalType": "address",
+        "name": "_cluster",
+        "type": "address"
+      }
+    ],
+    "name": "getClientKey",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
       }
     ],
     "payable": false,
@@ -332,297 +661,41 @@
     "constant": false,
     "inputs": [
       {
-        "name": "newOwner",
-        "type": "address"
-      }
-    ],
-    "name": "transferOwnership",
-    "outputs": [],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "constant": false,
-    "inputs": [
-      {
+        "internalType": "address",
         "name": "_cluster",
         "type": "address"
       }
     ],
-    "name": "getCommission",
+    "name": "getCluster",
     "outputs": [
       {
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "constant": false,
-    "inputs": [
-      {
-        "name": "_cluster",
-        "type": "address"
-      }
-    ],
-    "name": "getNetwork",
-    "outputs": [
-      {
-        "name": "",
-        "type": "bytes32"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "constant": false,
-    "inputs": [
-      {
-        "name": "_selector",
-        "type": "bytes32"
-      },
-      {
-        "name": "_updatedWaitTime",
-        "type": "uint256"
-      }
-    ],
-    "name": "updateLockWaitTime",
-    "outputs": [],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "name": "cluster",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "name": "networkId",
-        "type": "bytes32"
-      },
-      {
-        "indexed": false,
+        "internalType": "uint256",
         "name": "commission",
         "type": "uint256"
       },
       {
-        "indexed": false,
+        "internalType": "address",
         "name": "rewardAddress",
         "type": "address"
       },
       {
-        "indexed": false,
+        "internalType": "address",
         "name": "clientKey",
         "type": "address"
-      }
-    ],
-    "name": "ClusterRegistered",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "name": "cluster",
-        "type": "address"
       },
       {
-        "indexed": false,
-        "name": "commissionAfterUpdate",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "name": "effectiveBlock",
-        "type": "uint256"
-      }
-    ],
-    "name": "CommissionUpdateRequested",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "name": "cluster",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "name": "updatedCommission",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "name": "updatedAt",
-        "type": "uint256"
-      }
-    ],
-    "name": "CommissionUpdated",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "name": "cluster",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "name": "updatedRewardAddress",
-        "type": "address"
-      }
-    ],
-    "name": "RewardAddressUpdated",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "name": "cluster",
-        "type": "address"
-      },
-      {
-        "indexed": false,
+        "internalType": "bytes32",
         "name": "networkId",
         "type": "bytes32"
       },
       {
-        "indexed": false,
-        "name": "effectiveBlock",
-        "type": "uint256"
+        "internalType": "bool",
+        "name": "isValidCluster",
+        "type": "bool"
       }
     ],
-    "name": "NetworkSwitchRequested",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "name": "cluster",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "name": "networkId",
-        "type": "bytes32"
-      },
-      {
-        "indexed": false,
-        "name": "updatedAt",
-        "type": "uint256"
-      }
-    ],
-    "name": "NetworkSwitched",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "name": "cluster",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "name": "clientKey",
-        "type": "address"
-      }
-    ],
-    "name": "ClientKeyUpdated",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "name": "cluster",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "name": "effectiveBlock",
-        "type": "uint256"
-      }
-    ],
-    "name": "ClusterUnregisterRequested",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "name": "cluster",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "name": "updatedAt",
-        "type": "uint256"
-      }
-    ],
-    "name": "ClusterUnregistered",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "name": "selector",
-        "type": "bytes32"
-      },
-      {
-        "indexed": false,
-        "name": "prevLockTime",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "name": "updatedLockTime",
-        "type": "uint256"
-      }
-    ],
-    "name": "LockTimeUpdated",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "name": "previousOwner",
-        "type": "address"
-      },
-      {
-        "indexed": true,
-        "name": "newOwner",
-        "type": "address"
-      }
-    ],
-    "name": "OwnershipTransferred",
-    "type": "event"
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
   }
 ]
