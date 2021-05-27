@@ -71,6 +71,8 @@ type Delegator @entity {
   totalDelegations: [DelegatorToken!]! @derivedFrom(field: "delegator")
   pendingRewards: [DelegatorReward!]! @derivedFrom(field: "delegator")
   historicalRewardWithdrawl: [RewardWithdrawl!]! @derivedFrom(field: "delegator")
+  totalRewardsClaimed: BigInt!
+  stashes: [String!]!
 }
 
 type DelegatorToken @entity {
@@ -98,4 +100,5 @@ type RewardWithdrawl @entity {
   cluster: Cluster!
   delegator: Delegator
   timestamp: BigInt!
+  isAuto: Boolean!
 }

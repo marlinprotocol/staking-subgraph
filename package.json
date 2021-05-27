@@ -8,17 +8,22 @@
     "build": "graph build",
     "deploy": "graph deploy marlinprotocol/staking --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/ --access-token",
     "deploy-local": "graph deploy marlinprotocol/staking --ipfs http://localhost:5001 --node http://127.0.0.1:8020",
-
     "create-kovan": "graph create marlinprotocol/staking-kovan --node https://api.thegraph.com/deploy/",
     "create-local-kovan": "graph create marlinprotocol/staking-kovan --node http://127.0.0.1:8020",
     "codegen-kovan": "graph codegen subgraph-kovan.yaml",
     "build-kovan": "graph build subgraph-kovan.yaml",
     "deploy-kovan": "graph deploy marlinprotocol/staking-kovan subgraph-kovan.yaml --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/ --access-token",
-    "deploy-local-kovan": "graph deploy marlinprotocol/staking-kovan subgraph-kovan.yaml --ipfs http://localhost:5001 --node http://127.0.0.1:8020"
+    "deploy-local-kovan": "graph deploy marlinprotocol/staking-kovan subgraph-kovan.yaml --ipfs http://localhost:5001 --node http://127.0.0.1:8020",
+    "create-dev": "graph create marlinprotocol/staking-dev --node https://api.thegraph.com/deploy/",
+    "create-local-dev": "graph create marlinprotocol/staking-dev --node http://127.0.0.1:8020",
+    "codegen-dev": "graph codegen subgraph-dev.yaml",
+    "build-dev": "graph build subgraph-dev.yaml",
+    "deploy-dev": "graph deploy marlinprotocol/staking-dev subgraph-dev.yaml --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/ --access-token",
+    "deploy-local-dev": "graph deploy marlinprotocol/staking-dev subgraph-dev.yaml --ipfs http://localhost:5001 --node http://127.0.0.1:8020"
   },
   "devDependencies": {
-    "@graphprotocol/graph-cli": "^0.19.0",
-    "@graphprotocol/graph-ts": "^0.19.0"
+    "@graphprotocol/graph-cli": "^0.20.0",
+    "@graphprotocol/graph-ts": "^0.20.0"
   },
   "dependencies": {
     "babel-polyfill": "^6.26.0",
