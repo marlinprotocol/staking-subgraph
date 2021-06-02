@@ -234,13 +234,6 @@ export function handleStashUndelegationCancelled(
   let id = event.params.stashId.toHexString();
   let stash = Stash.load(id);
 
-  updateClusterDelegatorInfo(
-    id,
-    "0xFFfFfFffFFfffFFfFFfFFFFFffFFFffffFfFFFfF",
-    "delegated",
-  );
-
-  stash.delegatedCluster = "0xFFfFfFffFFfffFFfFFfFFFFFffFFFffffFfFFFfF";
   stash.undelegatesAt = null;
   stash.save();
 }
