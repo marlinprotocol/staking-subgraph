@@ -475,6 +475,12 @@ export function handleRewardsWithdrawn(
     delegatorId + clusterId
   );
 
+  if(delegatorReward == null) {
+    delegatorReward = new DelegatorReward(delegatorId + clusterId);
+    delegatorReward.cluster = clusterId;
+    delegatorReward.delegator = delegatorId;
+  }
+
   delegatorReward.amount = BIGINT_ZERO;
   delegatorReward.save();
 
