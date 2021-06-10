@@ -183,13 +183,13 @@ export function handleStashesMerged(
   let stash2 = Stash.load(stashId2);
 
   updateStashTokens(stashId1,
-    stash2.tokensDelegatedId,
-    stash2.tokensDelegatedAmount,
+    stash2.tokensDelegatedId as Bytes[],
+    stash2.tokensDelegatedAmount as BigInt[],
     "add"
   );
   updateStashTokens(stashId2,
-    stash2.tokensDelegatedId,
-    stash2.tokensDelegatedAmount,
+    stash2.tokensDelegatedId as Bytes[],
+    stash2.tokensDelegatedAmount as BigInt[],
     "withdraw"
   );
   store.remove('Stash', stashId2);

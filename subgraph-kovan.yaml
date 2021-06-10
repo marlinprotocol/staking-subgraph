@@ -60,25 +60,25 @@ dataSources:
           handler: handleStashSplit
         - event: StashesMerged(bytes32,bytes32)
           handler: handleStashesMerged
-        - event: StashDelegated(indexed bytes32,indexed address)
+        - event: StashDelegated(bytes32,address)
           handler: handleStashDelegated
-        - event: StashUndelegated(indexed bytes32,indexed address,uint256)
+        - event: StashUndelegated(bytes32,address,uint256)
           handler: handleStashUndelegated
-        - event: StashWithdrawn(indexed bytes32,bytes32[],uint256[])
+        - event: StashWithdrawn(bytes32,bytes32[],uint256[])
           handler: handleStashWithdrawn
-        - event: StashClosed(indexed bytes32,indexed address)
+        - event: StashClosed(bytes32,indexed address)
           handler: handleStashClosed
-        - event: AddedToStash(indexed bytes32,indexed address,bytes32[],uint256[])
+        - event: AddedToStash(bytes32,address,bytes32[],uint256[])
           handler: handleAddedToStash
-        - event: TokenAdded(indexed bytes32,indexed address)
+        - event: TokenAdded(bytes32,address)
           handler: handleTokenAdded
-        - event: TokenRemoved(indexed bytes32)
+        - event: TokenRemoved(bytes32)
           handler: handleTokenRemoved
-        - event: TokenUpdated(indexed bytes32,indexed address)
+        - event: TokenUpdated(bytes32,address)
           handler: handleTokenUpdated
-        - event: RedelegationRequested(indexed bytes32,indexed address,indexed address,uint256)
+        - event: RedelegationRequested(bytes32,address,address,uint256)
           handler: handleRedelegationRequested
-        - event: Redelegated(indexed bytes32,indexed address)
+        - event: Redelegated(bytes32,address)
           handler: handleRedelegated
         - event: RedelegationCancelled(indexed bytes32)
           handler: handleRedelegationCancelled

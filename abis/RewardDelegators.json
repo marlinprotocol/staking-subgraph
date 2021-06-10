@@ -3,7 +3,7 @@
     "anonymous": false,
     "inputs": [
       {
-        "indexed": true,
+        "indexed": false,
         "internalType": "bytes32",
         "name": "tokenId",
         "type": "bytes32"
@@ -24,37 +24,11 @@
       {
         "indexed": false,
         "internalType": "address",
-        "name": "_updatedClusterRegistry",
-        "type": "address"
-      }
-    ],
-    "name": "ClusterRegistryUpdated",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "address",
         "name": "cluster",
         "type": "address"
       }
     ],
     "name": "ClusterRewardDistributed",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "address",
-        "name": "_updatedClusterRewards",
-        "type": "address"
-      }
-    ],
-    "name": "ClusterRewardsAddressUpdated",
     "type": "event"
   },
   {
@@ -107,19 +81,6 @@
     "inputs": [
       {
         "indexed": false,
-        "internalType": "address",
-        "name": "_updatedPOND",
-        "type": "address"
-      }
-    ],
-    "name": "PONDAddressUpdated",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
         "internalType": "bytes32",
         "name": "tokenId",
         "type": "bytes32"
@@ -132,7 +93,7 @@
     "anonymous": false,
     "inputs": [
       {
-        "indexed": true,
+        "indexed": false,
         "internalType": "bytes32",
         "name": "tokenId",
         "type": "bytes32"
@@ -151,13 +112,13 @@
     "anonymous": false,
     "inputs": [
       {
-        "indexed": true,
+        "indexed": false,
         "internalType": "address",
         "name": "cluster",
         "type": "address"
       },
       {
-        "indexed": true,
+        "indexed": false,
         "internalType": "address",
         "name": "delegator",
         "type": "address"
@@ -176,32 +137,6 @@
       }
     ],
     "name": "RewardsWithdrawn",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "address",
-        "name": "_updatedStakeAddress",
-        "type": "address"
-      }
-    ],
-    "name": "StakeAddressUpdated",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "undelegationWaitTime",
-        "type": "uint256"
-      }
-    ],
-    "name": "UndelegationWaitTimeUpdated",
     "type": "event"
   },
   {
@@ -289,21 +224,6 @@
     "type": "function"
   },
   {
-    "constant": true,
-    "inputs": [],
-    "name": "undelegationWaitTime",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
     "constant": false,
     "inputs": [
       {
@@ -321,11 +241,6 @@
   {
     "constant": false,
     "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "_undelegationWaitTime",
-        "type": "uint256"
-      },
       {
         "internalType": "address",
         "name": "_stakeAddress",
@@ -625,21 +540,6 @@
     ],
     "payable": false,
     "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "constant": false,
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "_undelegationWaitTime",
-        "type": "uint256"
-      }
-    ],
-    "name": "updateUndelegationWaitTime",
-    "outputs": [],
-    "payable": false,
-    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
