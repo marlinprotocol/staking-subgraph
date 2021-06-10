@@ -34,8 +34,8 @@ dataSources:
           handler: handleNetworkSwitchRequested
         - event: ClusterUnregisterRequested(indexed address,uint256)
           handler: handleClusterUnregisterRequested
-      blockHandlers:
-        - handler: handleBlock
+      # blockHandlers:
+      #   - handler: handleBlock
   - kind: ethereum/contract
     name: StakeManager
     network: mainnet

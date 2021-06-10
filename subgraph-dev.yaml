@@ -8,9 +8,9 @@ dataSources:
     name: ClusterRegistry
     network: kovan
     source:
-      address: "0xEa280ec9FB24B59a4796470C4C58B17E2Cd7968D"
+      address: "0x0B3a1C61988cBfEAb687A2A8B2A2Ac5109a6b0Ce"
       abi: ClusterRegistry
-      startBlock: 25011600
+      startBlock: 23366200
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.4
@@ -22,17 +22,17 @@ dataSources:
         - name: ClusterRegistry
           file: ./abis/ClusterRegistry.json
       eventHandlers:
-        - event: ClusterRegistered(indexed address,indexed bytes32,uint256,address,address)
+        - event: ClusterRegistered(address,bytes32,uint256,address,address)
           handler: handleClusterRegistered
-        - event: RewardAddressUpdated(indexed address,address)
+        - event: RewardAddressUpdated(address,address)
           handler: handleRewardAddressUpdated
-        - event: ClientKeyUpdated(indexed address,address)
+        - event: ClientKeyUpdated(address,address)
           handler: handleClientKeyUpdated
-        - event: CommissionUpdateRequested(indexed address,uint256,uint256)
+        - event: CommissionUpdateRequested(address,uint256,uint256)
           handler: handleCommissionUpdateRequested
-        - event: NetworkSwitchRequested(indexed address,indexed bytes32,uint256)
+        - event: NetworkSwitchRequested(address,bytes32,uint256)
           handler: handleNetworkSwitchRequested
-        - event: ClusterUnregisterRequested(indexed address,uint256)
+        - event: ClusterUnregisterRequested(address,uint256)
           handler: handleClusterUnregisterRequested
       # blockHandlers:
       #   - handler: handleBlock
@@ -40,9 +40,9 @@ dataSources:
     name: StakeManager
     network: kovan
     source:
-      address: "0xB0aAE7625114fD41D89f33DDA377B164c91913d9"
+      address: "0x6E4601488588D82c47E6b83a1636afAEDd1C566e"
       abi: StakeManager
-      startBlock: 25011600
+      startBlock: 23366200
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.4
@@ -56,41 +56,33 @@ dataSources:
       eventHandlers:
         - event: StashCreated(indexed address,bytes32,uint256,bytes32[],uint256[])
           handler: handleStashCreated
-        - event: StashSplit(bytes32,bytes32,uint256,bytes32[],uint256[])
-          handler: handleStashSplit
-        - event: StashesMerged(bytes32,bytes32)
-          handler: handleStashesMerged
-        - event: StashDelegated(indexed bytes32,indexed address)
+        - event: StashDelegated(bytes32,address)
           handler: handleStashDelegated
-        - event: StashUndelegated(indexed bytes32,indexed address,uint256)
+        - event: StashUndelegated(bytes32,address,uint256)
           handler: handleStashUndelegated
-        - event: StashWithdrawn(indexed bytes32,bytes32[],uint256[])
+        - event: StashWithdrawn(bytes32,bytes32[],uint256[])
           handler: handleStashWithdrawn
-        - event: StashClosed(indexed bytes32,indexed address)
+        - event: StashClosed(bytes32,indexed address)
           handler: handleStashClosed
-        - event: AddedToStash(indexed bytes32,indexed address,bytes32[],uint256[])
+        - event: AddedToStash(bytes32,address,bytes32[],uint256[])
           handler: handleAddedToStash
-        - event: TokenAdded(indexed bytes32,indexed address)
+        - event: TokenAdded(bytes32,address)
           handler: handleTokenAdded
-        - event: TokenRemoved(indexed bytes32)
+        - event: TokenRemoved(bytes32)
           handler: handleTokenRemoved
-        - event: TokenUpdated(indexed bytes32,indexed address)
+        - event: TokenUpdated(bytes32,address)
           handler: handleTokenUpdated
-        - event: RedelegationRequested(indexed bytes32,indexed address,indexed address,uint256)
+        - event: RedelegationRequested(bytes32,address,address,uint256)
           handler: handleRedelegationRequested
-        - event: Redelegated(indexed bytes32,indexed address)
+        - event: Redelegated(bytes32,address)
           handler: handleRedelegated
-        - event: RedelegationCancelled(indexed bytes32)
-          handler: handleRedelegationCancelled
-        - event: StashUndelegationCancelled(bytes32)
-          handler: handleStashUndelegationCancelled
   - kind: ethereum/contract
     name: ClusterRewards
     network: kovan
     source:
-      address: "0x871ed48eC1784b1d27BD086765F54E1f8f484e66"
+      address: "0xA83aD48E2c963a2dF6adcC710Ba520a97d237dCc"
       abi: ClusterRewards
-      startBlock: 25011600
+      startBlock: 23366200
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.4
@@ -104,21 +96,21 @@ dataSources:
         - name: RewardDelegators
           file: ./abis/RewardDelegators.json
       eventHandlers:
-        - event: NetworkAdded(indexed bytes32,uint256)
+        - event: NetworkAdded(bytes32,uint256)
           handler: handleNetworkAdded
-        - event: NetworkRemoved(indexed bytes32)
+        - event: NetworkRemoved(bytes32)
           handler: handleNetworkRemoved
-        - event: NetworkRewardUpdated(indexed bytes32,uint256)
+        - event: NetworkRewardUpdated(bytes32,uint256)
           handler: handleNetworkRewardUpdated
-        - event: ClusterRewarded(indexed bytes32)
+        - event: ClusterRewarded(bytes32)
           handler: handleClusterRewarded
   - kind: ethereum/contract
     name: RewardDelegators
     network: kovan
     source:
-      address: "0xb6B3004dEb4D223b94A3874164A73C4Dc7CDda38"
+      address: "0x802E91F47e09E23eB253Ffcc97665497e12ec93D"
       abi: RewardDelegators
-      startBlock: 25011600
+      startBlock: 23366200
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.4
@@ -130,13 +122,13 @@ dataSources:
         - name: RewardDelegators
           file: ./abis/RewardDelegators.json
       eventHandlers:
-        - event: AddReward(indexed bytes32,uint256)
+        - event: AddReward(bytes32,uint256)
           handler: handleAddReward
-        - event: RemoveReward(indexed bytes32)
+        - event: RemoveReward(bytes32)
           handler: handleRemoveReward
-        - event: RewardsUpdated(indexed bytes32,uint256)
+        - event: RewardsUpdated(bytes32,uint256)
           handler: handleRewardsUpdated
-        - event: ClusterRewardDistributed(indexed address)
+        - event: ClusterRewardDistributed(address)
           handler: handleClusterRewardDistributed
-        - event: RewardsWithdrawn(indexed address,indexed address,bytes32[],uint256)
+        - event: RewardsWithdrawn(address,address,bytes32[],uint256)
           handler: handleRewardsWithdrawn

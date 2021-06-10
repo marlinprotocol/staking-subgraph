@@ -96,71 +96,6 @@
     "type": "event"
   },
   {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "address",
-        "name": "_updatedPOND",
-        "type": "address"
-      }
-    ],
-    "name": "PONDAddressUpdated",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "_updatedPayoutDenomination",
-        "type": "uint256"
-      }
-    ],
-    "name": "PayoutDenominationChanged",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "address",
-        "name": "_updatedRewardDelegator",
-        "type": "address"
-      }
-    ],
-    "name": "RewardDelegatorAddressUpdated",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "_updatedRewardDistributionWaitTime",
-        "type": "uint256"
-      }
-    ],
-    "name": "RewardDistributionWaitTimeUpdated",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "_updatedRewardPerEpoch",
-        "type": "uint256"
-      }
-    ],
-    "name": "RewardPerEpochChanged",
-    "type": "event"
-  },
-  {
     "constant": true,
     "inputs": [
       {
@@ -172,6 +107,7 @@
     "name": "clusterRewards",
     "outputs": [
       {
+        "indexed": false,
         "internalType": "uint256",
         "name": "",
         "type": "uint256"
@@ -241,9 +177,9 @@
     "name": "rewardDistributionWaitTime",
     "outputs": [
       {
-        "internalType": "uint256",
+        "internalType": "bool",
         "name": "",
-        "type": "uint256"
+        "type": "bool"
       }
     ],
     "payable": false,
@@ -260,6 +196,21 @@
       }
     ],
     "name": "rewardWeight",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "totalRewardsPerEpoch",
     "outputs": [
       {
         "internalType": "uint256",
@@ -311,6 +262,21 @@
       }
     ],
     "name": "initialize",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "newOwner",
+        "type": "address"
+      }
+    ],
+    "name": "transferOwnership",
     "outputs": [],
     "payable": false,
     "stateMutability": "nonpayable",
@@ -390,6 +356,21 @@
     "constant": false,
     "inputs": [
       {
+        "internalType": "address",
+        "name": "_newFeeder",
+        "type": "address"
+      }
+    ],
+    "name": "changeFeeder",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
         "internalType": "bytes32",
         "name": "_networkId",
         "type": "bytes32"
@@ -413,9 +394,14 @@
         "internalType": "bytes32",
         "name": "_networkId",
         "type": "bytes32"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_updatedRewardWeight",
+        "type": "uint256"
       }
     ],
-    "name": "removeNetwork",
+    "name": "changeNetworkReward",
     "outputs": [],
     "payable": false,
     "stateMutability": "nonpayable",

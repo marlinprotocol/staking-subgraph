@@ -237,6 +237,8 @@ export function updateDelegatorTokens(
         delegator = new Delegator(delegatorId);
         delegator.address = delegatorId;
         delegator.totalPendingReward = BIGINT_ZERO;
+        delegator.stashes = [];
+        delegator.totalRewardsClaimed = BIGINT_ZERO;
         delegator.save();
     }
 
