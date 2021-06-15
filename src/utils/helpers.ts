@@ -23,6 +23,7 @@ import {
 } from '../../generated/RewardDelegators/RewardDelegators';
 import {
     BIGINT_ZERO,
+    ZERO_ADDRESS,
     CLUSTER_REWARDS_ADDRESS,
     REWARD_DELEGATOR_ADDRESS,
     STATUS_NOT_REGISTERED,
@@ -133,6 +134,21 @@ export function updateClusterDelegatorInfo(
 ): void {
     let stash = Stash.load(stashId);
     let cluster = Cluster.load(stash.delegatedCluster);
+    if (cluster == null) {
+        cluster = new Cluster(stash.delegatedCluster);
+        cluster.commission = BIGINT_ZERO;
+        cluster.rewardAddress = null;
+        cluster.clientKey = null;
+        cluster.networkId = null;
+        cluster.status = STATUS_NOT_REGISTERED;
+        cluster.delegators = [];
+        cluster.pendingRewards = BIGINT_ZERO;
+        cluster.updatedNetwork = null;
+        cluster.networkUpdatesAt = BIGINT_ZERO;
+        cluster.updatedCommission = null;
+        cluster.commissionUpdatesAt = BIGINT_ZERO;
+        cluster.clusterUnregistersAt = BIGINT_ZERO;
+    }
 
     let tokens = stash.tokensDelegatedId as Bytes[];
     let amounts = stash.tokensDelegatedAmount as BigInt[];

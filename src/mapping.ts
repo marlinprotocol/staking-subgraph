@@ -35,6 +35,7 @@ import {
   Redelegated,
   RedelegationRequested,
   RedelegationCancelled,
+  StashUndelegationCancelled
 } from '../generated/StakeManager/StakeManager';
 import {
   NetworkAdded,
@@ -260,9 +261,9 @@ export function handleStashUndelegated(
 }
 
 export function handleStashUndelegationCancelled(
-  event: StashUndelegated
+  event: StashUndelegationCancelled
 ): void {
-  let id = event.params.stashId.toHexString();
+  let id = event.params._stashId.toHexString();
   let stash = Stash.load(id);
 
   stash.undelegatesAt = null;
@@ -359,11 +360,13 @@ export function handleRedelegated(
   let id = event.params.stashId.toHexString();
   let stash = Stash.load(id);
 
-  updateClusterDelegatorInfo(
-    event.params.stashId.toHexString(),
-    stash.delegatedCluster,
-    "undelegated",
-  );
+  if(stash.delegatedCluster != null) {
+    updateClusterDelegatorInfo(
+      event.params.stashId.toHexString(),
+      stash.delegatedCluster,
+      "undelegated",
+    );
+  }
 
   stash.delegatedCluster = event.params
     .updatedCluster.toHexString();
