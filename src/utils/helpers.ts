@@ -1,4 +1,5 @@
 import {
+    log,
     Bytes,
     BigInt,
     store,
