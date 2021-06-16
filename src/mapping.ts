@@ -55,6 +55,7 @@ import {
   updateClustersInfo,
   updateNetworkClusters,
   updateAllClustersList,
+  updateActiveClusterCount,
   updateClusterDelegation,
   updateClusterDelegatorInfo,
   updateNetworkClustersReward,
@@ -84,7 +85,7 @@ export function handleClusterRegistered(
   cluster.save();
 
   updateAllClustersList(event.params.cluster);
-
+  updateActiveClusterCount("register");
   updateNetworkClusters(
     new Bytes(0),
     event.params.networkId,
@@ -135,7 +136,7 @@ export function handleStashCreated(
   let tokens = event.params.tokens as Bytes[];
   let amounts = event.params.amounts as BigInt[];
 
-  updateStashTokens(id, tokens, amounts, "add");
+  updateStashTokens(id, tokens, amounts, "add", true);
   let delegatorId = event.params.creator.toHexString();
   let delegator = Delegator.load(delegatorId)
   if (delegator == null) {
@@ -172,8 +173,8 @@ export function handleStashSplit(
   }
   let tokens = event.params._splitTokens as Bytes[];
   let amounts = event.params._splitAmounts as BigInt[];
-  updateStashTokens(oldStashId, tokens, amounts, "withdraw");
-  updateStashTokens(newStashId, tokens, amounts, "add");
+  updateStashTokens(oldStashId, tokens, amounts, "withdraw", false);
+  updateStashTokens(newStashId, tokens, amounts, "add", false);
 }
 
 export function handleStashesMerged(
@@ -186,12 +187,14 @@ export function handleStashesMerged(
   updateStashTokens(stashId1,
     stash2.tokensDelegatedId as Bytes[],
     stash2.tokensDelegatedAmount as BigInt[],
-    "add"
+    "add",
+    false
   );
   updateStashTokens(stashId2,
     stash2.tokensDelegatedId as Bytes[],
     stash2.tokensDelegatedAmount as BigInt[],
-    "withdraw"
+    "withdraw",
+    false
   );
   store.remove('Stash', stashId2);
 }
@@ -279,7 +282,7 @@ export function handleAddedToStash(
 
   let tokens = event.params.tokens as Bytes[];
   let amounts = event.params.amounts as BigInt[];
-  updateStashTokens(id, tokens, amounts, "add");
+  updateStashTokens(id, tokens, amounts, "add", true);
 
   updateClusterDelegation(
     stash.delegatedCluster,
@@ -297,7 +300,7 @@ export function handleStashWithdrawn(
 
   let tokens = event.params.tokens as Bytes[];
   let amounts = event.params.amounts as BigInt[];
-  updateStashTokens(id, tokens, amounts, "withdraw");
+  updateStashTokens(id, tokens, amounts, "withdraw", true);
 }
 
 export function handleStashClosed(
@@ -377,6 +380,13 @@ export function handleRedelegated(
   updateClusterDelegatorInfo(
     event.params.stashId.toHexString(),
     event.params.updatedCluster.toHexString(),
+    "delegated",
+  );
+
+  updateDelegatorTotalDelegation(
+    stash.staker,
+    stash.tokensDelegatedId as Bytes[],
+    stash.tokensDelegatedAmount as BigInt[],
     "delegated",
   );
 }
@@ -587,11 +597,12 @@ export function handleBlock(
   block: ethereum.Block
 ): void {
   let blockNumber = block.number;
-  let state = State.load("clusters");
+  let state = State.load("state");
 
   if (state == null) {
-    state = new State("clusters");
+    state = new State("state");
     state.clusters = [];
+    state.activeClusterCount = BIGINT_ZERO;
     state.save();
   }
 

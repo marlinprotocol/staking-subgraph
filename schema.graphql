@@ -85,6 +85,7 @@ type DelegatorToken @entity {
 type State @entity {
   id: ID!
   clusters: [String!]!
+  activeClusterCount: BigInt!
 }
 
 type DelegatorReward @entity {

@@ -17,6 +17,19 @@
     "inputs": [
       {
         "indexed": false,
+        "internalType": "address",
+        "name": "_newFeeder",
+        "type": "address"
+      }
+    ],
+    "name": "FeederChanged",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
         "internalType": "bytes32",
         "name": "networkId",
         "type": "bytes32"
@@ -80,6 +93,71 @@
       }
     ],
     "name": "OwnershipTransferred",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "_updatedPOND",
+        "type": "address"
+      }
+    ],
+    "name": "PONDAddressUpdated",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "_updatedPayoutDenomination",
+        "type": "uint256"
+      }
+    ],
+    "name": "PayoutDenominationChanged",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "_updatedRewardDelegator",
+        "type": "address"
+      }
+    ],
+    "name": "RewardDelegatorAddressUpdated",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "_updatedRewardDistributionWaitTime",
+        "type": "uint256"
+      }
+    ],
+    "name": "RewardDistributionWaitTimeUpdated",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "_updatedRewardPerEpoch",
+        "type": "uint256"
+      }
+    ],
+    "name": "RewardPerEpochChanged",
     "type": "event"
   },
   {
@@ -228,6 +306,21 @@
     "inputs": [
       {
         "internalType": "address",
+        "name": "sender",
+        "type": "address"
+      }
+    ],
+    "name": "initialize",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "internalType": "address",
         "name": "_owner",
         "type": "address"
       },
@@ -270,21 +363,6 @@
         "internalType": "uint256",
         "name": "_rewardDistributionWaitTime",
         "type": "uint256"
-      }
-    ],
-    "name": "initialize",
-    "outputs": [],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "constant": false,
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "sender",
-        "type": "address"
       }
     ],
     "name": "initialize",

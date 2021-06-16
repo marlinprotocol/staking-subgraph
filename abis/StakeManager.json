@@ -592,11 +592,6 @@
       },
       {
         "internalType": "address",
-        "name": "_clusterRegistryAddress",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
         "name": "_rewardDelegatorsAddress",
         "type": "address"
       },
@@ -677,21 +672,6 @@
       }
     ],
     "name": "updateRewardDelegators",
-    "outputs": [],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "constant": false,
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "_updatedClusterRegistry",
-        "type": "address"
-      }
-    ],
-    "name": "updateClusterRegistry",
     "outputs": [],
     "payable": false,
     "stateMutability": "nonpayable",

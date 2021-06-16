@@ -24,11 +24,37 @@
       {
         "indexed": false,
         "internalType": "address",
+        "name": "_updatedClusterRegistry",
+        "type": "address"
+      }
+    ],
+    "name": "ClusterRegistryUpdated",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
         "name": "cluster",
         "type": "address"
       }
     ],
     "name": "ClusterRewardDistributed",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "_updatedClusterRewards",
+        "type": "address"
+      }
+    ],
+    "name": "ClusterRewardsAddressUpdated",
     "type": "event"
   },
   {
@@ -74,6 +100,19 @@
       }
     ],
     "name": "OwnershipTransferred",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "_updatedPOND",
+        "type": "address"
+      }
+    ],
+    "name": "PONDAddressUpdated",
     "type": "event"
   },
   {
@@ -137,6 +176,19 @@
       }
     ],
     "name": "RewardsWithdrawn",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "_updatedStakeAddress",
+        "type": "address"
+      }
+    ],
+    "name": "StakeAddressUpdated",
     "type": "event"
   },
   {
@@ -228,21 +280,6 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "sender",
-        "type": "address"
-      }
-    ],
-    "name": "initialize",
-    "outputs": [],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "constant": false,
-    "inputs": [
-      {
-        "internalType": "address",
         "name": "_stakeAddress",
         "type": "address"
       },
@@ -285,6 +322,21 @@
         "internalType": "uint256[]",
         "name": "_rewardFactors",
         "type": "uint256[]"
+      }
+    ],
+    "name": "initialize",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "sender",
+        "type": "address"
       }
     ],
     "name": "initialize",
@@ -460,6 +512,26 @@
         "type": "uint256"
       }
     ],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_delegator",
+        "type": "address"
+      },
+      {
+        "internalType": "address[]",
+        "name": "_clusters",
+        "type": "address[]"
+      }
+    ],
+    "name": "withdrawRewards",
+    "outputs": [],
     "payable": false,
     "stateMutability": "nonpayable",
     "type": "function"

@@ -27,6 +27,7 @@ import {
     CLUSTER_REWARDS_ADDRESS,
     REWARD_DELEGATOR_ADDRESS,
     STATUS_NOT_REGISTERED,
+    BIGINT_ONE,
 } from './constants';
 
 let clusterRewardsContract = ClusterRewardsContract.bind(
@@ -42,6 +43,7 @@ export function updateStashTokens(
     tokens: Bytes[],
     amounts: BigInt[],
     action: string,
+    updateTotalDele: boolean,
 ): void {
     let stash = Stash.load(stashId);
     let delegatedCluster = stash.delegatedCluster;
@@ -103,7 +105,7 @@ export function updateStashTokens(
             tokenData.save();
         }
 
-        if (delegatedCluster.length > 0) {
+        if (delegatedCluster.length > 0 && updateTotalDele) {
             updateDelegatorTokens(
                 stash.staker.toHexString(),
                 tokens[i].toHexString(),
@@ -278,11 +280,11 @@ export function updateDelegatorTokens(
         );
     }
 
-    if (delegatorToken.amount == BIGINT_ZERO) {
-        store.remove("DelegatorToken", delegatorTokenId);
-    } else {
+    // if (delegatorToken.amount == BIGINT_ZERO) {
+    //     store.remove("DelegatorToken", delegatorTokenId);
+    // } else {
         delegatorToken.save();
-    }
+    // }
 }
 
 export function updateNetworkClusters(
@@ -400,16 +402,16 @@ export function updateClusterDelegatorsReward(
 export function updateAllClustersList(
     clusterId: Bytes
 ): void {
-    let state = State.load("clusters");
+    let state = State.load("state");
     if (state == null) {
-        state = new State("clusters");
+        state = new State("state");
         state.clusters = [];
+        state.activeClusterCount = BIGINT_ZERO;
     }
 
     let clusters = state.clusters;
     clusters.push(clusterId.toHexString());
     state.clusters = clusters;
-
     state.save();
 }
 
@@ -466,9 +468,25 @@ export function updateClustersInfo(
                     clusters[i],
                     "unregistered",
                 );
+                updateActiveClusterCount("unregister");
             }
 
             cluster.save();
         };
     }
+}
+
+export function updateActiveClusterCount(operation: string): void {
+    let state = State.load("state");
+    if (state == null) {
+        state = new State("state");
+        state.clusters = [];
+        state.activeClusterCount = BIGINT_ZERO;
+    }
+    if (operation == "register") {
+        state.activeClusterCount = state.activeClusterCount.plus(BIGINT_ONE);
+    } else {
+        state.activeClusterCount = state.activeClusterCount.minus(BIGINT_ONE);
+    }
+    state.save();
 }
