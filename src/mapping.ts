@@ -177,6 +177,14 @@ export function handleStashSplit(
   let amounts = event.params._splitAmounts as BigInt[];
   updateStashTokens(oldStashId, tokens, amounts, "withdraw", false);
   updateStashTokens(newStashId, tokens, amounts, "add", false);
+
+  // add new shash id to delegator array
+  let delegatorId = oldStash.staker.toHexString();
+  let delegator = Delegator.load(delegatorId);
+  let stashes = delegator.stashes;
+  stashes.push(newStashId);
+  delegator.stashes = stashes;
+  delegator.save();
 }
 
 export function handleStashesMerged(
@@ -199,7 +207,16 @@ export function handleStashesMerged(
     "withdraw",
     false
   );
+  
+  // remove the stash from delegator
+  let staker = Stash.load(stashId2).staker;
   store.remove('Stash', stashId2);
+  let delegator = Delegator.load(staker.toHexString());
+  let stashes = delegator.stashes;
+  let stashIndex = stashes.indexOf(stashId2);
+  stashes.splice(stashIndex, 1);
+  delegator.stashes = stashes;
+  delegator.save()
 }
 
 export function handleStashDelegated(
@@ -312,8 +329,8 @@ export function handleStashClosed(
 ): void {
   handleBlock(event.block);
   let id = event.params.stashId.toHexString();
-  store.remove('Stash', id);
   let staker = Stash.load(id).staker;
+  store.remove('Stash', id);
   let delegator = Delegator.load(staker.toHexString());
   let stashes = delegator.stashes;
   let stashIndex = stashes.indexOf(id);

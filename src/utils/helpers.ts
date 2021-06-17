@@ -281,11 +281,11 @@ export function updateDelegatorTokens(
         );
     }
 
-    // if (delegatorToken.amount == BIGINT_ZERO) {
-    //     store.remove("DelegatorToken", delegatorTokenId);
-    // } else {
+    if (delegatorToken.amount == BIGINT_ZERO) {
+        store.remove("DelegatorToken", delegatorTokenId);
+    } else {
         delegatorToken.save();
-    // }
+    }
 }
 
 export function updateNetworkClusters(
