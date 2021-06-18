@@ -305,12 +305,14 @@ export function handleAddedToStash(
   let amounts = event.params.amounts as BigInt[];
   updateStashTokens(id, tokens, amounts, "add", true);
 
-  updateClusterDelegation(
-    stash.delegatedCluster,
-    tokens,
-    amounts,
-    "delegated",
-  );
+  if (stash.delegatedCluster != "") {
+    updateClusterDelegation(
+      stash.delegatedCluster,
+      tokens,
+      amounts,
+      "delegated",
+    );
+  }
 }
 
 export function handleStashWithdrawn(
@@ -384,7 +386,7 @@ export function handleRedelegated(
   let id = event.params.stashId.toHexString();
   let stash = Stash.load(id);
 
-  if(stash.delegatedCluster != null) {
+  if(stash.delegatedCluster != "") {
     updateClusterDelegatorInfo(
       event.params.stashId.toHexString(),
       stash.delegatedCluster,
