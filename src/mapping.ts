@@ -128,7 +128,7 @@ export function handleStashCreated(
 
   stash.stashId = event.params.stashId;
   stash.staker = event.params.creator;
-  stash.delegatedCluster = null;
+  stash.delegatedCluster = "";
   stash.tokensDelegatedId = [];
   stash.tokensDelegatedAmount = [];
   stash.isActive = true;
@@ -261,7 +261,7 @@ export function handleStashUndelegated(
     "undelegated",
   );
 
-  stash.delegatedCluster = null;
+  stash.delegatedCluster = "";
   stash.undelegatesAt = event.params.undelegatesAt;
   stash.save();
 
