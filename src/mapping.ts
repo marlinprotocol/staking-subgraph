@@ -132,6 +132,7 @@ export function handleStashCreated(
   stash.tokensDelegatedId = [];
   stash.tokensDelegatedAmount = [];
   stash.isActive = true;
+  stash.createdAt = event.block.number;
   stash.save();
 
   let tokens = event.params.tokens as Bytes[];
@@ -171,6 +172,7 @@ export function handleStashSplit(
     newStash.tokensDelegatedId = [];
     newStash.tokensDelegatedAmount = [];
     newStash.isActive = true;
+    newStash.createdAt = event.block.number;
     newStash.save();
   }
   let tokens = event.params._splitTokens as Bytes[];

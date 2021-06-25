@@ -59,7 +59,6 @@ export function updateStashTokens(
         if (action === "add") {
             if (tokenData == null) {
                 tokenData = new TokenData(tokenDataId);
-                // TokenData.token is of type Token how store Bytes?
                 tokenData.token = tokens[i].toHexString();
                 tokenData.stash = stashId;
                 tokenData.amount = BIGINT_ZERO;
@@ -99,12 +98,8 @@ export function updateStashTokens(
 
             stash.tokensDelegatedAmount = tokensDelegatedAmount;
         }
-
-        if (tokenData.amount == BIGINT_ZERO) {
-            store.remove("TokenData", tokenDataId);
-        } else {
-            tokenData.save();
-        }
+        
+        tokenData.save();
 
         if (delegatedCluster.length > 0 && updateTotalDele) {
             updateDelegatorTokens(
