@@ -33,6 +33,7 @@ type Stash @entity {
   redelegationUpdateBlock: BigInt
   redelegationUpdatedCluster: String
   isActive: Boolean!
+  createdAt: BigInt!
 }
 
 type Token @entity {
@@ -85,6 +86,7 @@ type DelegatorToken @entity {
 type State @entity {
   id: ID!
   clusters: [String!]!
+  activeClusterCount: BigInt!
 }
 
 type DelegatorReward @entity {
