@@ -246,8 +246,8 @@ export function handleStashClosed(
 ): void {
   handleBlock(event.block)
   let id = event.params.stashId.toHexString();
-  store.remove('Stash', id);
   let staker = Stash.load(id).staker;
+  store.remove('Stash', id);
   let delegator = Delegator.load(staker.toHexString());
   let stashes = delegator.stashes;
   let stashIndex = stashes.indexOf(id);
