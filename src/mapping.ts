@@ -281,7 +281,8 @@ export function handleStashUndelegated(
   for(let i=0; i < stashes.length; i++) {
     let _stash = Stash.load(stashes[i]);
     _stash.redelegationUpdateBlockV1 = null;
-    _stash.redelegationUpdateBlock = null;    
+    _stash.redelegationUpdateBlock = null;
+    _stash.redelegationUpdatedClusterV1 = null;
     _stash.redelegationUpdatedCluster = null;
     _stash.save()
   }
@@ -402,6 +403,7 @@ export function handleRedelegated(
     .updatedCluster.toHexString();
   stash.redelegationUpdateBlockV1 = null;
   stash.redelegationUpdateBlock = null;
+  stash.redelegationUpdatedClusterV1 = null;
   stash.redelegationUpdatedCluster = null;
   stash.save();
 
@@ -427,6 +429,7 @@ export function handleRedelegationCancelled(
   let stash = Stash.load(id);
   stash.redelegationUpdateBlockV1 = null;
   stash.redelegationUpdateBlock = null;
+  stash.redelegationUpdatedClusterV1 = null;
   stash.redelegationUpdatedCluster = null;
   stash.save();
 }
@@ -442,13 +445,15 @@ export function handleRedelegationRequested(
   if (event.block.number.gt(FIRST_V2_BLOCK)) {
     stash.redelegationUpdateBlock = event.params
     .redelegatesAt;
+    stash.redelegationUpdatedCluster = event.params
+    .updatedCluster.toHexString();
   } else {
     stash.redelegationUpdateBlockV1 = event.params
     .redelegatesAt;
+    stash.redelegationUpdatedClusterV1 = event.params
+    .updatedCluster.toHexString();
   }
 
-  stash.redelegationUpdatedCluster = event.params
-    .updatedCluster.toHexString();
   stash.save();
 }
 

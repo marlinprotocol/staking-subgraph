@@ -32,6 +32,7 @@ type Stash @entity {
   tokensDelegatedAmount: [BigInt!]
   redelegationUpdateBlockV1: BigInt
   redelegationUpdateBlock: BigInt
+  redelegationUpdatedClusterV1: String
   redelegationUpdatedCluster: String
   isActive: Boolean!
   createdAt: BigInt!
