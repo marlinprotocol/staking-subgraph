@@ -11,6 +11,7 @@ import {
   BIGINT_ZERO,
   WITHDRAW_REWARDS_FUNC_SIG,
   UPDATE_REWARDS_FUNC_SIG,
+  FIRST_V2_BLOCK,
 } from "./utils/constants";
 import {
   ClusterRegistered,
@@ -279,7 +280,8 @@ export function handleStashUndelegated(
   let stashes = delegator.stashes;
   for(let i=0; i < stashes.length; i++) {
     let _stash = Stash.load(stashes[i]);
-    _stash.redelegationUpdateBlock = null;
+    _stash.redelegationUpdateBlockV1 = null;
+    _stash.redelegationUpdateBlockV2 = null;    
     _stash.redelegationUpdatedCluster = null;
     _stash.save()
   }
@@ -398,7 +400,8 @@ export function handleRedelegated(
 
   stash.delegatedCluster = event.params
     .updatedCluster.toHexString();
-  stash.redelegationUpdateBlock = null;
+  stash.redelegationUpdateBlockV1 = null;
+  stash.redelegationUpdateBlockV2 = null;
   stash.redelegationUpdatedCluster = null;
   stash.save();
 
@@ -422,7 +425,8 @@ export function handleRedelegationCancelled(
   handleBlock(event.block);
   let id = event.params._stashId.toHexString();
   let stash = Stash.load(id);
-  stash.redelegationUpdateBlock = null;
+  stash.redelegationUpdateBlockV1 = null;
+  stash.redelegationUpdateBlockV2 = null;
   stash.redelegationUpdatedCluster = null;
   stash.save();
 }
@@ -433,9 +437,16 @@ export function handleRedelegationRequested(
   handleBlock(event.block);
   let id = event.params.stashId.toHexString();
   let stash = Stash.load(id);
-
-  stash.redelegationUpdateBlock = event.params
+  
+  // check if the block is V2
+  if (event.block.number.gt(FIRST_V2_BLOCK)) {
+    stash.redelegationUpdateBlockV2 = event.params
     .redelegatesAt;
+  } else {
+    stash.redelegationUpdateBlockV1 = event.params
+    .redelegatesAt;
+  }
+
   stash.redelegationUpdatedCluster = event.params
     .updatedCluster.toHexString();
   stash.save();

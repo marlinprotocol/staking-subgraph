@@ -30,7 +30,8 @@ type Stash @entity {
   tokensDelegated: [TokenData!]! @derivedFrom(field: "stash")
   tokensDelegatedId: [Bytes!]
   tokensDelegatedAmount: [BigInt!]
-  redelegationUpdateBlock: BigInt
+  redelegationUpdateBlockV1: BigInt
+  redelegationUpdateBlockV2: BigInt
   redelegationUpdatedCluster: String
   isActive: Boolean!
   createdAt: BigInt!
