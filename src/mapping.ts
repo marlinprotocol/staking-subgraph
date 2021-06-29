@@ -412,13 +412,15 @@ export function handleRedelegated(
     event.params.updatedCluster.toHexString(),
     "delegated",
   );
-
-  updateDelegatorTotalDelegation(
-    stash.staker,
-    stash.tokensDelegatedId as Bytes[],
-    stash.tokensDelegatedAmount as BigInt[],
-    "delegated",
-  );
+  
+  if(stash.delegatedCluster == "") {
+    updateDelegatorTotalDelegation(
+      stash.staker,
+      stash.tokensDelegatedId as Bytes[],
+      stash.tokensDelegatedAmount as BigInt[],
+      "delegated",
+    );
+  }
 }
 
 export function handleRedelegationCancelled(
