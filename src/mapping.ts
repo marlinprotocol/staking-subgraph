@@ -134,7 +134,7 @@ export function handleStashCreated(
   stash.tokensDelegatedAmount = [];
   stash.isActive = true;
   stash.createdAt = event.block.number;
-  stash.save();
+  // stash.save();
 
   let tokens = event.params.tokens as Bytes[];
   let amounts = event.params.amounts as BigInt[];
@@ -153,6 +153,14 @@ export function handleStashCreated(
   stashes.push(id);
   delegator.stashes = stashes;
   delegator.save();
+
+  updateDelegatorTotalDelegation(
+    event.params.creator,
+    stash.tokensDelegatedId as Bytes[],
+    stash.tokensDelegatedAmount as BigInt[],
+    "delegated",
+  );
+  stash.save();
 }
 
 export function handleStashSplit(
@@ -242,13 +250,14 @@ export function handleStashDelegated(
     event.params.delegatedCluster.toHexString(),
     "delegated",
   );
-
-  updateDelegatorTotalDelegation(
-    stash.staker,
-    stash.tokensDelegatedId as Bytes[],
-    stash.tokensDelegatedAmount as BigInt[],
-    "delegated",
-  );
+  
+  // done in createShashHandler
+  // updateDelegatorTotalDelegation(
+  //   stash.staker,
+  //   stash.tokensDelegatedId as Bytes[],
+  //   stash.tokensDelegatedAmount as BigInt[],
+  //   "delegated",
+  // );
 }
 
 export function handleStashUndelegated(
