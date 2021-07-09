@@ -276,6 +276,7 @@ export function updateDelegatorTokens(
         );
     }
 
+    // if delegatorToken.amount is null then its not comparable to BIGINT_ZERO
     if (delegatorToken.amount == BIGINT_ZERO) {
         store.remove("DelegatorToken", delegatorTokenId);
     } else {
@@ -336,12 +337,16 @@ export function updateNetworkClustersReward(
     for (let i = 0; i < clusters.length; i++) {
         let cluster = Cluster.load(clusters[i]);
 
-        let reward = clusterRewardsContract.clusterRewards(
+        let result = clusterRewardsContract.try_clusterRewards(
             Address.fromString(
                 clusters[i]
             )
         );
 
+        let reward = BIGINT_ZERO;
+        if (!result.reverted) {
+            reward = result.value;
+        }
         cluster.pendingRewards = (reward.times(cluster.commission))
             .div(BigInt.fromI32(100));
 
