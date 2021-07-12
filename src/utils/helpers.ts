@@ -277,11 +277,11 @@ export function updateDelegatorTokens(
     }
 
     // if delegatorToken.amount is null then its not comparable to BIGINT_ZERO
-    if (delegatorToken.amount == BIGINT_ZERO) {
-        store.remove("DelegatorToken", delegatorTokenId);
-    } else {
+    // if (delegatorToken.amount == BIGINT_ZERO) {
+    //     store.remove("DelegatorToken", delegatorTokenId);
+    // } else {
         delegatorToken.save();
-    }
+    // }
 }
 
 export function updateNetworkClusters(
