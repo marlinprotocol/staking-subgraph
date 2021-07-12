@@ -153,6 +153,13 @@ export function handleStashCreated(
   stashes.push(id);
   delegator.stashes = stashes;
   delegator.save();
+
+  updateDelegatorTotalDelegation(
+    stash.staker,
+    stash.tokensDelegatedId as Bytes[],
+    stash.tokensDelegatedAmount as BigInt[],
+    "delegated",
+  );
 }
 
 export function handleStashSplit(
@@ -243,12 +250,13 @@ export function handleStashDelegated(
     "delegated",
   );
 
-  updateDelegatorTotalDelegation(
-    stash.staker,
-    stash.tokensDelegatedId as Bytes[],
-    stash.tokensDelegatedAmount as BigInt[],
-    "delegated",
-  );
+  // done in createShashHandler
+  // updateDelegatorTotalDelegation(
+  //   stash.staker,
+  //   stash.tokensDelegatedId as Bytes[],
+  //   stash.tokensDelegatedAmount as BigInt[],
+  //   "delegated",
+  // );
 }
 
 export function handleStashUndelegated(
