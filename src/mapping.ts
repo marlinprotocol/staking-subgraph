@@ -235,6 +235,8 @@ export function handleStashDelegated(
   handleBlock(event.block);
   let id = event.params.stashId.toHexString();
   let stash = Stash.load(id);
+  
+  // is this possible?
   if (stash == null) {
     stash = new Stash(id);
   }
@@ -405,6 +407,13 @@ export function handleRedelegated(
       stash.delegatedCluster,
       "undelegated",
     );
+  } else {
+    updateDelegatorTotalDelegation(
+      stash.staker,
+      stash.tokensDelegatedId as Bytes[],
+      stash.tokensDelegatedAmount as BigInt[],
+      "delegated",
+    );
   }
 
   stash.delegatedCluster = event.params
@@ -420,15 +429,6 @@ export function handleRedelegated(
     event.params.updatedCluster.toHexString(),
     "delegated",
   );
-  
-  if(stash.delegatedCluster == "") {
-    updateDelegatorTotalDelegation(
-      stash.staker,
-      stash.tokensDelegatedId as Bytes[],
-      stash.tokensDelegatedAmount as BigInt[],
-      "delegated",
-    );
-  }
 }
 
 export function handleRedelegationCancelled(
