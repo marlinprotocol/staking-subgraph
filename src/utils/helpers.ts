@@ -275,7 +275,6 @@ export function updateDelegatorTokens(
             amount
         );
     }
-
     if (delegatorToken.amount == BIGINT_ZERO) {
         store.remove("DelegatorToken", delegatorTokenId);
     } else {
