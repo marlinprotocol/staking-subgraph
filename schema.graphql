@@ -30,9 +30,12 @@ type Stash @entity {
   tokensDelegated: [TokenData!]! @derivedFrom(field: "stash")
   tokensDelegatedId: [Bytes!]
   tokensDelegatedAmount: [BigInt!]
+  redelegationUpdateBlockV1: BigInt
   redelegationUpdateBlock: BigInt
+  redelegationUpdatedClusterV1: String
   redelegationUpdatedCluster: String
   isActive: Boolean!
+  createdAt: BigInt!
 }
 
 type Token @entity {
@@ -85,6 +88,7 @@ type DelegatorToken @entity {
 type State @entity {
   id: ID!
   clusters: [String!]!
+  activeClusterCount: BigInt!
 }
 
 type DelegatorReward @entity {

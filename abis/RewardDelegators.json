@@ -24,11 +24,37 @@
       {
         "indexed": false,
         "internalType": "address",
+        "name": "_updatedClusterRegistry",
+        "type": "address"
+      }
+    ],
+    "name": "ClusterRegistryUpdated",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
         "name": "cluster",
         "type": "address"
       }
     ],
     "name": "ClusterRewardDistributed",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "_updatedClusterRewards",
+        "type": "address"
+      }
+    ],
+    "name": "ClusterRewardsAddressUpdated",
     "type": "event"
   },
   {
@@ -74,6 +100,19 @@
       }
     ],
     "name": "OwnershipTransferred",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "_updatedPOND",
+        "type": "address"
+      }
+    ],
+    "name": "PONDAddressUpdated",
     "type": "event"
   },
   {
@@ -144,56 +183,66 @@
     "inputs": [
       {
         "indexed": false,
-        "internalType": "uint256",
-        "name": "undelegationWaitTime",
-        "type": "uint256"
-      }
-    ],
-    "name": "UndelegationWaitTimeUpdated",
-    "type": "event"
-  },
-  {
-    "constant": false,
-    "inputs": [
-      {
         "internalType": "address",
-        "name": "_cluster",
+        "name": "_updatedStakeAddress",
         "type": "address"
       }
     ],
-    "name": "_updateRewards",
-    "outputs": [],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "function"
+    "name": "StakeAddressUpdated",
+    "type": "event"
   },
   {
-    "constant": false,
-    "inputs": [
+    "constant": true,
+    "inputs": [],
+    "name": "MPONDTokenId",
+    "outputs": [
       {
         "internalType": "bytes32",
-        "name": "_tokenId",
+        "name": "",
         "type": "bytes32"
-      },
-      {
-        "internalType": "uint256",
-        "name": "_rewardFactor",
-        "type": "uint256"
       }
     ],
-    "name": "addReward",
-    "outputs": [],
     "payable": false,
-    "stateMutability": "nonpayable",
+    "stateMutability": "view",
     "type": "function"
   },
   {
     "constant": true,
     "inputs": [],
-    "name": "clusterRewards",
+    "name": "isOwner",
     "outputs": [
       {
-        "internalType": "contract ClusterRewards",
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "minMPONDStake",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "owner",
+    "outputs": [
+      {
+        "internalType": "address",
         "name": "",
         "type": "address"
       }
@@ -204,99 +253,31 @@
   },
   {
     "constant": false,
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "_delegator",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "_cluster",
-        "type": "address"
-      },
-      {
-        "internalType": "bytes32[]",
-        "name": "_tokens",
-        "type": "bytes32[]"
-      },
-      {
-        "internalType": "uint256[]",
-        "name": "_amounts",
-        "type": "uint256[]"
-      }
-    ],
-    "name": "delegate",
+    "inputs": [],
+    "name": "renounceOwnership",
     "outputs": [],
     "payable": false,
     "stateMutability": "nonpayable",
     "type": "function"
   },
   {
-    "constant": true,
+    "constant": false,
     "inputs": [
       {
         "internalType": "address",
-        "name": "_cluster",
+        "name": "newOwner",
         "type": "address"
-      },
-      {
-        "internalType": "bytes32",
-        "name": "_tokenId",
-        "type": "bytes32"
       }
     ],
-    "name": "getClusterDelegation",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
+    "name": "transferOwnership",
+    "outputs": [],
     "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "constant": true,
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "_cluster",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "_delegator",
-        "type": "address"
-      },
-      {
-        "internalType": "bytes32",
-        "name": "_tokenId",
-        "type": "bytes32"
-      }
-    ],
-    "name": "getDelegation",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "view",
+    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
     "constant": false,
     "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "_undelegationWaitTime",
-        "type": "uint256"
-      },
       {
         "internalType": "address",
         "name": "_stakeAddress",
@@ -365,54 +346,38 @@
     "type": "function"
   },
   {
-    "constant": true,
+    "constant": false,
     "inputs": [
       {
-        "internalType": "address",
-        "name": "_cluster",
-        "type": "address"
+        "internalType": "bytes32",
+        "name": "_updatedMPONDTokenId",
+        "type": "bytes32"
       }
     ],
-    "name": "isClusterActive",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "",
-        "type": "bool"
-      }
-    ],
+    "name": "updateMPONDTokenId",
+    "outputs": [],
     "payable": false,
-    "stateMutability": "view",
+    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
-    "constant": true,
-    "inputs": [],
-    "name": "isOwner",
-    "outputs": [
+    "constant": false,
+    "inputs": [
       {
-        "internalType": "bool",
-        "name": "",
-        "type": "bool"
+        "internalType": "bytes32",
+        "name": "_tokenId",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_rewardFactor",
+        "type": "uint256"
       }
     ],
+    "name": "addRewardFactor",
+    "outputs": [],
     "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "constant": true,
-    "inputs": [],
-    "name": "owner",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "view",
+    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
@@ -432,32 +397,22 @@
   },
   {
     "constant": false,
-    "inputs": [],
-    "name": "renounceOwnership",
-    "outputs": [],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "constant": true,
     "inputs": [
       {
+        "internalType": "bytes32",
+        "name": "_tokenId",
+        "type": "bytes32"
+      },
+      {
         "internalType": "uint256",
-        "name": "",
+        "name": "_updatedRewardFactor",
         "type": "uint256"
       }
     ],
-    "name": "tokenList",
-    "outputs": [
-      {
-        "internalType": "bytes32",
-        "name": "",
-        "type": "bytes32"
-      }
-    ],
+    "name": "updateRewardFactor",
+    "outputs": [],
     "payable": false,
-    "stateMutability": "view",
+    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
@@ -465,11 +420,41 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "newOwner",
+        "name": "_cluster",
         "type": "address"
       }
     ],
-    "name": "transferOwnership",
+    "name": "_updateRewards",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_delegator",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_cluster",
+        "type": "address"
+      },
+      {
+        "internalType": "bytes32[]",
+        "name": "_tokens",
+        "type": "bytes32[]"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "_amounts",
+        "type": "uint256[]"
+      }
+    ],
+    "name": "delegate",
     "outputs": [],
     "payable": false,
     "stateMutability": "nonpayable",
@@ -506,80 +491,20 @@
     "type": "function"
   },
   {
-    "constant": true,
-    "inputs": [],
-    "name": "undelegationWaitTime",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
     "constant": false,
     "inputs": [
       {
-        "internalType": "bytes32",
-        "name": "_updatedMPONDTokenId",
-        "type": "bytes32"
-      }
-    ],
-    "name": "updateMPONDTokenId",
-    "outputs": [],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "constant": false,
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "_minMPONDStake",
-        "type": "uint256"
-      }
-    ],
-    "name": "updateMinMPONDStake",
-    "outputs": [],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "constant": false,
-    "inputs": [
-      {
-        "internalType": "bytes32",
-        "name": "_tokenId",
-        "type": "bytes32"
+        "internalType": "address",
+        "name": "_delegator",
+        "type": "address"
       },
       {
-        "internalType": "uint256",
-        "name": "_updatedRewardFactor",
-        "type": "uint256"
+        "internalType": "address[]",
+        "name": "_clusters",
+        "type": "address[]"
       }
     ],
-    "name": "updateRewardFactor",
-    "outputs": [],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "constant": false,
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "_undelegationWaitTime",
-        "type": "uint256"
-      }
-    ],
-    "name": "updateUndelegationWaitTime",
+    "name": "withdrawRewards",
     "outputs": [],
     "payable": false,
     "stateMutability": "nonpayable",
@@ -609,6 +534,220 @@
     ],
     "payable": false,
     "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_delegator",
+        "type": "address"
+      },
+      {
+        "internalType": "address[]",
+        "name": "_clusters",
+        "type": "address[]"
+      }
+    ],
+    "name": "withdrawRewards",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_cluster",
+        "type": "address"
+      }
+    ],
+    "name": "isClusterActive",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_cluster",
+        "type": "address"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "_tokenId",
+        "type": "bytes32"
+      }
+    ],
+    "name": "getClusterDelegation",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_cluster",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_delegator",
+        "type": "address"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "_tokenId",
+        "type": "bytes32"
+      }
+    ],
+    "name": "getDelegation",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_minMPONDStake",
+        "type": "uint256"
+      }
+    ],
+    "name": "updateMinMPONDStake",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_updatedStakeAddress",
+        "type": "address"
+      }
+    ],
+    "name": "updateStakeAddress",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_updatedClusterRewards",
+        "type": "address"
+      }
+    ],
+    "name": "updateClusterRewards",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_updatedClusterRegistry",
+        "type": "address"
+      }
+    ],
+    "name": "updateClusterRegistry",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_updatedPOND",
+        "type": "address"
+      }
+    ],
+    "name": "updatePONDAddress",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "getFullTokenList",
+    "outputs": [
+      {
+        "internalType": "bytes32[]",
+        "name": "",
+        "type": "bytes32[]"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_cluster",
+        "type": "address"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "_tokenId",
+        "type": "bytes32"
+      }
+    ],
+    "name": "getAccRewardPerShare",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
     "type": "function"
   }
 ]

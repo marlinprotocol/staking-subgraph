@@ -14,6 +14,7 @@ export let CLUSTER_REWARDS_ADDRESS = Address.fromString(
 export let REWARD_DELEGATOR_ADDRESS = Address.fromString(
     "0x513FB60037240205A0CF17C260257097D747BD46"
 );
+export let FIRST_V2_BLOCK = BigInt.fromString("12716894");
 // export let REWARD_DELEGATOR_ADDRESS = {
 //     "0xA83aD48E2c963a2dF6adcC710Ba520a97d237dCc": Address.fromString(
 //         "0x802E91F47e09E23eB253Ffcc97665497e12ec93D"
