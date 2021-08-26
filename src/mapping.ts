@@ -260,6 +260,8 @@ export function handleStashDelegated(
   let id = event.params.stashId.toHexString();
   let delegatedCluster = event.params.delegatedCluster.toHexString();
   let stash = Stash.load(id);
+  
+  // is this possible?
   if (stash == null) {
     stash = new Stash(id);
   }
@@ -465,6 +467,13 @@ export function handleRedelegated(
       event.params.stashId.toHexString(),
       prevCluster,
       "undelegated",
+    );
+  } else {
+    updateDelegatorTotalDelegation(
+      stash.staker,
+      stash.tokensDelegatedId as Bytes[],
+      stash.tokensDelegatedAmount as BigInt[],
+      "delegated",
     );
   }
 

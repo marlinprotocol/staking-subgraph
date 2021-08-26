@@ -261,6 +261,8 @@ export function updateDelegatorTokens(
 
     if (action === "add") {
         if (delegatorToken == null) {
+            log.warning(
+                "=================== delegatorToken is null {}", [delegatorTokenId]);
             delegatorToken = new DelegatorToken(delegatorTokenId);
             delegatorToken.delegator = delegatorId;
             delegatorToken.token = token;
@@ -270,8 +272,7 @@ export function updateDelegatorTokens(
         delegatorToken.amount = delegatorToken.amount.plus(
             amount
         );
-    } else if (action == "withdraw") {
-        log.error("delegator amount", [delegatorToken.amount.toString(), amount.toString()]);
+    } else if (action === "withdraw") {
         delegatorToken.amount = delegatorToken.amount.minus(
             amount
         );
