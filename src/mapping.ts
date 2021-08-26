@@ -4,7 +4,7 @@ import {
 import {
   Cluster, Stash, Token,
   State, DelegatorReward,
-  Delegator, Network, RewardWithdrawl,
+  Delegator, Network, RewardWithdrawl, ClusterCount,
 } from '../generated/schema';
 import {
   STATUS_REGISTERED,
@@ -12,6 +12,7 @@ import {
   WITHDRAW_REWARDS_FUNC_SIG,
   UPDATE_REWARDS_FUNC_SIG,
   FIRST_V2_BLOCK,
+  BIGINT_ONE,
 } from "./utils/constants";
 import {
   ClusterRegistered,
@@ -148,6 +149,7 @@ export function handleStashCreated(
     delegator.totalPendingReward = BIGINT_ZERO;
     delegator.stashes = [];
     delegator.totalRewardsClaimed = BIGINT_ZERO;
+    delegator.clusters = [];
   }
   let stashes = delegator.stashes;
   stashes.push(id);
@@ -194,6 +196,17 @@ export function handleStashSplit(
   let stashes = delegator.stashes;
   stashes.push(newStashId);
   delegator.stashes = stashes;
+  // update clusters in delegator
+  let clusters = delegator.clusters;
+  for(let i=0; i < clusters.length; i++) {
+    if(clusters[i] == oldStash.delegatedCluster) {
+      let currentCluster = ClusterCount.load(clusters[i]);
+      currentCluster.count = currentCluster.count.plus(BIGINT_ONE);
+      currentCluster.save();
+      break;
+    }
+  }
+
   delegator.save();
 }
 
@@ -226,6 +239,17 @@ export function handleStashesMerged(
   let stashIndex = stashes.indexOf(stashId2);
   stashes.splice(stashIndex, 1);
   delegator.stashes = stashes;
+  // update clusters in delegator
+  let clusters = delegator.clusters;
+  for(let i=0; i < clusters.length; i++) {
+    if(clusters[i] == stash2.delegatedCluster) {
+      let currentCluster = ClusterCount.load(clusters[i]);
+      currentCluster.count = currentCluster.count.minus(BIGINT_ONE);
+      currentCluster.save();
+      break;
+    }
+  }
+
   delegator.save()
 }
 
@@ -234,13 +258,13 @@ export function handleStashDelegated(
 ): void {
   handleBlock(event.block);
   let id = event.params.stashId.toHexString();
+  let delegatedCluster = event.params.delegatedCluster.toHexString();
   let stash = Stash.load(id);
   if (stash == null) {
     stash = new Stash(id);
   }
 
-  stash.delegatedCluster = event.params.delegatedCluster
-    .toHexString();
+  stash.delegatedCluster = delegatedCluster;
   stash.undelegatesAt = null;
   stash.save();
 
@@ -249,6 +273,30 @@ export function handleStashDelegated(
     event.params.delegatedCluster.toHexString(),
     "delegated",
   );
+
+  // update clusters in delegator
+  let delegator = Delegator.load(stash.staker.toHexString());
+  let clusters = delegator.clusters;
+  let clusterFound = false;
+  for(let i=0; i < clusters.length; i++) {
+    if(clusters[i] == delegatedCluster) {
+      let currentCluster = ClusterCount.load(clusters[i]);
+      currentCluster.count = currentCluster.count.plus(BIGINT_ONE);
+      currentCluster.save();
+      clusterFound = true;
+      break;
+    }
+  }
+
+  if(!clusterFound) {
+    let currentCluster = new ClusterCount(delegatedCluster);
+    currentCluster.cluster = delegatedCluster;
+    currentCluster.count = BIGINT_ONE;
+    currentCluster.save();
+    clusters.push(delegatedCluster);
+    delegator.clusters = clusters;
+    delegator.save();
+  }
 
   // done in createShashHandler
   // updateDelegatorTotalDelegation(
@@ -283,17 +331,29 @@ export function handleStashUndelegated(
     "undelegated",
   );
 
-  // cancel redelegation of all stashes of the user
+  // update clusters in delegator
   let delegator = Delegator.load(stash.staker.toHexString());
-  let stashes = delegator.stashes;
-  for(let i=0; i < stashes.length; i++) {
-    let _stash = Stash.load(stashes[i]);
-    _stash.redelegationUpdateBlockV1 = null;
-    _stash.redelegationUpdateBlock = null;
-    _stash.redelegationUpdatedClusterV1 = null;
-    _stash.redelegationUpdatedCluster = null;
-    _stash.save()
+  let clusters = delegator.clusters;
+  for(let i=0; i < clusters.length; i++) {
+    if(clusters[i] == stash.delegatedCluster) {
+      let currentCluster = ClusterCount.load(clusters[i]);
+      currentCluster.count = currentCluster.count.minus(BIGINT_ONE);
+      if(currentCluster.count == BIGINT_ZERO) {
+        store.remove("ClusterCount", clusters[i]);
+      } else {
+        currentCluster.save();
+      }
+      break;
+    }
   }
+
+  // cancel redelegation of the stash
+  let _stash = Stash.load(id);
+  _stash.redelegationUpdateBlockV1 = null;
+  _stash.redelegationUpdateBlock = null;
+  _stash.redelegationUpdatedClusterV1 = null;
+  _stash.redelegationUpdatedCluster = null;
+  _stash.save()
 }
 
 export function handleStashUndelegationCancelled(
@@ -398,11 +458,12 @@ export function handleRedelegated(
   handleBlock(event.block);
   let id = event.params.stashId.toHexString();
   let stash = Stash.load(id);
+  let prevCluster = stash.delegatedCluster;
 
   if(stash.delegatedCluster != "") {
     updateClusterDelegatorInfo(
       event.params.stashId.toHexString(),
-      stash.delegatedCluster,
+      prevCluster,
       "undelegated",
     );
   }
@@ -428,6 +489,45 @@ export function handleRedelegated(
       stash.tokensDelegatedAmount as BigInt[],
       "delegated",
     );
+  }
+
+  // update clusters for delegator
+  let delegator = Delegator.load(stash.staker.toHexString());
+  let clusters = delegator.clusters;
+  let currentClusterUpdated = false;
+  let newClusterUpdated = false;
+
+  for(let i=0; i < clusters.length; i++) {
+    if(currentClusterUpdated && newClusterUpdated) {
+      break;
+    }
+    if(clusters[i] == prevCluster && !currentClusterUpdated) {
+      let currentCluster = ClusterCount.load(clusters[i]);
+      currentCluster.count = currentCluster.count.minus(BIGINT_ONE);
+      if(currentCluster.count == BIGINT_ZERO) {
+        store.remove("ClusterCount", clusters[i]);
+      } else {
+        currentCluster.save();
+      }
+      currentClusterUpdated = true;
+    }
+
+    if(clusters[i] == stash.delegatedCluster && !newClusterUpdated) {
+      let currentCluster = ClusterCount.load(clusters[i]);
+      currentCluster.count = currentCluster.count.plus(BIGINT_ONE);
+      currentCluster.save();
+      newClusterUpdated = true;
+    }
+  }
+
+  if(!newClusterUpdated) {
+    let currentCluster = new ClusterCount(stash.delegatedCluster);
+    currentCluster.cluster = stash.delegatedCluster;
+    currentCluster.count = BIGINT_ONE;
+    currentCluster.save();
+    clusters.push(stash.delegatedCluster);
+    delegator.clusters = clusters;
+    delegator.save();
   }
 }
 

@@ -76,6 +76,13 @@ type Delegator @entity {
   historicalRewardWithdrawl: [RewardWithdrawl!]! @derivedFrom(field: "delegator")
   totalRewardsClaimed: BigInt!
   stashes: [String!]!
+  clusters: [ClusterCount!]!
+}
+
+type ClusterCount @entity {
+  id: ID!
+  cluster: String!
+  count: BigInt!
 }
 
 type DelegatorToken @entity {

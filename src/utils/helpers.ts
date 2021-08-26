@@ -271,17 +271,18 @@ export function updateDelegatorTokens(
             amount
         );
     } else if (action == "withdraw") {
+        log.error("delegator amount", [delegatorToken.amount.toString(), amount.toString()]);
         delegatorToken.amount = delegatorToken.amount.minus(
             amount
         );
     }
 
     // if delegatorToken.amount is null then its not comparable to BIGINT_ZERO
-    // if (delegatorToken.amount == BIGINT_ZERO) {
-    //     store.remove("DelegatorToken", delegatorTokenId);
-    // } else {
+    if (delegatorToken.amount == BIGINT_ZERO) {
+        store.remove("DelegatorToken", delegatorTokenId);
+    } else {
         delegatorToken.save();
-    // }
+    }
 }
 
 export function updateNetworkClusters(
