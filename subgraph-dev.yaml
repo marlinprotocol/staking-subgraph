@@ -84,6 +84,8 @@ dataSources:
           handler: handleRedelegationCancelled
         - event: StashUndelegationCancelled(bytes32)
           handler: handleStashUndelegationCancelled
+        - event: UndelegationWaitTimeUpdated(uint256)
+          handler: handleUndelegationWaitTimeUpdated
   - kind: ethereum/contract
     name: ClusterRewards
     network: kovan

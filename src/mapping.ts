@@ -37,7 +37,8 @@ import {
   Redelegated,
   RedelegationRequested,
   RedelegationCancelled,
-  StashUndelegationCancelled
+  StashUndelegationCancelled,
+  UndelegationWaitTimeUpdated
 } from '../generated/StakeManager/StakeManager';
 import {
   NetworkAdded,
@@ -491,14 +492,14 @@ export function handleRedelegated(
     "delegated",
   );
   
-  if(stash.delegatedCluster == "") {
-    updateDelegatorTotalDelegation(
-      stash.staker,
-      stash.tokensDelegatedId as Bytes[],
-      stash.tokensDelegatedAmount as BigInt[],
-      "delegated",
-    );
-  }
+  // if(stash.delegatedCluster == "") {
+  //   updateDelegatorTotalDelegation(
+  //     stash.staker,
+  //     stash.tokensDelegatedId as Bytes[],
+  //     stash.tokensDelegatedAmount as BigInt[],
+  //     "delegated",
+  //   );
+  // }
 
   // update clusters for delegator
   let delegator = Delegator.load(stash.staker.toHexString());
@@ -754,6 +755,15 @@ export function handleRewardsWithdrawn(
   rewardWithdrawl.save();
 }
 
+export function handleUndelegationWaitTimeUpdated(
+  event: UndelegationWaitTimeUpdated
+): void {
+  handleBlock(event.block);
+  let state = State.load("state");
+  state.undelegationWaitTime = event.params.undelegationWaitTime;
+  state.save();
+}
+
 export function handleBlock(
   block: ethereum.Block
 ): void {
@@ -764,6 +774,9 @@ export function handleBlock(
     state = new State("state");
     state.clusters = [];
     state.activeClusterCount = BIGINT_ZERO;
+    state.lastUpdatedBlock = blockNumber;
+    // NOTE: This is randomly initialized to avoid usage of stake contract in constants
+    state.undelegationWaitTime = BIGINT_ZERO;
     state.save();
   }
 
