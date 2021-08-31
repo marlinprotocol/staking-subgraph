@@ -780,6 +780,8 @@ export function handleBlock(
     state.save();
   }
 
-  let clusters = state.clusters as string[];
-  updateClustersInfo(blockNumber, clusters);
+  if(blockNumber.gt(state.lastUpdatedBlock)) {
+    let clusters = state.clusters as string[];
+    updateClustersInfo(blockNumber, clusters);
+  }
 }
