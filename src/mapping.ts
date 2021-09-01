@@ -675,6 +675,7 @@ export function handleLockTimeUpdated(
 
   if(event.params.selector.toHexString() == REDELEGATION_LOCK_SELECTOR) {
     state.redelegationWaitTime = event.params.updatedLockTime;
+    state.save();
   }
 }
 
