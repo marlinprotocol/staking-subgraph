@@ -97,6 +97,7 @@ type State @entity {
   clusters: [String!]!
   activeClusterCount: BigInt!
   lastUpdatedBlock: BigInt!
+  redelegationWaitTime: BigInt!
   undelegationWaitTime: BigInt!
 }
 
