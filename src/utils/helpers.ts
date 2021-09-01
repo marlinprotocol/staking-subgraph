@@ -253,6 +253,7 @@ export function updateDelegatorTokens(
         delegator.totalPendingReward = BIGINT_ZERO;
         delegator.stashes = [];
         delegator.totalRewardsClaimed = BIGINT_ZERO;
+        delegator.clusters = [];
         delegator.save();
     }
 
@@ -273,6 +274,8 @@ export function updateDelegatorTokens(
             amount
         );
     } else if (action === "withdraw") {
+        // log.error(
+        //     "=================== delegatorToken is null {}", [delegatorToken.amount.toString()]);
         delegatorToken.amount = delegatorToken.amount.minus(
             amount
         );
