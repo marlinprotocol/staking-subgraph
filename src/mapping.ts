@@ -243,6 +243,7 @@ export function handleStashDelegated(
   }
 
   stash.delegatedCluster = delegatedCluster;
+  stash.undelegationRequestedAt = null;
   stash.undelegatesAt = null;
   stash.save();
 
@@ -282,6 +283,7 @@ export function handleStashUndelegated(
   );
 
   stash.delegatedCluster = "";
+  stash.undelegationRequestedAt = event.block.timestamp;
   stash.undelegatesAt = event.params.undelegatesAt;
   stash.save();
 
@@ -308,6 +310,7 @@ export function handleStashUndelegationCancelled(
   let id = event.params._stashId.toHexString();
   let stash = Stash.load(id);
 
+  stash.undelegationRequestedAt = null;
   stash.undelegatesAt = null;
   stash.save();
 }
