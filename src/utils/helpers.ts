@@ -131,9 +131,9 @@ export function updateClusterDelegatorInfo(
     operation: string,
 ): void {
     let stash = Stash.load(stashId);
-    let cluster = Cluster.load(stash.delegatedCluster);
+    let cluster = Cluster.load(clusterId);
     if (cluster == null) {
-        cluster = new Cluster(stash.delegatedCluster);
+        cluster = new Cluster(clusterId);
         cluster.commission = BIGINT_ZERO;
         cluster.rewardAddress = null;
         cluster.clientKey = null;
@@ -159,12 +159,9 @@ export function updateClusterDelegatorInfo(
         let index = cluster.delegators.indexOf(
             stash.staker.toHexString()
         );
-
-        if (index > -1) {
-            let delegators = cluster.delegators;
-            delegators.splice(index, 1);
-            cluster.delegators = delegators;
-        }
+        let delegators = cluster.delegators;
+        delegators.splice(index, 1);
+        cluster.delegators = delegators;
     }
 
     cluster.save();

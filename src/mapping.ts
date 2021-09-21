@@ -167,20 +167,17 @@ export function handleStashSplit(
   let oldStashId = event.params._stashId.toHexString();
   let newStashId = event.params._newStashId.toHexString();
   let oldStash = Stash.load(oldStashId);
-  let newStash = Stash.load(newStashId);
 
-  // this check not necessary
-  if (newStash == null) {
-    newStash = new Stash(newStashId);
-    newStash.stashId = event.params._newStashId;
-    newStash.staker = oldStash.staker;
-    newStash.delegatedCluster = oldStash.delegatedCluster;
-    newStash.tokensDelegatedId = [];
-    newStash.tokensDelegatedAmount = [];
-    newStash.isActive = true;
-    newStash.createdAt = event.block.number;
-    newStash.save();
-  }
+  let newStash = new Stash(newStashId);
+  newStash.stashId = event.params._newStashId;
+  newStash.staker = oldStash.staker;
+  newStash.delegatedCluster = oldStash.delegatedCluster;
+  newStash.tokensDelegatedId = [];
+  newStash.tokensDelegatedAmount = [];
+  newStash.isActive = true;
+  newStash.createdAt = event.block.number;
+  newStash.save();
+
   let tokens = event.params._splitTokens as Bytes[];
   let amounts = event.params._splitAmounts as BigInt[];
   updateStashTokens(oldStashId, tokens, amounts, "withdraw", false);
@@ -259,14 +256,6 @@ export function handleStashDelegated(
     stash.tokensDelegatedAmount as BigInt[],
     "delegated",
   );
-
-  // done in createShashHandler
-  // updateDelegatorTotalDelegation(
-  //   stash.staker,
-  //   stash.tokensDelegatedId as Bytes[],
-  //   stash.tokensDelegatedAmount as BigInt[],
-  //   "delegated",
-  // );
 }
 
 export function handleStashUndelegated(
@@ -409,11 +398,13 @@ export function handleRedelegated(
   let prevCluster = stash.delegatedCluster;
 
   if(stash.delegatedCluster != "") {
+    log.error("Undelegated cluster updateClusterDelegatorInfo", []);
     updateClusterDelegatorInfo(
-      event.params.stashId.toHexString(),
+      id,
       prevCluster,
       "undelegated",
     );
+    log.error("Undelegated cluster complete updateClusterDelegatorInfo", []);
   } else {
     updateDelegatorTotalDelegation(
       stash.staker,
@@ -432,8 +423,8 @@ export function handleRedelegated(
   stash.save();
 
   updateClusterDelegatorInfo(
-    event.params.stashId.toHexString(),
-    event.params.updatedCluster.toHexString(),
+    id,
+    stash.delegatedCluster,
     "delegated",
   );
   
