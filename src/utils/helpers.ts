@@ -1,4 +1,5 @@
 import {
+    log,
     Bytes,
     BigInt,
     store,
@@ -23,9 +24,11 @@ import {
 } from '../../generated/RewardDelegators/RewardDelegators';
 import {
     BIGINT_ZERO,
+    ZERO_ADDRESS,
     CLUSTER_REWARDS_ADDRESS,
     REWARD_DELEGATOR_ADDRESS,
     STATUS_NOT_REGISTERED,
+    BIGINT_ONE,
 } from './constants';
 
 let clusterRewardsContract = ClusterRewardsContract.bind(
@@ -41,6 +44,7 @@ export function updateStashTokens(
     tokens: Bytes[],
     amounts: BigInt[],
     action: string,
+    updateTotalDele: boolean,
 ): void {
     let stash = Stash.load(stashId);
     let delegatedCluster = stash.delegatedCluster;
@@ -94,14 +98,10 @@ export function updateStashTokens(
 
             stash.tokensDelegatedAmount = tokensDelegatedAmount;
         }
+        
+        tokenData.save();
 
-        if (tokenData.amount == BIGINT_ZERO) {
-            store.remove("TokenData", tokenDataId);
-        } else {
-            tokenData.save();
-        }
-
-        if (delegatedCluster.length > 0) {
+        if (delegatedCluster.length > 0 && updateTotalDele) {
             updateDelegatorTokens(
                 stash.staker.toHexString(),
                 tokens[i].toHexString(),
@@ -131,7 +131,22 @@ export function updateClusterDelegatorInfo(
     operation: string,
 ): void {
     let stash = Stash.load(stashId);
-    let cluster = Cluster.load(stash.delegatedCluster);
+    let cluster = Cluster.load(clusterId);
+    if (cluster == null) {
+        cluster = new Cluster(clusterId);
+        cluster.commission = BIGINT_ZERO;
+        cluster.rewardAddress = null;
+        cluster.clientKey = null;
+        cluster.networkId = null;
+        cluster.status = STATUS_NOT_REGISTERED;
+        cluster.delegators = [];
+        cluster.pendingRewards = BIGINT_ZERO;
+        cluster.updatedNetwork = null;
+        cluster.networkUpdatesAt = BIGINT_ZERO;
+        cluster.updatedCommission = null;
+        cluster.commissionUpdatesAt = BIGINT_ZERO;
+        cluster.clusterUnregistersAt = BIGINT_ZERO;
+    }
 
     let tokens = stash.tokensDelegatedId as Bytes[];
     let amounts = stash.tokensDelegatedAmount as BigInt[];
@@ -144,12 +159,9 @@ export function updateClusterDelegatorInfo(
         let index = cluster.delegators.indexOf(
             stash.staker.toHexString()
         );
-
-        if (index > -1) {
-            let delegators = cluster.delegators;
-            delegators.splice(index, 1);
-            cluster.delegators = delegators;
-        }
+        let delegators = cluster.delegators;
+        delegators.splice(index, 1);
+        cluster.delegators = delegators;
     }
 
     cluster.save();
@@ -172,6 +184,10 @@ export function updateClusterDelegation(
         for (let i = 0; i < tokens.length; i++) {
             let id = tokens[i].toHexString() + clusterId;
             let delegation = Delegation.load(id);
+            if(amounts[i] == BIGINT_ZERO) {
+                log.warning("amount works", [amounts[i].toString()]);
+                continue;
+            }
 
             if (delegation == null) {
                 delegation = new Delegation(id);
@@ -191,6 +207,10 @@ export function updateClusterDelegation(
             let id = tokens[i].toHexString() + clusterId;
 
             let delegation = Delegation.load(id);
+
+            if(delegation == null && amounts[i] == BIGINT_ZERO) {
+                continue;
+            }
 
             delegation.amount = delegation.amount.minus(
                 amounts[i]
@@ -238,6 +258,7 @@ export function updateDelegatorTokens(
         delegator.totalPendingReward = BIGINT_ZERO;
         delegator.stashes = [];
         delegator.totalRewardsClaimed = BIGINT_ZERO;
+        delegator.clusters = [];
         delegator.save();
     }
 
@@ -246,6 +267,8 @@ export function updateDelegatorTokens(
 
     if (action === "add") {
         if (delegatorToken == null) {
+            log.warning(
+                "=================== delegatorToken is null {}", [delegatorTokenId]);
             delegatorToken = new DelegatorToken(delegatorTokenId);
             delegatorToken.delegator = delegatorId;
             delegatorToken.token = token;
@@ -255,12 +278,15 @@ export function updateDelegatorTokens(
         delegatorToken.amount = delegatorToken.amount.plus(
             amount
         );
-    } else if (action == "withdraw") {
+    } else if (action === "withdraw") {
+        // log.error(
+        //     "=================== delegatorToken is null {}", [delegatorToken.amount.toString()]);
         delegatorToken.amount = delegatorToken.amount.minus(
             amount
         );
     }
 
+    // if delegatorToken.amount is null then its not comparable to BIGINT_ZERO
     if (delegatorToken.amount == BIGINT_ZERO) {
         store.remove("DelegatorToken", delegatorTokenId);
     } else {
@@ -321,12 +347,16 @@ export function updateNetworkClustersReward(
     for (let i = 0; i < clusters.length; i++) {
         let cluster = Cluster.load(clusters[i]);
 
-        let reward = clusterRewardsContract.clusterRewards(
+        let result = clusterRewardsContract.try_clusterRewards(
             Address.fromString(
                 clusters[i]
             )
         );
 
+        let reward = BIGINT_ZERO;
+        if (!result.reverted) {
+            reward = result.value;
+        }
         cluster.pendingRewards = (reward.times(cluster.commission))
             .div(BigInt.fromI32(100));
 
@@ -383,16 +413,16 @@ export function updateClusterDelegatorsReward(
 export function updateAllClustersList(
     clusterId: Bytes
 ): void {
-    let state = State.load("clusters");
+    let state = State.load("state");
     if (state == null) {
-        state = new State("clusters");
+        state = new State("state");
         state.clusters = [];
+        state.activeClusterCount = BIGINT_ZERO;
     }
 
     let clusters = state.clusters;
     clusters.push(clusterId.toHexString());
     state.clusters = clusters;
-
     state.save();
 }
 
@@ -449,9 +479,25 @@ export function updateClustersInfo(
                     clusters[i],
                     "unregistered",
                 );
+                updateActiveClusterCount("unregister");
             }
 
             cluster.save();
         };
     }
+}
+
+export function updateActiveClusterCount(operation: string): void {
+    let state = State.load("state");
+    if (state == null) {
+        state = new State("state");
+        state.clusters = [];
+        state.activeClusterCount = BIGINT_ZERO;
+    }
+    if (operation == "register") {
+        state.activeClusterCount = state.activeClusterCount.plus(BIGINT_ONE);
+    } else {
+        state.activeClusterCount = state.activeClusterCount.minus(BIGINT_ONE);
+    }
+    state.save();
 }

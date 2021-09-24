@@ -56,6 +56,10 @@ dataSources:
       eventHandlers:
         - event: StashCreated(indexed address,bytes32,uint256,bytes32[],uint256[])
           handler: handleStashCreated
+        - event: StashSplit(bytes32,bytes32,uint256,bytes32[],uint256[])
+          handler: handleStashSplit
+        - event: StashesMerged(bytes32,bytes32)
+          handler: handleStashesMerged
         - event: StashDelegated(bytes32,address)
           handler: handleStashDelegated
         - event: StashUndelegated(bytes32,address,uint256)
@@ -76,6 +80,14 @@ dataSources:
           handler: handleRedelegationRequested
         - event: Redelegated(bytes32,address)
           handler: handleRedelegated
+        - event: RedelegationCancelled(indexed bytes32)
+          handler: handleRedelegationCancelled
+        - event: StashUndelegationCancelled(bytes32)
+          handler: handleStashUndelegationCancelled
+        - event: UndelegationWaitTimeUpdated(uint256)
+          handler: handleUndelegationWaitTimeUpdated
+        - event: LockTimeUpdated(bytes32,uint256,uint256)
+          handler: handleLockTimeUpdated
   - kind: ethereum/contract
     name: ClusterRewards
     network: mainnet

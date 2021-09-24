@@ -22,17 +22,17 @@ dataSources:
         - name: ClusterRegistry
           file: ./abis/ClusterRegistry.json
       eventHandlers:
-        - event: ClusterRegistered(address,bytes32,uint256,address,address)
+        - event: ClusterRegistered(indexed address,indexed bytes32,uint256,address,address)
           handler: handleClusterRegistered
-        - event: RewardAddressUpdated(address,address)
+        - event: RewardAddressUpdated(indexed address,address)
           handler: handleRewardAddressUpdated
-        - event: ClientKeyUpdated(address,address)
+        - event: ClientKeyUpdated(indexed address,address)
           handler: handleClientKeyUpdated
-        - event: CommissionUpdateRequested(address,uint256,uint256)
+        - event: CommissionUpdateRequested(indexed address,uint256,uint256)
           handler: handleCommissionUpdateRequested
-        - event: NetworkSwitchRequested(address,bytes32,uint256)
+        - event: NetworkSwitchRequested(indexed address,indexed bytes32,uint256)
           handler: handleNetworkSwitchRequested
-        - event: ClusterUnregisterRequested(address,uint256)
+        - event: ClusterUnregisterRequested(indexed address,uint256)
           handler: handleClusterUnregisterRequested
       # blockHandlers:
       #   - handler: handleBlock
@@ -56,6 +56,10 @@ dataSources:
       eventHandlers:
         - event: StashCreated(indexed address,bytes32,uint256,bytes32[],uint256[])
           handler: handleStashCreated
+        - event: StashSplit(bytes32,bytes32,uint256,bytes32[],uint256[])
+          handler: handleStashSplit
+        - event: StashesMerged(bytes32,bytes32)
+          handler: handleStashesMerged
         - event: StashDelegated(bytes32,address)
           handler: handleStashDelegated
         - event: StashUndelegated(bytes32,address,uint256)
@@ -76,6 +80,14 @@ dataSources:
           handler: handleRedelegationRequested
         - event: Redelegated(bytes32,address)
           handler: handleRedelegated
+        - event: RedelegationCancelled(indexed bytes32)
+          handler: handleRedelegationCancelled
+        - event: StashUndelegationCancelled(bytes32)
+          handler: handleStashUndelegationCancelled
+        - event: UndelegationWaitTimeUpdated(uint256)
+          handler: handleUndelegationWaitTimeUpdated
+        - event: LockTimeUpdated(bytes32,uint256,uint256)
+          handler: handleLockTimeUpdated
   - kind: ethereum/contract
     name: ClusterRewards
     network: kovan
@@ -96,13 +108,13 @@ dataSources:
         - name: RewardDelegators
           file: ./abis/RewardDelegators.json
       eventHandlers:
-        - event: NetworkAdded(bytes32,uint256)
+        - event: NetworkAdded(indexed bytes32,uint256)
           handler: handleNetworkAdded
-        - event: NetworkRemoved(bytes32)
+        - event: NetworkRemoved(indexed bytes32)
           handler: handleNetworkRemoved
-        - event: NetworkRewardUpdated(bytes32,uint256)
+        - event: NetworkRewardUpdated(indexed bytes32,uint256)
           handler: handleNetworkRewardUpdated
-        - event: ClusterRewarded(bytes32)
+        - event: ClusterRewarded(indexed bytes32)
           handler: handleClusterRewarded
   - kind: ethereum/contract
     name: RewardDelegators
@@ -122,13 +134,13 @@ dataSources:
         - name: RewardDelegators
           file: ./abis/RewardDelegators.json
       eventHandlers:
-        - event: AddReward(bytes32,uint256)
+        - event: AddReward(indexed bytes32,uint256)
           handler: handleAddReward
-        - event: RemoveReward(bytes32)
+        - event: RemoveReward(indexed bytes32)
           handler: handleRemoveReward
-        - event: RewardsUpdated(bytes32,uint256)
+        - event: RewardsUpdated(indexed bytes32,uint256)
           handler: handleRewardsUpdated
-        - event: ClusterRewardDistributed(address)
+        - event: ClusterRewardDistributed(indexed address)
           handler: handleClusterRewardDistributed
-        - event: RewardsWithdrawn(address,address,bytes32[],uint256)
+        - event: RewardsWithdrawn(indexed address,indexed address,bytes32[],uint256)
           handler: handleRewardsWithdrawn
