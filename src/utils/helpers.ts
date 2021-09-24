@@ -184,6 +184,10 @@ export function updateClusterDelegation(
         for (let i = 0; i < tokens.length; i++) {
             let id = tokens[i].toHexString() + clusterId;
             let delegation = Delegation.load(id);
+            if(amounts[i] == BIGINT_ZERO) {
+                log.warning("amount works", [amounts[i].toString()]);
+                continue;
+            }
 
             if (delegation == null) {
                 delegation = new Delegation(id);
@@ -203,6 +207,10 @@ export function updateClusterDelegation(
             let id = tokens[i].toHexString() + clusterId;
 
             let delegation = Delegation.load(id);
+
+            if(delegation == null && amounts[i] == BIGINT_ZERO) {
+                continue;
+            }
 
             delegation.amount = delegation.amount.minus(
                 amounts[i]
