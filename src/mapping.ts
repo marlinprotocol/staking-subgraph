@@ -574,7 +574,8 @@ export function handleClusterRewarded(
 ): void {
   handleBlock(event.block);
   let id = event.params.networkId.toHexString();
-  updateNetworkClustersReward(id);
+
+  updateNetworkClustersReward(id, event.address);
 }
 
 export function handleClusterRewardDistributed(
@@ -625,9 +626,7 @@ export function handleRewardsWithdrawn(
   delegatorReward.save();
 
   let delegator = Delegator.load(delegatorId);
-  let amount = delegator.totalPendingReward.ge(
-    event.params.rewards
-  ) ? event.params.rewards : BIGINT_ZERO;
+  let amount = event.params.rewards;
 
   delegator.totalPendingReward = delegator
     .totalPendingReward.minus(amount);

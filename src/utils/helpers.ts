@@ -25,15 +25,10 @@ import {
 import {
     BIGINT_ZERO,
     ZERO_ADDRESS,
-    CLUSTER_REWARDS_ADDRESS,
     REWARD_DELEGATOR_ADDRESS,
     STATUS_NOT_REGISTERED,
     BIGINT_ONE,
 } from './constants';
-
-let clusterRewardsContract = ClusterRewardsContract.bind(
-    CLUSTER_REWARDS_ADDRESS
-);
 
 let rewardDelegatorContract = RewardDelegatorsContract.bind(
     REWARD_DELEGATOR_ADDRESS
@@ -279,8 +274,9 @@ export function updateDelegatorTokens(
             amount
         );
     } else if (action === "withdraw") {
-        // log.error(
-        //     "=================== delegatorToken is null {}", [delegatorToken.amount.toString()]);
+        if(delegatorToken == null && amount == BIGINT_ZERO) {
+            return;
+        }
         delegatorToken.amount = delegatorToken.amount.minus(
             amount
         );
@@ -341,9 +337,11 @@ export function updateNetworkClusters(
 
 export function updateNetworkClustersReward(
     networkId: string,
+    clusterRewardsAddress: Address
 ): void {
     let network = Network.load(networkId);
     let clusters = network.clusters as string[];
+    let clusterRewardsContract = ClusterRewardsContract.bind(clusterRewardsAddress);
     for (let i = 0; i < clusters.length; i++) {
         let cluster = Cluster.load(clusters[i]);
 
@@ -395,17 +393,17 @@ export function updateClusterDelegatorsReward(
         let reward = BIGINT_ZERO;
         if (!result.reverted) {
             reward = result.value;
+        } else {
+            let delegator = Delegator.load(delegators[i]);
+
+            delegator.totalPendingReward = delegator
+                .totalPendingReward.plus(reward)
+                .minus(delegatorReward.amount);
+
+            delegatorReward.amount = reward;
+            delegator.save();
         }
 
-        let delegator = Delegator.load(delegators[i]);
-
-        delegator.totalPendingReward = delegator
-            .totalPendingReward.plus(reward)
-            .minus(delegatorReward.amount);
-
-        delegatorReward.amount = reward;
-
-        delegator.save();
         delegatorReward.save();
     }
 };
