@@ -628,6 +628,11 @@ export function handleRewardsWithdrawn(
   let delegator = Delegator.load(delegatorId);
   let amount = event.params.rewards;
 
+  if(delegator.totalPendingReward.lt(amount)) {
+    log.warning("Amount more than pending reward is withdrawn", [delegator.totalPendingReward.toString(), amount.toString()])
+    amount = delegator.totalPendingReward;
+  }
+
   delegator.totalPendingReward = delegator
     .totalPendingReward.minus(amount);
   delegator.totalRewardsClaimed = delegator.totalRewardsClaimed.plus(amount);

@@ -345,16 +345,13 @@ export function updateNetworkClustersReward(
     for (let i = 0; i < clusters.length; i++) {
         let cluster = Cluster.load(clusters[i]);
 
-        let result = clusterRewardsContract.try_clusterRewards(
+        let result = clusterRewardsContract.clusterRewards(
             Address.fromString(
                 clusters[i]
             )
         );
 
-        let reward = BIGINT_ZERO;
-        if (!result.reverted) {
-            reward = result.value;
-        }
+        let reward = result;
         cluster.pendingRewards = (reward.times(cluster.commission))
             .div(BigInt.fromI32(100));
 
@@ -390,10 +387,8 @@ export function updateClusterDelegatorsReward(
             Address.fromString(clusterId)
         );
 
-        let reward = BIGINT_ZERO;
         if (!result.reverted) {
-            reward = result.value;
-        } else {
+            let reward = result.value;
             let delegator = Delegator.load(delegators[i]);
 
             delegator.totalPendingReward = delegator
