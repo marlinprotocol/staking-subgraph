@@ -25,14 +25,10 @@ import {
 import {
     BIGINT_ZERO,
     ZERO_ADDRESS,
-    REWARD_DELEGATOR_ADDRESS,
+    getRewardDelegatorAddress,
     STATUS_NOT_REGISTERED,
     BIGINT_ONE,
 } from './constants';
-
-let rewardDelegatorContract = RewardDelegatorsContract.bind(
-    REWARD_DELEGATOR_ADDRESS
-);
 
 export function updateStashTokens(
     stashId: string,
@@ -180,7 +176,6 @@ export function updateClusterDelegation(
             let id = tokens[i].toHexString() + clusterId;
             let delegation = Delegation.load(id);
             if(amounts[i] == BIGINT_ZERO) {
-                log.warning("amount works", [amounts[i].toString()]);
                 continue;
             }
 
@@ -262,8 +257,6 @@ export function updateDelegatorTokens(
 
     if (action === "add") {
         if (delegatorToken == null) {
-            log.warning(
-                "=================== delegatorToken is null {}", [delegatorTokenId]);
             delegatorToken = new DelegatorToken(delegatorTokenId);
             delegatorToken.delegator = delegatorId;
             delegatorToken.token = token;
@@ -357,12 +350,13 @@ export function updateNetworkClustersReward(
 
         cluster.save();
 
-        updateClusterDelegatorsReward(clusters[i]);
+        updateClusterDelegatorsReward(clusters[i], clusterRewardsAddress);
     }
 };
 
 export function updateClusterDelegatorsReward(
     clusterId: string,
+    clusterRewardsAddress: Address
 ): void {
     let cluster = Cluster.load(clusterId);
     let delegators = cluster.delegators as string[];
@@ -381,6 +375,11 @@ export function updateClusterDelegatorsReward(
             delegatorReward.amount = BIGINT_ZERO;
             delegatorReward.delegator = delegators[i];
         }
+
+        let rewardDelegatorContract = RewardDelegatorsContract.bind(
+            getRewardDelegatorAddress(clusterRewardsAddress)
+        );
+        
 
         let result = rewardDelegatorContract.try_withdrawRewards(
             Address.fromString(delegators[i]),

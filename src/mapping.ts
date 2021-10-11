@@ -398,13 +398,11 @@ export function handleRedelegated(
   let prevCluster = stash.delegatedCluster;
 
   if(stash.delegatedCluster != "") {
-    log.error("Undelegated cluster updateClusterDelegatorInfo", []);
     updateClusterDelegatorInfo(
       id,
       prevCluster,
       "undelegated",
     );
-    log.error("Undelegated cluster complete updateClusterDelegatorInfo", []);
   } else {
     updateDelegatorTotalDelegation(
       stash.staker,
