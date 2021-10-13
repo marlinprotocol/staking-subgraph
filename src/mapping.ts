@@ -176,6 +176,8 @@ export function handleStashSplit(
   newStash.tokensDelegatedAmount = [];
   newStash.isActive = true;
   newStash.createdAt = event.block.number;
+  newStash.undelegatesAt = oldStash.undelegatesAt;
+  newStash.undelegationRequestedAt = oldStash.undelegationRequestedAt;
   newStash.save();
 
   let tokens = event.params._splitTokens as Bytes[];
