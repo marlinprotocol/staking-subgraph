@@ -180,6 +180,14 @@ export function handleStashSplit(
   newStash.undelegationRequestedAt = oldStash.undelegationRequestedAt;
   newStash.save();
 
+  if(oldStash.delegatedCluster != "") {
+    let cluster = Cluster.load(oldStash.delegatedCluster);
+    let delegators = cluster.delegators;
+    delegators.push(oldStash.staker.toHexString());
+    cluster.delegators = delegators;
+    cluster.save();
+  }
+
   let tokens = event.params._splitTokens as Bytes[];
   let amounts = event.params._splitAmounts as BigInt[];
   updateStashTokens(oldStashId, tokens, amounts, "withdraw", false);
@@ -215,6 +223,18 @@ export function handleStashesMerged(
     "withdraw",
     false
   );
+  
+  if(stash2.delegatedCluster != "") {
+    // remove one instance of the delegator from cluster
+    let cluster = Cluster.load(stash2.delegatedCluster);
+    let delegators = cluster.delegators;
+    let index = delegators.indexOf(
+        stash2.staker.toHexString()
+    );
+    delegators.splice(index, 1);
+    cluster.delegators = delegators;
+    cluster.save();
+  }
   
   // remove the stash from delegator
   let staker = Stash.load(stashId2).staker;
