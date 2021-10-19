@@ -147,10 +147,10 @@ export function updateClusterDelegatorInfo(
         delegators.push(stash.staker.toHexString());
         cluster.delegators = delegators;
     } else if (operation === "undelegated") {
-        let index = cluster.delegators.indexOf(
+        let delegators = cluster.delegators;
+        let index = delegators.indexOf(
             stash.staker.toHexString()
         );
-        let delegators = cluster.delegators;
         delegators.splice(index, 1);
         cluster.delegators = delegators;
     }
@@ -366,7 +366,7 @@ export function updateClusterDelegatorsReward(
         let delegatorReward = DelegatorReward.load(
             delegatorRewardId
         );
-
+        let delegatorRewardStored = delegatorReward;
         if (delegatorReward == null) {
             delegatorReward = new DelegatorReward(
                 delegatorRewardId
@@ -398,7 +398,13 @@ export function updateClusterDelegatorsReward(
             delegator.save();
         }
 
-        delegatorReward.save();
+        if(delegatorReward.amount.equals(BIGINT_ZERO)) {
+            if(delegatorRewardStored != null) {
+                store.remove('DelegatorReward', delegatorRewardId);
+            }
+        } else {
+            delegatorReward.save();
+        }
     }
 };
 

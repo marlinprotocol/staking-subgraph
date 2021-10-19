@@ -629,7 +629,7 @@ export function handleRewardsWithdrawn(
   let amount = event.params.rewards;
 
   if(delegator.totalPendingReward.lt(amount)) {
-    log.warning("Amount more than pending reward is withdrawn", [delegator.totalPendingReward.toString(), amount.toString()])
+    log.warning("Amount more than pending reward is withdrawn", [delegator.totalPendingReward.toString(), amount.toString(), delegator.address.toString()]);
     amount = delegator.totalPendingReward;
   }
 
