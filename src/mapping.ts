@@ -604,10 +604,15 @@ export function handleClusterRewardDistributed(
   handleBlock(event.block);
   let clusterId = event.params.cluster.toHexString();
   let cluster = Cluster.load(clusterId);
+  let txHash = event.transaction.hash.toHexString();
 
-  let clutserRewardWithdrawl = new RewardWithdrawl(
-    event.transaction.hash.toHexString()
-  );
+  let id = txHash;
+  let clutserRewardWithdrawl = RewardWithdrawl.load(id);
+  while(clutserRewardWithdrawl != null) {
+      id = id + "0";
+      clutserRewardWithdrawl = RewardWithdrawl.load(id);
+  }
+  clutserRewardWithdrawl = new RewardWithdrawl(id);
 
   clutserRewardWithdrawl.isAuto = true;
   
@@ -619,6 +624,7 @@ export function handleClusterRewardDistributed(
   clutserRewardWithdrawl.amount = cluster.pendingRewards;
   clutserRewardWithdrawl.timestamp = event.block.timestamp;
   clutserRewardWithdrawl.delegator = null;
+  clutserRewardWithdrawl.txHash = txHash;
   clutserRewardWithdrawl.save();
 
   cluster.pendingRewards = BIGINT_ZERO;
@@ -657,10 +663,15 @@ export function handleRewardsWithdrawn(
     .totalPendingReward.minus(amount);
   delegator.totalRewardsClaimed = delegator.totalRewardsClaimed.plus(amount);
   delegator.save();
+  let txHash = event.transaction.hash.toHexString();
 
-  let rewardWithdrawl = new RewardWithdrawl(
-    event.transaction.hash.toHexString()
-  );
+  let id = txHash;
+  let rewardWithdrawl = RewardWithdrawl.load(id);
+  while(rewardWithdrawl != null) {
+      id = id + "0";
+      rewardWithdrawl = RewardWithdrawl.load(id);
+  }
+  rewardWithdrawl = new RewardWithdrawl(id);
 
   rewardWithdrawl.isAuto = true;
   
@@ -673,6 +684,7 @@ export function handleRewardsWithdrawn(
   rewardWithdrawl.amount = event.params.rewards;
   rewardWithdrawl.delegator = delegatorId;
   rewardWithdrawl.timestamp = event.block.timestamp;
+  rewardWithdrawl.txHash = txHash;
   rewardWithdrawl.save();
 }
 

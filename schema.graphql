@@ -116,4 +116,5 @@ type RewardWithdrawl @entity {
   delegator: Delegator
   timestamp: BigInt!
   isAuto: Boolean!
+  txHash: String!
 }
