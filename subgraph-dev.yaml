@@ -6,7 +6,7 @@ schema:
 dataSources:
   - kind: ethereum/contract
     name: ClusterRegistry
-    network: kovan
+    network: arbitrum-rinkeby
     source:
       address: "0x0B3a1C61988cBfEAb687A2A8B2A2Ac5109a6b0Ce"
       abi: ClusterRegistry
@@ -38,7 +38,7 @@ dataSources:
       #   - handler: handleBlock
   - kind: ethereum/contract
     name: StakeManager
-    network: kovan
+    network: arbitrum-rinkeby
     source:
       address: "0x6E4601488588D82c47E6b83a1636afAEDd1C566e"
       abi: StakeManager
@@ -90,7 +90,7 @@ dataSources:
           handler: handleLockTimeUpdated
   - kind: ethereum/contract
     name: ClusterRewards
-    network: kovan
+    network: arbitrum-rinkeby
     source:
       address: "0xA83aD48E2c963a2dF6adcC710Ba520a97d237dCc"
       abi: ClusterRewards
@@ -118,7 +118,7 @@ dataSources:
           handler: handleClusterRewarded
   - kind: ethereum/contract
     name: RewardDelegators
-    network: kovan
+    network: arbitrum-rinkeby
     source:
       address: "0x802E91F47e09E23eB253Ffcc97665497e12ec93D"
       abi: RewardDelegators
