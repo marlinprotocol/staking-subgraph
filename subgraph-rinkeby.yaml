@@ -1,0 +1,146 @@
+specVersion: 0.0.2
+description: Marlin Staking Subgraph
+repository: https://github.com/marlinprotocol/staking-subgraph
+schema:
+  file: ./schema.graphql
+dataSources:
+  - kind: ethereum/contract
+    name: ClusterRegistry
+    network: rinkeby
+    source:
+      address: "0xf7273443ac05D6B90c08ac300257E068c91D34Cc"
+      abi: ClusterRegistry
+      startBlock: 9611000
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.4
+      language: wasm/assemblyscript
+      file: ./src/mapping.ts
+      entities:
+        - Cluster
+      abis:
+        - name: ClusterRegistry
+          file: ./abis/ClusterRegistry.json
+      eventHandlers:
+        - event: ClusterRegistered(address,bytes32,uint256,address,address)
+          handler: handleClusterRegistered
+        - event: RewardAddressUpdated(address,address)
+          handler: handleRewardAddressUpdated
+        - event: ClientKeyUpdated(address,address)
+          handler: handleClientKeyUpdated
+        - event: CommissionUpdateRequested(address,uint256,uint256)
+          handler: handleCommissionUpdateRequested
+        - event: NetworkSwitchRequested(address,bytes32,uint256)
+          handler: handleNetworkSwitchRequested
+        - event: ClusterUnregisterRequested(address,uint256)
+          handler: handleClusterUnregisterRequested
+      # blockHandlers:
+      #   - handler: handleBlock
+  - kind: ethereum/contract
+    name: StakeManager
+    network: rinkeby
+    source:
+      address: "0xbD3678C4423514AF7Cc9fB61524781F363E63862"
+      abi: StakeManager
+      startBlock: 9611000
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.4
+      language: wasm/assemblyscript
+      file: ./src/mapping.ts
+      entities:
+        - Cluster
+      abis:
+        - name: StakeManager
+          file: ./abis/StakeManager.json
+      eventHandlers:
+        - event: StashCreated(indexed address,bytes32,uint256,bytes32[],uint256[])
+          handler: handleStashCreated
+        - event: StashSplit(bytes32,bytes32,uint256,bytes32[],uint256[])
+          handler: handleStashSplit
+        - event: StashesMerged(bytes32,bytes32)
+          handler: handleStashesMerged
+        - event: StashDelegated(bytes32,address)
+          handler: handleStashDelegated
+        - event: StashUndelegated(bytes32,address,uint256)
+          handler: handleStashUndelegated
+        - event: StashWithdrawn(bytes32,bytes32[],uint256[])
+          handler: handleStashWithdrawn
+        - event: StashClosed(bytes32,indexed address)
+          handler: handleStashClosed
+        - event: AddedToStash(bytes32,address,bytes32[],uint256[])
+          handler: handleAddedToStash
+        - event: TokenAdded(bytes32,address)
+          handler: handleTokenAdded
+        - event: TokenRemoved(bytes32)
+          handler: handleTokenRemoved
+        - event: TokenUpdated(bytes32,address)
+          handler: handleTokenUpdated
+        - event: RedelegationRequested(bytes32,address,address,uint256)
+          handler: handleRedelegationRequested
+        - event: Redelegated(bytes32,address)
+          handler: handleRedelegated
+        - event: RedelegationCancelled(indexed bytes32)
+          handler: handleRedelegationCancelled
+        - event: StashUndelegationCancelled(bytes32)
+          handler: handleStashUndelegationCancelled
+        - event: UndelegationWaitTimeUpdated(uint256)
+          handler: handleUndelegationWaitTimeUpdated
+        - event: LockTimeUpdated(bytes32,uint256,uint256)
+          handler: handleLockTimeUpdated
+  - kind: ethereum/contract
+    name: ClusterRewards
+    network: rinkeby
+    source:
+      address: "0x307D5c72A8bA07B999d71270e3E3614EcD3b2013"
+      abi: ClusterRewards
+      startBlock: 9611000
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.4
+      language: wasm/assemblyscript
+      file: ./src/mapping.ts
+      entities:
+        - Cluster
+      abis:
+        - name: ClusterRewards
+          file: ./abis/ClusterRewards.json
+        - name: RewardDelegators
+          file: ./abis/RewardDelegators.json
+      eventHandlers:
+        - event: NetworkAdded(bytes32,uint256)
+          handler: handleNetworkAdded
+        - event: NetworkRemoved(bytes32)
+          handler: handleNetworkRemoved
+        - event: NetworkRewardUpdated(bytes32,uint256)
+          handler: handleNetworkRewardUpdated
+        - event: ClusterRewarded(bytes32)
+          handler: handleClusterRewarded
+  - kind: ethereum/contract
+    name: RewardDelegators
+    network: rinkeby
+    source:
+      address: "0xAd805cF042A3758c3BF424238f8e2A8eA1F5cC3b"
+      abi: RewardDelegators
+      startBlock: 9611000
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.4
+      language: wasm/assemblyscript
+      file: ./src/mapping.ts
+      entities:
+        - Cluster
+      abis:
+        - name: RewardDelegators
+          file: ./abis/RewardDelegators.json
+      eventHandlers:
+        - event: AddReward(bytes32,uint256)
+          handler: handleAddReward
+        - event: RemoveReward(bytes32)
+          handler: handleRemoveReward
+        - event: RewardsUpdated(bytes32,uint256)
+          handler: handleRewardsUpdated
+        - event: ClusterRewardDistributed(address)
+          handler: handleClusterRewardDistributed
+        - event: RewardsWithdrawn(address,address,bytes32[],uint256)
+          handler: handleRewardsWithdrawn
