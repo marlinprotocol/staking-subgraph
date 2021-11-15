@@ -1,1072 +1,963 @@
-[
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "bytes32",
-        "name": "stashId",
-        "type": "bytes32"
-      },
-      {
-        "indexed": false,
-        "internalType": "address",
-        "name": "delegatedCluster",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "bytes32[]",
-        "name": "tokens",
-        "type": "bytes32[]"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256[]",
-        "name": "amounts",
-        "type": "uint256[]"
-      }
-    ],
-    "name": "AddedToStash",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "bytes32",
-        "name": "selector",
-        "type": "bytes32"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "prevLockTime",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "updatedLockTime",
-        "type": "uint256"
-      }
-    ],
-    "name": "LockTimeUpdated",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "previousOwner",
-        "type": "address"
-      },
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "newOwner",
-        "type": "address"
-      }
-    ],
-    "name": "OwnershipTransferred",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "bytes32",
-        "name": "stashId",
-        "type": "bytes32"
-      },
-      {
-        "indexed": false,
-        "internalType": "address",
-        "name": "updatedCluster",
-        "type": "address"
-      }
-    ],
-    "name": "Redelegated",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "bytes32",
-        "name": "_stashId",
-        "type": "bytes32"
-      }
-    ],
-    "name": "RedelegationCancelled",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "bytes32",
-        "name": "stashId",
-        "type": "bytes32"
-      },
-      {
-        "indexed": false,
-        "internalType": "address",
-        "name": "currentCluster",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "address",
-        "name": "updatedCluster",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "redelegatesAt",
-        "type": "uint256"
-      }
-    ],
-    "name": "RedelegationRequested",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "bytes32",
-        "name": "stashId",
-        "type": "bytes32"
-      },
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "staker",
-        "type": "address"
-      }
-    ],
-    "name": "StashClosed",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "creator",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "bytes32",
-        "name": "stashId",
-        "type": "bytes32"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "stashIndex",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "bytes32[]",
-        "name": "tokens",
-        "type": "bytes32[]"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256[]",
-        "name": "amounts",
-        "type": "uint256[]"
-      }
-    ],
-    "name": "StashCreated",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "bytes32",
-        "name": "stashId",
-        "type": "bytes32"
-      },
-      {
-        "indexed": false,
-        "internalType": "address",
-        "name": "delegatedCluster",
-        "type": "address"
-      }
-    ],
-    "name": "StashDelegated",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "bytes32",
-        "name": "_newStashId",
-        "type": "bytes32"
-      },
-      {
-        "indexed": false,
-        "internalType": "bytes32",
-        "name": "_stashId",
-        "type": "bytes32"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "_stashIndex",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "bytes32[]",
-        "name": "_splitTokens",
-        "type": "bytes32[]"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256[]",
-        "name": "_splitAmounts",
-        "type": "uint256[]"
-      }
-    ],
-    "name": "StashSplit",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "bytes32",
-        "name": "stashId",
-        "type": "bytes32"
-      },
-      {
-        "indexed": false,
-        "internalType": "address",
-        "name": "undelegatedCluster",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "undelegatesAt",
-        "type": "uint256"
-      }
-    ],
-    "name": "StashUndelegated",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "bytes32",
-        "name": "_stashId",
-        "type": "bytes32"
-      }
-    ],
-    "name": "StashUndelegationCancelled",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "bytes32",
-        "name": "stashId",
-        "type": "bytes32"
-      },
-      {
-        "indexed": false,
-        "internalType": "bytes32[]",
-        "name": "tokens",
-        "type": "bytes32[]"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256[]",
-        "name": "amounts",
-        "type": "uint256[]"
-      }
-    ],
-    "name": "StashWithdrawn",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "bytes32",
-        "name": "_stashId1",
-        "type": "bytes32"
-      },
-      {
-        "indexed": false,
-        "internalType": "bytes32",
-        "name": "_stashId2",
-        "type": "bytes32"
-      }
-    ],
-    "name": "StashesMerged",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "bytes32",
-        "name": "tokenId",
-        "type": "bytes32"
-      },
-      {
-        "indexed": false,
-        "internalType": "address",
-        "name": "tokenAddress",
-        "type": "address"
-      }
-    ],
-    "name": "TokenAdded",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "bytes32",
-        "name": "tokenId",
-        "type": "bytes32"
-      }
-    ],
-    "name": "TokenRemoved",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "bytes32",
-        "name": "tokenId",
-        "type": "bytes32"
-      },
-      {
-        "indexed": false,
-        "internalType": "address",
-        "name": "tokenAddress",
-        "type": "address"
-      }
-    ],
-    "name": "TokenUpdated",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "undelegationWaitTime",
-        "type": "uint256"
-      }
-    ],
-    "name": "UndelegationWaitTimeUpdated",
-    "type": "event"
-  },
-  {
-    "constant": true,
-    "inputs": [],
-    "name": "isOwner",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "",
-        "type": "bool"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "constant": true,
-    "inputs": [
-      {
-        "internalType": "bytes32",
-        "name": "",
-        "type": "bytes32"
-      }
-    ],
-    "name": "lockWaitTime",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "constant": true,
-    "inputs": [
-      {
-        "internalType": "bytes32",
-        "name": "",
-        "type": "bytes32"
-      }
-    ],
-    "name": "locks",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "unlockBlock",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "iValue",
-        "type": "uint256"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "constant": true,
-    "inputs": [],
-    "name": "owner",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "constant": false,
-    "inputs": [],
-    "name": "renounceOwnership",
-    "outputs": [],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "constant": true,
-    "inputs": [],
-    "name": "rewardDelegators",
-    "outputs": [
-      {
-        "internalType": "contract IRewardDelegators",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "constant": true,
-    "inputs": [],
-    "name": "stashIndex",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "constant": true,
-    "inputs": [
-      {
-        "internalType": "bytes32",
-        "name": "",
-        "type": "bytes32"
-      }
-    ],
-    "name": "stashes",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "staker",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "delegatedCluster",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "undelegatesAt",
-        "type": "uint256"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "constant": false,
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "newOwner",
-        "type": "address"
-      }
-    ],
-    "name": "transferOwnership",
-    "outputs": [],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "constant": true,
-    "inputs": [],
+[{
+  "anonymous": false,
+  "inputs": [{
+      "indexed": false,
+      "internalType": "bytes32",
+      "name": "stashId",
+      "type": "bytes32"
+    },
+    {
+      "indexed": false,
+      "internalType": "address",
+      "name": "delegatedCluster",
+      "type": "address"
+    },
+    {
+      "indexed": false,
+      "internalType": "bytes32[]",
+      "name": "tokens",
+      "type": "bytes32[]"
+    },
+    {
+      "indexed": false,
+      "internalType": "uint256[]",
+      "name": "amounts",
+      "type": "uint256[]"
+    }
+  ],
+  "name": "AddedToStash",
+  "type": "event"
+},
+{
+  "anonymous": false,
+  "inputs": [{
+      "indexed": false,
+      "internalType": "address",
+      "name": "previousAdmin",
+      "type": "address"
+    },
+    {
+      "indexed": false,
+      "internalType": "address",
+      "name": "newAdmin",
+      "type": "address"
+    }
+  ],
+  "name": "AdminChanged",
+  "type": "event"
+},
+{
+  "anonymous": false,
+  "inputs": [{
+    "indexed": true,
+    "internalType": "address",
+    "name": "beacon",
+    "type": "address"
+  }],
+  "name": "BeaconUpgraded",
+  "type": "event"
+},
+{
+  "anonymous": false,
+  "inputs": [{
+      "indexed": false,
+      "internalType": "bytes32",
+      "name": "selector",
+      "type": "bytes32"
+    },
+    {
+      "indexed": false,
+      "internalType": "uint256",
+      "name": "prevLockTime",
+      "type": "uint256"
+    },
+    {
+      "indexed": false,
+      "internalType": "uint256",
+      "name": "updatedLockTime",
+      "type": "uint256"
+    }
+  ],
+  "name": "LockTimeUpdated",
+  "type": "event"
+},
+{
+  "anonymous": false,
+  "inputs": [{
+      "indexed": true,
+      "internalType": "address",
+      "name": "previousOwner",
+      "type": "address"
+    },
+    {
+      "indexed": true,
+      "internalType": "address",
+      "name": "newOwner",
+      "type": "address"
+    }
+  ],
+  "name": "OwnershipTransferred",
+  "type": "event"
+},
+{
+  "anonymous": false,
+  "inputs": [{
+      "indexed": false,
+      "internalType": "bytes32",
+      "name": "stashId",
+      "type": "bytes32"
+    },
+    {
+      "indexed": false,
+      "internalType": "address",
+      "name": "updatedCluster",
+      "type": "address"
+    }
+  ],
+  "name": "Redelegated",
+  "type": "event"
+},
+{
+  "anonymous": false,
+  "inputs": [{
+    "indexed": true,
+    "internalType": "bytes32",
+    "name": "_stashId",
+    "type": "bytes32"
+  }],
+  "name": "RedelegationCancelled",
+  "type": "event"
+},
+{
+  "anonymous": false,
+  "inputs": [{
+      "indexed": false,
+      "internalType": "bytes32",
+      "name": "stashId",
+      "type": "bytes32"
+    },
+    {
+      "indexed": false,
+      "internalType": "address",
+      "name": "currentCluster",
+      "type": "address"
+    },
+    {
+      "indexed": false,
+      "internalType": "address",
+      "name": "updatedCluster",
+      "type": "address"
+    },
+    {
+      "indexed": false,
+      "internalType": "uint256",
+      "name": "redelegatesAt",
+      "type": "uint256"
+    }
+  ],
+  "name": "RedelegationRequested",
+  "type": "event"
+},
+{
+  "anonymous": false,
+  "inputs": [{
+      "indexed": false,
+      "internalType": "bytes32",
+      "name": "stashId",
+      "type": "bytes32"
+    },
+    {
+      "indexed": true,
+      "internalType": "address",
+      "name": "staker",
+      "type": "address"
+    }
+  ],
+  "name": "StashClosed",
+  "type": "event"
+},
+{
+  "anonymous": false,
+  "inputs": [{
+      "indexed": true,
+      "internalType": "address",
+      "name": "creator",
+      "type": "address"
+    },
+    {
+      "indexed": false,
+      "internalType": "bytes32",
+      "name": "stashId",
+      "type": "bytes32"
+    },
+    {
+      "indexed": false,
+      "internalType": "uint256",
+      "name": "stashIndex",
+      "type": "uint256"
+    },
+    {
+      "indexed": false,
+      "internalType": "bytes32[]",
+      "name": "tokens",
+      "type": "bytes32[]"
+    },
+    {
+      "indexed": false,
+      "internalType": "uint256[]",
+      "name": "amounts",
+      "type": "uint256[]"
+    }
+  ],
+  "name": "StashCreated",
+  "type": "event"
+},
+{
+  "anonymous": false,
+  "inputs": [{
+      "indexed": false,
+      "internalType": "bytes32",
+      "name": "stashId",
+      "type": "bytes32"
+    },
+    {
+      "indexed": false,
+      "internalType": "address",
+      "name": "delegatedCluster",
+      "type": "address"
+    }
+  ],
+  "name": "StashDelegated",
+  "type": "event"
+},
+{
+  "anonymous": false,
+  "inputs": [{
+      "indexed": false,
+      "internalType": "bytes32",
+      "name": "_newStashId",
+      "type": "bytes32"
+    },
+    {
+      "indexed": false,
+      "internalType": "bytes32",
+      "name": "_stashId",
+      "type": "bytes32"
+    },
+    {
+      "indexed": false,
+      "internalType": "uint256",
+      "name": "_stashIndex",
+      "type": "uint256"
+    },
+    {
+      "indexed": false,
+      "internalType": "bytes32[]",
+      "name": "_splitTokens",
+      "type": "bytes32[]"
+    },
+    {
+      "indexed": false,
+      "internalType": "uint256[]",
+      "name": "_splitAmounts",
+      "type": "uint256[]"
+    }
+  ],
+  "name": "StashSplit",
+  "type": "event"
+},
+{
+  "anonymous": false,
+  "inputs": [{
+      "indexed": false,
+      "internalType": "bytes32",
+      "name": "stashId",
+      "type": "bytes32"
+    },
+    {
+      "indexed": false,
+      "internalType": "address",
+      "name": "undelegatedCluster",
+      "type": "address"
+    },
+    {
+      "indexed": false,
+      "internalType": "uint256",
+      "name": "undelegatesAt",
+      "type": "uint256"
+    }
+  ],
+  "name": "StashUndelegated",
+  "type": "event"
+},
+{
+  "anonymous": false,
+  "inputs": [{
+    "indexed": false,
+    "internalType": "bytes32",
+    "name": "_stashId",
+    "type": "bytes32"
+  }],
+  "name": "StashUndelegationCancelled",
+  "type": "event"
+},
+{
+  "anonymous": false,
+  "inputs": [{
+      "indexed": false,
+      "internalType": "bytes32",
+      "name": "stashId",
+      "type": "bytes32"
+    },
+    {
+      "indexed": false,
+      "internalType": "bytes32[]",
+      "name": "tokens",
+      "type": "bytes32[]"
+    },
+    {
+      "indexed": false,
+      "internalType": "uint256[]",
+      "name": "amounts",
+      "type": "uint256[]"
+    }
+  ],
+  "name": "StashWithdrawn",
+  "type": "event"
+},
+{
+  "anonymous": false,
+  "inputs": [{
+      "indexed": false,
+      "internalType": "bytes32",
+      "name": "_stashId1",
+      "type": "bytes32"
+    },
+    {
+      "indexed": false,
+      "internalType": "bytes32",
+      "name": "_stashId2",
+      "type": "bytes32"
+    }
+  ],
+  "name": "StashesMerged",
+  "type": "event"
+},
+{
+  "anonymous": false,
+  "inputs": [{
+      "indexed": false,
+      "internalType": "bytes32",
+      "name": "tokenId",
+      "type": "bytes32"
+    },
+    {
+      "indexed": false,
+      "internalType": "address",
+      "name": "tokenAddress",
+      "type": "address"
+    }
+  ],
+  "name": "TokenAdded",
+  "type": "event"
+},
+{
+  "anonymous": false,
+  "inputs": [{
+    "indexed": false,
+    "internalType": "bytes32",
+    "name": "tokenId",
+    "type": "bytes32"
+  }],
+  "name": "TokenRemoved",
+  "type": "event"
+},
+{
+  "anonymous": false,
+  "inputs": [{
+      "indexed": false,
+      "internalType": "bytes32",
+      "name": "tokenId",
+      "type": "bytes32"
+    },
+    {
+      "indexed": false,
+      "internalType": "address",
+      "name": "tokenAddress",
+      "type": "address"
+    }
+  ],
+  "name": "TokenUpdated",
+  "type": "event"
+},
+{
+  "anonymous": false,
+  "inputs": [{
+    "indexed": false,
+    "internalType": "uint256",
     "name": "undelegationWaitTime",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "constant": false,
-    "inputs": [
-      {
-        "internalType": "bytes32[]",
-        "name": "_tokenIds",
-        "type": "bytes32[]"
-      },
-      {
-        "internalType": "address[]",
-        "name": "_tokenAddresses",
-        "type": "address[]"
-      },
-      {
-        "internalType": "address",
-        "name": "_MPONDTokenAddress",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "_rewardDelegatorsAddress",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "_owner",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "_undelegationWaitTime",
-        "type": "uint256"
-      }
-    ],
-    "name": "initialize",
-    "outputs": [],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "constant": false,
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "sender",
-        "type": "address"
-      }
-    ],
-    "name": "initialize",
-    "outputs": [],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "constant": false,
-    "inputs": [
-      {
-        "internalType": "bytes32",
-        "name": "_selector",
-        "type": "bytes32"
-      },
-      {
-        "internalType": "uint256",
-        "name": "_updatedWaitTime",
-        "type": "uint256"
-      }
-    ],
-    "name": "updateLockWaitTime",
-    "outputs": [],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "constant": false,
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "_MPONDTokenAddress",
-        "type": "address"
-      }
-    ],
-    "name": "changeMPONDTokenAddress",
-    "outputs": [],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "constant": false,
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "_updatedRewardDelegator",
-        "type": "address"
-      }
-    ],
-    "name": "updateRewardDelegators",
-    "outputs": [],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "constant": false,
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "_undelegationWaitTime",
-        "type": "uint256"
-      }
-    ],
-    "name": "updateUndelegationWaitTime",
-    "outputs": [],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "constant": false,
-    "inputs": [
-      {
-        "internalType": "bytes32",
-        "name": "_tokenId",
-        "type": "bytes32"
-      },
-      {
-        "internalType": "address",
-        "name": "_address",
-        "type": "address"
-      }
-    ],
-    "name": "enableToken",
-    "outputs": [],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "constant": false,
-    "inputs": [
-      {
-        "internalType": "bytes32",
-        "name": "_tokenId",
-        "type": "bytes32"
-      }
-    ],
-    "name": "disableToken",
-    "outputs": [],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "constant": false,
-    "inputs": [
-      {
-        "internalType": "bytes32[]",
-        "name": "_tokens",
-        "type": "bytes32[]"
-      },
-      {
-        "internalType": "uint256[]",
-        "name": "_amounts",
-        "type": "uint256[]"
-      },
-      {
-        "internalType": "address",
-        "name": "_delegatedCluster",
-        "type": "address"
-      }
-    ],
-    "name": "createStashAndDelegate",
-    "outputs": [],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "constant": false,
-    "inputs": [
-      {
-        "internalType": "bytes32[]",
-        "name": "_tokens",
-        "type": "bytes32[]"
-      },
-      {
-        "internalType": "uint256[]",
-        "name": "_amounts",
-        "type": "uint256[]"
-      }
-    ],
-    "name": "createStash",
-    "outputs": [
-      {
-        "internalType": "bytes32",
-        "name": "",
-        "type": "bytes32"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "constant": false,
-    "inputs": [
-      {
-        "internalType": "bytes32",
-        "name": "_stashId",
-        "type": "bytes32"
-      },
-      {
-        "internalType": "bytes32[]",
-        "name": "_tokens",
-        "type": "bytes32[]"
-      },
-      {
-        "internalType": "uint256[]",
-        "name": "_amounts",
-        "type": "uint256[]"
-      }
-    ],
-    "name": "addToStash",
-    "outputs": [],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "constant": false,
-    "inputs": [
-      {
-        "internalType": "bytes32",
-        "name": "_stashId",
-        "type": "bytes32"
-      },
-      {
-        "internalType": "address",
-        "name": "_delegatedCluster",
-        "type": "address"
-      }
-    ],
-    "name": "delegateStash",
-    "outputs": [],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "constant": false,
-    "inputs": [
-      {
-        "internalType": "bytes32",
-        "name": "_stashId",
-        "type": "bytes32"
-      },
-      {
-        "internalType": "address",
-        "name": "_newCluster",
-        "type": "address"
-      }
-    ],
-    "name": "requestStashRedelegation",
-    "outputs": [],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "constant": false,
-    "inputs": [
-      {
-        "internalType": "bytes32[]",
-        "name": "_stashIds",
-        "type": "bytes32[]"
-      },
-      {
-        "internalType": "address[]",
-        "name": "_newClusters",
-        "type": "address[]"
-      }
-    ],
-    "name": "requestStashRedelegations",
-    "outputs": [],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "constant": false,
-    "inputs": [
-      {
-        "internalType": "bytes32",
-        "name": "_stashId",
-        "type": "bytes32"
-      }
-    ],
-    "name": "redelegateStash",
-    "outputs": [],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "constant": false,
-    "inputs": [
-      {
-        "internalType": "bytes32",
-        "name": "_stashId",
-        "type": "bytes32"
-      },
-      {
-        "internalType": "bytes32[]",
-        "name": "_tokens",
-        "type": "bytes32[]"
-      },
-      {
-        "internalType": "uint256[]",
-        "name": "_amounts",
-        "type": "uint256[]"
-      }
-    ],
-    "name": "splitStash",
-    "outputs": [],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "constant": false,
-    "inputs": [
-      {
-        "internalType": "bytes32",
-        "name": "_stashId1",
-        "type": "bytes32"
-      },
-      {
-        "internalType": "bytes32",
-        "name": "_stashId2",
-        "type": "bytes32"
-      }
-    ],
-    "name": "mergeStash",
-    "outputs": [],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "constant": false,
-    "inputs": [
-      {
-        "internalType": "bytes32[]",
-        "name": "_stashIds",
-        "type": "bytes32[]"
-      }
-    ],
-    "name": "redelegateStashes",
-    "outputs": [],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "constant": false,
-    "inputs": [
-      {
-        "internalType": "bytes32",
-        "name": "_stashId",
-        "type": "bytes32"
-      }
-    ],
-    "name": "cancelRedelegation",
-    "outputs": [],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "constant": false,
-    "inputs": [
-      {
-        "internalType": "bytes32",
-        "name": "_stashId",
-        "type": "bytes32"
-      }
-    ],
-    "name": "undelegateStash",
-    "outputs": [],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "constant": false,
-    "inputs": [
-      {
-        "internalType": "bytes32[]",
-        "name": "_stashIds",
-        "type": "bytes32[]"
-      }
-    ],
-    "name": "undelegateStashes",
-    "outputs": [],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "constant": false,
-    "inputs": [
-      {
-        "internalType": "bytes32",
-        "name": "_stashId",
-        "type": "bytes32"
-      },
-      {
-        "internalType": "address",
-        "name": "_delegatedCluster",
-        "type": "address"
-      }
-    ],
-    "name": "cancelUndelegation",
-    "outputs": [],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "constant": false,
-    "inputs": [
-      {
-        "internalType": "bytes32",
-        "name": "_stashId",
-        "type": "bytes32"
-      }
-    ],
-    "name": "withdrawStash",
-    "outputs": [],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "constant": false,
-    "inputs": [
-      {
-        "internalType": "bytes32",
-        "name": "_stashId",
-        "type": "bytes32"
-      },
-      {
-        "internalType": "bytes32[]",
-        "name": "_tokens",
-        "type": "bytes32[]"
-      },
-      {
-        "internalType": "uint256[]",
-        "name": "_amounts",
-        "type": "uint256[]"
-      }
-    ],
-    "name": "withdrawStash",
-    "outputs": [],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "constant": true,
-    "inputs": [
-      {
-        "internalType": "bytes32",
-        "name": "_stashId",
-        "type": "bytes32"
-      },
-      {
-        "internalType": "bytes32",
-        "name": "_tokenId",
-        "type": "bytes32"
-      }
-    ],
-    "name": "getTokenAmountInStash",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  }
+    "type": "uint256"
+  }],
+  "name": "UndelegationWaitTimeUpdated",
+  "type": "event"
+},
+{
+  "anonymous": false,
+  "inputs": [{
+    "indexed": true,
+    "internalType": "address",
+    "name": "implementation",
+    "type": "address"
+  }],
+  "name": "Upgraded",
+  "type": "event"
+},
+{
+  "inputs": [{
+      "internalType": "bytes32",
+      "name": "_stashId",
+      "type": "bytes32"
+    },
+    {
+      "internalType": "bytes32[]",
+      "name": "_tokens",
+      "type": "bytes32[]"
+    },
+    {
+      "internalType": "uint256[]",
+      "name": "_amounts",
+      "type": "uint256[]"
+    }
+  ],
+  "name": "addToStash",
+  "outputs": [],
+  "stateMutability": "nonpayable",
+  "type": "function"
+},
+{
+  "inputs": [{
+    "internalType": "bytes32",
+    "name": "_stashId",
+    "type": "bytes32"
+  }],
+  "name": "cancelRedelegation",
+  "outputs": [],
+  "stateMutability": "nonpayable",
+  "type": "function"
+},
+{
+  "inputs": [{
+      "internalType": "bytes32",
+      "name": "_stashId",
+      "type": "bytes32"
+    },
+    {
+      "internalType": "address",
+      "name": "_delegatedCluster",
+      "type": "address"
+    }
+  ],
+  "name": "cancelUndelegation",
+  "outputs": [],
+  "stateMutability": "nonpayable",
+  "type": "function"
+},
+{
+  "inputs": [{
+    "internalType": "address",
+    "name": "_MPONDTokenAddress",
+    "type": "address"
+  }],
+  "name": "changeMPONDTokenAddress",
+  "outputs": [],
+  "stateMutability": "nonpayable",
+  "type": "function"
+},
+{
+  "inputs": [{
+      "internalType": "bytes32[]",
+      "name": "_tokens",
+      "type": "bytes32[]"
+    },
+    {
+      "internalType": "uint256[]",
+      "name": "_amounts",
+      "type": "uint256[]"
+    }
+  ],
+  "name": "createStash",
+  "outputs": [{
+    "internalType": "bytes32",
+    "name": "",
+    "type": "bytes32"
+  }],
+  "stateMutability": "nonpayable",
+  "type": "function"
+},
+{
+  "inputs": [{
+      "internalType": "bytes32[]",
+      "name": "_tokens",
+      "type": "bytes32[]"
+    },
+    {
+      "internalType": "uint256[]",
+      "name": "_amounts",
+      "type": "uint256[]"
+    },
+    {
+      "internalType": "address",
+      "name": "_delegatedCluster",
+      "type": "address"
+    }
+  ],
+  "name": "createStashAndDelegate",
+  "outputs": [],
+  "stateMutability": "nonpayable",
+  "type": "function"
+},
+{
+  "inputs": [{
+      "internalType": "bytes32",
+      "name": "_stashId",
+      "type": "bytes32"
+    },
+    {
+      "internalType": "address",
+      "name": "_delegatedCluster",
+      "type": "address"
+    }
+  ],
+  "name": "delegateStash",
+  "outputs": [],
+  "stateMutability": "nonpayable",
+  "type": "function"
+},
+{
+  "inputs": [{
+    "internalType": "bytes32",
+    "name": "_tokenId",
+    "type": "bytes32"
+  }],
+  "name": "disableToken",
+  "outputs": [],
+  "stateMutability": "nonpayable",
+  "type": "function"
+},
+{
+  "inputs": [{
+      "internalType": "bytes32",
+      "name": "_tokenId",
+      "type": "bytes32"
+    },
+    {
+      "internalType": "address",
+      "name": "_address",
+      "type": "address"
+    }
+  ],
+  "name": "enableToken",
+  "outputs": [],
+  "stateMutability": "nonpayable",
+  "type": "function"
+},
+{
+  "inputs": [{
+      "internalType": "bytes32",
+      "name": "_stashId",
+      "type": "bytes32"
+    },
+    {
+      "internalType": "bytes32",
+      "name": "_tokenId",
+      "type": "bytes32"
+    }
+  ],
+  "name": "getTokenAmountInStash",
+  "outputs": [{
+    "internalType": "uint256",
+    "name": "",
+    "type": "uint256"
+  }],
+  "stateMutability": "view",
+  "type": "function"
+},
+{
+  "inputs": [{
+      "internalType": "bytes32[]",
+      "name": "_tokenIds",
+      "type": "bytes32[]"
+    },
+    {
+      "internalType": "address[]",
+      "name": "_tokenAddresses",
+      "type": "address[]"
+    },
+    {
+      "internalType": "address",
+      "name": "_MPONDTokenAddress",
+      "type": "address"
+    },
+    {
+      "internalType": "address",
+      "name": "_rewardDelegatorsAddress",
+      "type": "address"
+    },
+    {
+      "internalType": "address",
+      "name": "_owner",
+      "type": "address"
+    },
+    {
+      "internalType": "uint256",
+      "name": "_undelegationWaitTime",
+      "type": "uint256"
+    }
+  ],
+  "name": "initialize",
+  "outputs": [],
+  "stateMutability": "nonpayable",
+  "type": "function"
+},
+{
+  "inputs": [{
+    "internalType": "bytes32",
+    "name": "",
+    "type": "bytes32"
+  }],
+  "name": "lockWaitTime",
+  "outputs": [{
+    "internalType": "uint256",
+    "name": "",
+    "type": "uint256"
+  }],
+  "stateMutability": "view",
+  "type": "function"
+},
+{
+  "inputs": [{
+    "internalType": "bytes32",
+    "name": "",
+    "type": "bytes32"
+  }],
+  "name": "locks",
+  "outputs": [{
+      "internalType": "uint256",
+      "name": "unlockBlock",
+      "type": "uint256"
+    },
+    {
+      "internalType": "uint256",
+      "name": "iValue",
+      "type": "uint256"
+    }
+  ],
+  "stateMutability": "view",
+  "type": "function"
+},
+{
+  "inputs": [{
+      "internalType": "bytes32",
+      "name": "_stashId1",
+      "type": "bytes32"
+    },
+    {
+      "internalType": "bytes32",
+      "name": "_stashId2",
+      "type": "bytes32"
+    }
+  ],
+  "name": "mergeStash",
+  "outputs": [],
+  "stateMutability": "nonpayable",
+  "type": "function"
+},
+{
+  "inputs": [],
+  "name": "owner",
+  "outputs": [{
+    "internalType": "address",
+    "name": "",
+    "type": "address"
+  }],
+  "stateMutability": "view",
+  "type": "function"
+},
+{
+  "inputs": [{
+    "internalType": "bytes32",
+    "name": "_stashId",
+    "type": "bytes32"
+  }],
+  "name": "redelegateStash",
+  "outputs": [],
+  "stateMutability": "nonpayable",
+  "type": "function"
+},
+{
+  "inputs": [{
+    "internalType": "bytes32[]",
+    "name": "_stashIds",
+    "type": "bytes32[]"
+  }],
+  "name": "redelegateStashes",
+  "outputs": [],
+  "stateMutability": "nonpayable",
+  "type": "function"
+},
+{
+  "inputs": [],
+  "name": "renounceOwnership",
+  "outputs": [],
+  "stateMutability": "nonpayable",
+  "type": "function"
+},
+{
+  "inputs": [{
+      "internalType": "bytes32",
+      "name": "_stashId",
+      "type": "bytes32"
+    },
+    {
+      "internalType": "address",
+      "name": "_newCluster",
+      "type": "address"
+    }
+  ],
+  "name": "requestStashRedelegation",
+  "outputs": [],
+  "stateMutability": "nonpayable",
+  "type": "function"
+},
+{
+  "inputs": [{
+      "internalType": "bytes32[]",
+      "name": "_stashIds",
+      "type": "bytes32[]"
+    },
+    {
+      "internalType": "address[]",
+      "name": "_newClusters",
+      "type": "address[]"
+    }
+  ],
+  "name": "requestStashRedelegations",
+  "outputs": [],
+  "stateMutability": "nonpayable",
+  "type": "function"
+},
+{
+  "inputs": [],
+  "name": "rewardDelegators",
+  "outputs": [{
+    "internalType": "contract IRewardDelegators",
+    "name": "",
+    "type": "address"
+  }],
+  "stateMutability": "view",
+  "type": "function"
+},
+{
+  "inputs": [{
+      "internalType": "bytes32",
+      "name": "_stashId",
+      "type": "bytes32"
+    },
+    {
+      "internalType": "bytes32[]",
+      "name": "_tokens",
+      "type": "bytes32[]"
+    },
+    {
+      "internalType": "uint256[]",
+      "name": "_amounts",
+      "type": "uint256[]"
+    }
+  ],
+  "name": "splitStash",
+  "outputs": [],
+  "stateMutability": "nonpayable",
+  "type": "function"
+},
+{
+  "inputs": [],
+  "name": "stashIndex",
+  "outputs": [{
+    "internalType": "uint256",
+    "name": "",
+    "type": "uint256"
+  }],
+  "stateMutability": "view",
+  "type": "function"
+},
+{
+  "inputs": [{
+    "internalType": "bytes32",
+    "name": "",
+    "type": "bytes32"
+  }],
+  "name": "stashes",
+  "outputs": [{
+      "internalType": "address",
+      "name": "staker",
+      "type": "address"
+    },
+    {
+      "internalType": "address",
+      "name": "delegatedCluster",
+      "type": "address"
+    },
+    {
+      "internalType": "uint256",
+      "name": "undelegatesAt",
+      "type": "uint256"
+    }
+  ],
+  "stateMutability": "view",
+  "type": "function"
+},
+{
+  "inputs": [{
+    "internalType": "address",
+    "name": "newOwner",
+    "type": "address"
+  }],
+  "name": "transferOwnership",
+  "outputs": [],
+  "stateMutability": "nonpayable",
+  "type": "function"
+},
+{
+  "inputs": [{
+    "internalType": "bytes32",
+    "name": "_stashId",
+    "type": "bytes32"
+  }],
+  "name": "undelegateStash",
+  "outputs": [],
+  "stateMutability": "nonpayable",
+  "type": "function"
+},
+{
+  "inputs": [{
+    "internalType": "bytes32[]",
+    "name": "_stashIds",
+    "type": "bytes32[]"
+  }],
+  "name": "undelegateStashes",
+  "outputs": [],
+  "stateMutability": "nonpayable",
+  "type": "function"
+},
+{
+  "inputs": [],
+  "name": "undelegationWaitTime",
+  "outputs": [{
+    "internalType": "uint256",
+    "name": "",
+    "type": "uint256"
+  }],
+  "stateMutability": "view",
+  "type": "function"
+},
+{
+  "inputs": [{
+      "internalType": "bytes32",
+      "name": "_selector",
+      "type": "bytes32"
+    },
+    {
+      "internalType": "uint256",
+      "name": "_updatedWaitTime",
+      "type": "uint256"
+    }
+  ],
+  "name": "updateLockWaitTime",
+  "outputs": [],
+  "stateMutability": "nonpayable",
+  "type": "function"
+},
+{
+  "inputs": [{
+    "internalType": "address",
+    "name": "_updatedRewardDelegator",
+    "type": "address"
+  }],
+  "name": "updateRewardDelegators",
+  "outputs": [],
+  "stateMutability": "nonpayable",
+  "type": "function"
+},
+{
+  "inputs": [{
+    "internalType": "uint256",
+    "name": "_undelegationWaitTime",
+    "type": "uint256"
+  }],
+  "name": "updateUndelegationWaitTime",
+  "outputs": [],
+  "stateMutability": "nonpayable",
+  "type": "function"
+},
+{
+  "inputs": [{
+    "internalType": "address",
+    "name": "newImplementation",
+    "type": "address"
+  }],
+  "name": "upgradeTo",
+  "outputs": [],
+  "stateMutability": "nonpayable",
+  "type": "function"
+},
+{
+  "inputs": [{
+      "internalType": "address",
+      "name": "newImplementation",
+      "type": "address"
+    },
+    {
+      "internalType": "bytes",
+      "name": "data",
+      "type": "bytes"
+    }
+  ],
+  "name": "upgradeToAndCall",
+  "outputs": [],
+  "stateMutability": "payable",
+  "type": "function"
+},
+{
+  "inputs": [{
+    "internalType": "bytes32",
+    "name": "_stashId",
+    "type": "bytes32"
+  }],
+  "name": "withdrawStash",
+  "outputs": [],
+  "stateMutability": "nonpayable",
+  "type": "function"
+},
+{
+  "inputs": [{
+      "internalType": "bytes32",
+      "name": "_stashId",
+      "type": "bytes32"
+    },
+    {
+      "internalType": "bytes32[]",
+      "name": "_tokens",
+      "type": "bytes32[]"
+    },
+    {
+      "internalType": "uint256[]",
+      "name": "_amounts",
+      "type": "uint256[]"
+    }
+  ],
+  "name": "withdrawStash",
+  "outputs": [],
+  "stateMutability": "nonpayable",
+  "type": "function"
+}
 ]
