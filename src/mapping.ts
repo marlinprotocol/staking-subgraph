@@ -40,7 +40,8 @@ import {
   RedelegationRequested,
   RedelegationCancelled,
   StashUndelegationCancelled,
-  UndelegationWaitTimeUpdated
+  UndelegationWaitTimeUpdated,
+  StashesBridged
 } from '../generated/StakeManager/StakeManager';
 import {
   NetworkAdded,
@@ -129,6 +130,7 @@ export function handleStashCreated(
   let stash = Stash.load(id);
   if (stash == null) {
     stash = new Stash(id);
+    stash.isBridged = false;
   }
 
   stash.stashId = event.params.stashId;
@@ -178,6 +180,7 @@ export function handleStashSplit(
   newStash.createdAt = event.block.number;
   newStash.undelegatesAt = oldStash.undelegatesAt;
   newStash.undelegationRequestedAt = oldStash.undelegationRequestedAt;
+  newStash.isBridged = false;
   newStash.save();
 
   if(oldStash.delegatedCluster != "") {
@@ -259,6 +262,7 @@ export function handleStashDelegated(
   // is this possible?
   if (stash == null) {
     stash = new Stash(id);
+    stash.isBridged = false;
   }
 
   stash.delegatedCluster = delegatedCluster;
@@ -729,5 +733,18 @@ export function handleBlock(
   if(blockNumber.gt(state.lastUpdatedBlock)) {
     let clusters = state.clusters as string[];
     updateClustersInfo(blockNumber, clusters);
+  }
+}
+
+export function handleStashBridged(
+  event: StashesBridged
+): void {
+  let bridgedStashes = event.params._stashIds;
+  for(let i=0; i < bridgedStashes.length; i++) {
+    let stashId = bridgedStashes[i].toHexString();
+    let stash = Stash.load(stashId);
+
+    stash.isBridged = true;
+    stash.save();
   }
 }
