@@ -88,6 +88,8 @@ dataSources:
           handler: handleUndelegationWaitTimeUpdated
         - event: LockTimeUpdated(bytes32,uint256,uint256)
           handler: handleLockTimeUpdated
+        - event: StashesBridged(indexed uint256,bytes32[])
+          handler: handleStashBridged
   - kind: ethereum/contract
     name: ClusterRewards
     network: mainnet
