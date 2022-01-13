@@ -30,76 +30,117 @@ import {
     BIGINT_ONE,
 } from './constants';
 
-export function updateStashTokens(
+
+export function stashDeposit(
     stashId: string,
     tokens: Bytes[],
     amounts: BigInt[],
-    action: string,
-    updateTotalDele: boolean,
 ): void {
     let stash = Stash.load(stashId);
-    let delegatedCluster = stash.delegatedCluster;
-    let tokensDelegatedId = stash.tokensDelegatedId as Bytes[];
-    let tokensDelegatedAmount = stash.tokensDelegatedAmount as BigInt[];
-    let temp = BIGINT_ZERO;
+    let tokenIds = stash.tokenIds as Bytes[];
 
     for (let i = 0; i < tokens.length; i++) {
         let tokenDataId = tokens[i].toHexString() + stashId;
         let tokenData = TokenData.load(tokenDataId);
 
-        if (action === "add") {
-            if (tokenData == null) {
-                tokenData = new TokenData(tokenDataId);
-                tokenData.token = tokens[i].toHexString();
-                tokenData.stash = stashId;
-                tokenData.amount = BIGINT_ZERO;
-            }
+        if (tokenData == null) {
+            tokenData = new TokenData(tokenDataId);
+            tokenData.token = tokens[i].toHexString();
+            tokenData.stash = stashId;
+            tokenData.amount = BIGINT_ZERO;
 
-            tokenData.amount = tokenData.amount.plus(
-                amounts[i]
-            );
+            tokenIds.push(tokens[i]);
+            stash.tokenIds = tokenIds;
+        }
 
-            if (!tokensDelegatedId.includes(tokens[i])) {
-                tokensDelegatedId.push(tokens[i]);
-                stash.tokensDelegatedId = tokensDelegatedId;
+        tokenData.amount = tokenData.amount.plus(amounts[i]);
 
-                tokensDelegatedAmount.push(amounts[i]);
-                stash.tokensDelegatedAmount = tokensDelegatedAmount;
-            } else {
-                let index = tokensDelegatedId.indexOf(
-                    tokens[i]
-                );
+        tokenData.save();
+    };
 
-                tokensDelegatedAmount[index] = tokensDelegatedAmount[index]
-                    .plus(amounts[i]);
+    stash.save();
+}
 
-                stash.tokensDelegatedAmount = tokensDelegatedAmount;
-            }
-        } else if (action === "withdraw") {
-            tokenData.amount = tokenData.amount.minus(
-                amounts[i]
-            );
+export function stashWithdraw(
+    stashId: string,
+    tokens: Bytes[],
+    amounts: BigInt[],
+): void {
+    let stash = Stash.load(stashId);
 
-            let index = tokensDelegatedId.indexOf(
-                tokens[i]
-            );
+    for (let i = 0; i < tokens.length; i++) {
+        if(amounts[i].equals(BIGINT_ZERO)) continue;
+        let tokenDataId = tokens[i].toHexString() + stashId;
+        let tokenData = TokenData.load(tokenDataId);
 
+        tokenData.amount = tokenData.amount.minus(amounts[i]);
+
+        tokenData.save();
+    };
+
+    stash.save();
+}
+
+export function stashDelegation(
+    stashId: string,
+    cluster: string,
+): void {
+    let stash = Stash.load(stashId);
+    let tokenIds = stash.tokenIds as Bytes[];
+
+    let tokensDelegatedId = stash.tokensDelegatedId as Bytes[];
+    let tokensDelegatedAmount = stash.tokensDelegatedAmount as BigInt[];
+    let temp = BIGINT_ZERO;
+
+    for (let i = 0; i < tokenIds.length; i++) {
+        let tokenDataId = tokenIds[i].toHexString() + stashId;
+        let tokenData = TokenData.load(tokenDataId);
+        let amount = tokenData.amount;
+
+        if (!tokensDelegatedId.includes(tokenIds[i])) {
+            tokensDelegatedId.push(tokenIds[i]);
+            stash.tokensDelegatedId = tokensDelegatedId;
+
+            tokensDelegatedAmount.push(amount);
+            stash.tokensDelegatedAmount = tokensDelegatedAmount;
+        } else {
+            let index = tokensDelegatedId.indexOf(tokenIds[i]);
+            log.info("SD1: {}, {}, {}", [
+                stash.staker.toHexString(),
+                tokenIds[i].toHexString(),
+                (stash.tokensDelegatedAmount as BigInt[])[index].toHexString(),
+            ]);
+
+
+            amount = amount.minus(tokensDelegatedAmount[index]);
             tokensDelegatedAmount[index] = tokensDelegatedAmount[index]
-                .minus(amounts[i]);
+                .plus(amount);
 
             stash.tokensDelegatedAmount = tokensDelegatedAmount;
         }
-        
-        tokenData.save();
 
-        if (delegatedCluster.length > 0 && updateTotalDele) {
-            updateDelegatorTokens(
-                stash.staker.toHexString(),
-                tokens[i].toHexString(),
-                amounts[i],
-                action,
-            );
-        }
+        stash.save();
+
+        log.info("SD2: {}, {}, {}", [
+            stash.staker.toHexString(),
+            tokenIds[i].toHexString(),
+            (stash.tokensDelegatedAmount as BigInt[])[tokensDelegatedId.indexOf(tokenIds[i])].toHexString(),
+        ]);
+
+        updateDelegatorTokens(
+            stash.staker.toHexString(),
+            tokenIds[i].toHexString(),
+            amount,
+            "add",
+        );
+
+        updateClusterDelegatorInfo(
+            stashId,
+            cluster,
+            [tokenIds[i]],
+            [amount],
+            "delegated",
+        );
     };
 
     for (let i = 0; i < tokensDelegatedId.length; i++) {
@@ -116,9 +157,88 @@ export function updateStashTokens(
     stash.save();
 }
 
+
+export function stashUndelegation(
+    stashId: string,
+    cluster: string,
+): void {
+    let stash = Stash.load(stashId);
+    let tokenIds = stash.tokenIds as Bytes[];
+
+    let tokensDelegatedId = stash.tokensDelegatedId as Bytes[];
+    let tokensDelegatedAmount = stash.tokensDelegatedAmount as BigInt[];
+    let temp = BIGINT_ZERO;
+
+    for (let i = 0; i < tokenIds.length; i++) {
+        let tokenDataId = tokenIds[i].toHexString() + stashId;
+        let tokenData = TokenData.load(tokenDataId);
+        let index = tokensDelegatedId.indexOf(tokenIds[i]);
+
+        log.info("SU1: {}, {}, {}", [
+            stash.staker.toHexString(),
+            tokenIds[i].toHexString(),
+            (stash.tokensDelegatedAmount as BigInt[])[index].toHexString(),
+        ]);
+
+        let amount = tokensDelegatedAmount[index];
+        tokensDelegatedAmount[index] = BIGINT_ZERO;
+        // tokensDelegatedAmount[index] = tokensDelegatedAmount[index]
+        //     .minus(amount);
+
+        {
+        let stashLog = Stash.load(stashId);
+        log.info("SU2: {}, {}, {}", [
+            stashLog.staker.toHexString(),
+            tokenIds[i].toHexString(),
+            (stashLog.tokensDelegatedAmount as BigInt[])[index].toHexString(),
+        ]);
+        }
+
+        updateDelegatorTokens(
+            stash.staker.toHexString(),
+            tokenIds[i].toHexString(),
+            amount,
+            "withdraw",
+        );
+
+        updateClusterDelegatorInfo(
+            stashId,
+            cluster,
+            [tokenIds[i]],
+            [amount],
+            "undelegated",
+        );
+        {
+        let stashLog = Stash.load(stashId);
+        log.info("SU3: {}, {}, {}", [
+            stashLog.staker.toHexString(),
+            tokenIds[i].toHexString(),
+            (tokensDelegatedAmount)[index].toHexString(),
+        ]);
+        }
+
+    };
+
+    for (let i = 0; i < tokensDelegatedId.length; i++) {
+        temp = temp.plus(tokensDelegatedAmount[i]);
+
+        if (
+            temp == BIGINT_ZERO &&
+            i == tokensDelegatedId.length - 1
+        ) {
+            stash.isActive = false;
+        }
+    }
+
+    stash.tokensDelegatedAmount = tokensDelegatedAmount;
+    stash.save();
+}
+
 export function updateClusterDelegatorInfo(
     stashId: string,
     clusterId: string,
+    tokens: Bytes[],
+    amounts: BigInt[],
     operation: string,
 ): void {
     let stash = Stash.load(stashId);
@@ -139,20 +259,21 @@ export function updateClusterDelegatorInfo(
         cluster.clusterUnregistersAt = BIGINT_ZERO;
     }
 
-    let tokens = stash.tokensDelegatedId as Bytes[];
-    let amounts = stash.tokensDelegatedAmount as BigInt[];
-
     if (operation === "delegated") {
         let delegators = cluster.delegators;
-        delegators.push(stash.staker.toHexString());
-        cluster.delegators = delegators;
+        if(delegators.indexOf(stash.staker.toHexString()) == -1) {
+            delegators.push(stash.staker.toHexString());
+            cluster.delegators = delegators;
+        }
     } else if (operation === "undelegated") {
         let delegators = cluster.delegators;
-        let index = delegators.indexOf(
-            stash.staker.toHexString()
-        );
-        delegators.splice(index, 1);
-        cluster.delegators = delegators;
+        if(delegators.indexOf(stash.staker.toHexString()) != -1) {
+            let index = delegators.indexOf(
+                stash.staker.toHexString()
+            );
+            delegators.splice(index, 1);
+            cluster.delegators = delegators;
+        }
     }
 
     cluster.save();
@@ -215,31 +336,13 @@ export function updateClusterDelegation(
     }
 };
 
-export function updateDelegatorTotalDelegation(
-    delegatorId: Bytes,
-    tokens: Bytes[],
-    amounts: BigInt[],
-    action: string,
-): void {
-    for (let i = 0; i < tokens.length; i++) {
-        let operation = action == "delegated" ?
-            "add" : "withdraw";
-
-        updateDelegatorTokens(
-            delegatorId.toHexString(),
-            tokens[i].toHexString(),
-            amounts[i],
-            operation,
-        );
-    }
-};
-
 export function updateDelegatorTokens(
     delegatorId: string,
     token: string,
     amount: BigInt,
     action: string,
 ): void {
+    log.info("UDT: {}, {}, {}, {}", [delegatorId, token, amount.toHexString(), action]);
     let delegator = Delegator.load(delegatorId);
 
     if (delegator == null) {
@@ -379,7 +482,7 @@ export function updateClusterDelegatorsReward(
         let rewardDelegatorContract = RewardDelegatorsContract.bind(
             getRewardDelegatorAddress(clusterRewardsAddress)
         );
-        
+
 
         let result = rewardDelegatorContract.try_withdrawRewards(
             Address.fromString(delegators[i]),

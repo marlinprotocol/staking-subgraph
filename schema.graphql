@@ -28,6 +28,7 @@ type Stash @entity {
   delegatedCluster: String!
   undelegationRequestedAt: BigInt
   undelegatesAt: BigInt
+  tokenIds: [Bytes!]
   tokensDelegated: [TokenData!]! @derivedFrom(field: "stash")
   tokensDelegatedId: [Bytes!]
   tokensDelegatedAmount: [BigInt!]
