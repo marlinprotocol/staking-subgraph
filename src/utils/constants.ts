@@ -21,6 +21,8 @@ export function getRewardDelegatorAddress(clusterRewardsAddress: Address): Addre
         return Address.fromString("0xb6B3004dEb4D223b94A3874164A73C4Dc7CDda38");
     } else if(clusterRewardsAddress.equals(Address.fromString("0x307D5c72A8bA07B999d71270e3E3614EcD3b2013"))) {
         return Address.fromString("0xAd805cF042A3758c3BF424238f8e2A8eA1F5cC3b");
+    } else if(clusterRewardsAddress.equals(Address.fromString("0xc2033B3Ea8C226461ac7408BA948806F09148788"))) {
+        return Address.fromString("0xfB1F3fFa0d9819Da45D4E91967D46fAF025aa1c3");
     } else {
         return Address.fromString(ZERO_ADDRESS);
     }

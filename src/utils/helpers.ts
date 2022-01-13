@@ -479,9 +479,13 @@ export function updateClusterDelegatorsReward(
             delegatorReward.delegator = delegators[i];
         }
 
-        let rewardDelegatorContract = RewardDelegatorsContract.bind(
-            getRewardDelegatorAddress(clusterRewardsAddress)
-        );
+        let rewardDelegatorAddress = getRewardDelegatorAddress(clusterRewardsAddress);
+
+        if(rewardDelegatorAddress.toHexString() == ZERO_ADDRESS) {
+            log.critical('rewardDelegator mapping doesnt exist for {}', [clusterRewardsAddress.toHexString()]);
+        }
+
+        let rewardDelegatorContract = RewardDelegatorsContract.bind(rewardDelegatorAddress);
 
 
         let result = rewardDelegatorContract.try_withdrawRewards(

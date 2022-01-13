@@ -740,13 +740,6 @@ export function handleBlock(
     let clusters = state.clusters as string[];
     updateClustersInfo(blockNumber, clusters);
   }
-
-  if(blockNumber.gt(BigInt.fromI32(4585200))) {
-    updateNetworkClustersReward(
-      "0xaaaebeba3810b1e6b70781f14b2d72c1cb89c0b2b320c43bb67ff79f562f5ff4",
-      Address.fromString("0xc2033b3ea8c226461ac7408ba948806f09148788"),
-    );
-  }
 }
 
 // export function handleStashBridged(
