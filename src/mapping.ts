@@ -81,14 +81,14 @@ export function handleClusterRegistered(
   let cluster = Cluster.load(id);
   if (cluster == null) {
     cluster = new Cluster(id);
+    cluster.delegators = [];
+    cluster.pendingRewards = BIGINT_ZERO;
   }
   cluster.commission = event.params.commission;
   cluster.rewardAddress = event.params.rewardAddress;
   cluster.clientKey = event.params.clientKey;
   cluster.networkId = event.params.networkId;
   cluster.status = STATUS_REGISTERED;
-  cluster.delegators = [];
-  cluster.pendingRewards = BIGINT_ZERO;
   cluster.updatedNetwork = null;
   cluster.networkUpdatesAt = BIGINT_ZERO;
   cluster.updatedCommission = null;
