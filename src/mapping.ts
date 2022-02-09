@@ -141,6 +141,8 @@ export function handleStashCreated(
   stash.delegatedCluster = "";
   stash.tokensDelegatedId = [];
   stash.tokensDelegatedAmount = [];
+  stash.tokensDelegatedIdV2 = [];
+  stash.tokensDelegatedAmountV2 = [];
   stash.isActive = true;
   stash.createdAt = event.block.number;
   stash.save();
@@ -191,6 +193,9 @@ export function handleStashMove(
   let fromId = event.params.fromStashId.toHexString();
   let toId = event.params.toStashId.toHexString();
   let stash = Stash.load(fromId);
+  let toStash = Stash.load(toId);
+  toStash.delegatedCluster = stash.delegatedCluster;
+  toStash.save();
 
   let tokens = event.params.tokenIds as Bytes[];
   let amounts = event.params.amounts as BigInt[];
@@ -722,7 +727,7 @@ export function handleLockTimeUpdated(
 export function handleBlock(
   block: ethereum.Block
 ): void {
-  let blockNumber = block.number;
+  let blockNumber = block.timestamp;
   let state = State.load("state");
 
   if (state == null) {
