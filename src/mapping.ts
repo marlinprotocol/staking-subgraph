@@ -203,6 +203,7 @@ export function handleStashMove(
   stashWithdraw(fromId, tokens, amounts);
   stashDeposit(toId, tokens, amounts);
   stashDelegation(toId, stash.delegatedCluster);
+  stashDelegation(fromId, stash.delegatedCluster);
 }
 
 export function handleStashDelegated(
@@ -299,9 +300,11 @@ export function handleLockCreated(
     stash.redelegationUpdateBlock = event.params.unlockTime;
     stash.redelegationUpdatedCluster = event.params.iValue.toHexString();
   } else {
-    // undelegation
-    stash.undelegationRequestedAt = event.block.timestamp;
-    stash.undelegatesAt = event.params.unlockTime;
+    if(!event.params.unlockTime.equals(BIGINT_ZERO)) {
+      // undelegation
+      stash.undelegationRequestedAt = event.block.timestamp;
+      stash.undelegatesAt = event.params.unlockTime;
+    }
   }
 
   stash.save();
