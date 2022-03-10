@@ -37,7 +37,6 @@ export function stashDeposit(
     amounts: BigInt[],
 ): void {
     let stash = Stash.load(stashId);
-    let tokenIds = stash.tokenIds as Bytes[];
 
     let tokensDelegatedId = stash.tokensDelegatedId as Bytes[];
     let tokensDelegatedAmount = stash.tokensDelegatedAmount as BigInt[];
@@ -51,6 +50,7 @@ export function stashDeposit(
             tokenData.stash = stashId;
             tokenData.amount = BIGINT_ZERO;
 
+            let tokenIds = stash.tokenIds as Bytes[];
             tokenIds.push(tokens[i]);
             stash.tokenIds = tokenIds;
         }
@@ -59,14 +59,14 @@ export function stashDeposit(
 
         tokenData.save();
 
-        if (!tokensDelegatedId.includes(tokenIds[i])) {
-            tokensDelegatedId.push(tokenIds[i]);
+        if (!tokensDelegatedId.includes(tokens[i])) {
+            tokensDelegatedId.push(tokens[i]);
             stash.tokensDelegatedId = tokensDelegatedId;
 
             tokensDelegatedAmount.push(tokenData.amount);
             stash.tokensDelegatedAmount = tokensDelegatedAmount;
         } else {
-            let index = tokensDelegatedId.indexOf(tokenIds[i]);
+            let index = tokensDelegatedId.indexOf(tokens[i]);
 
             tokensDelegatedAmount[index] = tokenData.amount;
 
