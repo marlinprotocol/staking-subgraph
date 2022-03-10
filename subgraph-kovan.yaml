@@ -6,11 +6,11 @@ schema:
 dataSources:
   - kind: ethereum/contract
     name: ClusterRegistry
-    network: kovan
+    network: arbitrum-rinkeby
     source:
-      address: "0xEa280ec9FB24B59a4796470C4C58B17E2Cd7968D"
+      address: "0x80B45D7A385f2b2D8433877D36B01AB5C1892bAb"
       abi: ClusterRegistry
-      startBlock: 25011600
+      startBlock: 7749991
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.4
@@ -38,11 +38,11 @@ dataSources:
       #   - handler: handleBlock
   - kind: ethereum/contract
     name: StakeManager
-    network: kovan
+    network: arbitrum-rinkeby
     source:
-      address: "0xB0aAE7625114fD41D89f33DDA377B164c91913d9"
+      address: "0x0EC28b2250574c18839E6723a276A2A89D9E5a50"
       abi: StakeManager
-      startBlock: 25011600
+      startBlock: 7750055
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.4
@@ -54,47 +54,33 @@ dataSources:
         - name: StakeManager
           file: ./abis/StakeManager.json
       eventHandlers:
-        - event: StashCreated(indexed address,bytes32,uint256,bytes32[],uint256[])
+        - event: StashCreated(indexed bytes32,indexed address)
           handler: handleStashCreated
-        - event: StashSplit(bytes32,bytes32,uint256,bytes32[],uint256[])
-          handler: handleStashSplit
-        - event: StashesMerged(bytes32,bytes32)
-          handler: handleStashesMerged
-        - event: StashDelegated(bytes32,address)
+        - event: StashDeposit(indexed bytes32,bytes32[],uint256[])
+          handler: handleStashDeposit
+        - event: StashWithdraw(indexed bytes32,bytes32[],uint256[])
+          handler: handleStashWithdraw
+        - event: StashMove(indexed bytes32,indexed bytes32,bytes32[],uint256[])
+          handler: handleStashMove
+        - event: StashDelegated(indexed bytes32,indexed address)
           handler: handleStashDelegated
-        - event: StashUndelegated(bytes32,address,uint256)
+        - event: StashUndelegated(indexed bytes32,indexed address)
           handler: handleStashUndelegated
-        - event: StashWithdrawn(bytes32,bytes32[],uint256[])
-          handler: handleStashWithdrawn
-        - event: StashClosed(bytes32,indexed address)
-          handler: handleStashClosed
-        - event: AddedToStash(bytes32,address,bytes32[],uint256[])
-          handler: handleAddedToStash
         - event: TokenAdded(bytes32,address)
           handler: handleTokenAdded
-        - event: TokenRemoved(bytes32)
-          handler: handleTokenRemoved
-        - event: TokenUpdated(bytes32,address)
+        - event: TokenUpdated(bytes32,address,address)
           handler: handleTokenUpdated
-        - event: RedelegationRequested(bytes32,address,address,uint256)
-          handler: handleRedelegationRequested
-        - event: Redelegated(bytes32,address)
-          handler: handleRedelegated
-        - event: RedelegationCancelled(indexed bytes32)
-          handler: handleRedelegationCancelled
-        - event: StashUndelegationCancelled(bytes32)
-          handler: handleStashUndelegationCancelled
-        - event: UndelegationWaitTimeUpdated(uint256)
-          handler: handleUndelegationWaitTimeUpdated
-        - event: LockTimeUpdated(bytes32,uint256,uint256)
-          handler: handleLockTimeUpdated
+        - event: LockCreated(indexed bytes32,indexed bytes32,uint256,uint256)
+          handler: handleLockCreated
+        - event: LockDeleted(indexed bytes32,indexed bytes32,uint256)
+          handler: handleLockDeleted
   - kind: ethereum/contract
     name: ClusterRewards
-    network: kovan
+    network: arbitrum-rinkeby
     source:
-      address: "0x871ed48eC1784b1d27BD086765F54E1f8f484e66"
+      address: "0x6ffACC200e0dCb607b9Be64077eb0f8eEc00e73a"
       abi: ClusterRewards
-      startBlock: 25011600
+      startBlock: 7750039
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.4
@@ -108,21 +94,21 @@ dataSources:
         - name: RewardDelegators
           file: ./abis/RewardDelegators.json
       eventHandlers:
-        - event: NetworkAdded(indexed bytes32,uint256)
+        - event: NetworkAdded(bytes32,uint256)
           handler: handleNetworkAdded
-        - event: NetworkRemoved(indexed bytes32)
+        - event: NetworkRemoved(bytes32)
           handler: handleNetworkRemoved
-        - event: NetworkRewardUpdated(indexed bytes32,uint256)
+        - event: NetworkRewardUpdated(bytes32,uint256)
           handler: handleNetworkRewardUpdated
-        - event: ClusterRewarded(indexed bytes32)
+        - event: ClusterRewarded(bytes32)
           handler: handleClusterRewarded
   - kind: ethereum/contract
     name: RewardDelegators
-    network: kovan
+    network: arbitrum-rinkeby
     source:
-      address: "0xb6B3004dEb4D223b94A3874164A73C4Dc7CDda38"
+      address: "0x2ea3Ba8e1564b2925579e864D6F65606293DcdB4"
       abi: RewardDelegators
-      startBlock: 25011600
+      startBlock: 7750002
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.4
@@ -134,13 +120,13 @@ dataSources:
         - name: RewardDelegators
           file: ./abis/RewardDelegators.json
       eventHandlers:
-        - event: AddReward(indexed bytes32,uint256)
+        - event: AddReward(bytes32,uint256)
           handler: handleAddReward
-        - event: RemoveReward(indexed bytes32)
+        - event: RemoveReward(bytes32)
           handler: handleRemoveReward
-        - event: RewardsUpdated(indexed bytes32,uint256)
+        - event: RewardsUpdated(bytes32,uint256)
           handler: handleRewardsUpdated
-        - event: ClusterRewardDistributed(indexed address)
+        - event: ClusterRewardDistributed(address)
           handler: handleClusterRewardDistributed
-        - event: RewardsWithdrawn(indexed address,indexed address,bytes32[],uint256)
+        - event: RewardsWithdrawn(address,address,bytes32[],uint256)
           handler: handleRewardsWithdrawn
