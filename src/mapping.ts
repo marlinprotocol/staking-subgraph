@@ -11,7 +11,7 @@ import {
   BIGINT_ZERO,
   WITHDRAW_REWARDS_FUNC_SIG,
   UPDATE_REWARDS_FUNC_SIG,
-  FIRST_V2_BLOCK,
+  // FIRST_V2_BLOCK,
   BIGINT_ONE,
   REDELEGATION_LOCK_SELECTOR,
 } from "./utils/constants";
@@ -168,7 +168,6 @@ export function handleStashDeposit(
 ): void {
   handleBlock(event.block);
   let id = event.params.stashId.toHexString();
-  let stash = Stash.load(id);
 
   let tokens = event.params.tokenIds as Bytes[];
   let amounts = event.params.amounts as BigInt[];
