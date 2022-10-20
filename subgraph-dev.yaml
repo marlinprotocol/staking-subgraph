@@ -6,11 +6,11 @@ schema:
 dataSources:
   - kind: ethereum/contract
     name: ClusterRegistry
-    network: kovan
+    network: arbitrum-goerli
     source:
-      address: "0x0B3a1C61988cBfEAb687A2A8B2A2Ac5109a6b0Ce"
+      address: "0xCb106cAB93E3774Ed4bdcd5AD564077Ad8FA835f"
       abi: ClusterRegistry
-      startBlock: 23366200
+      startBlock: 728222
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.4
@@ -38,11 +38,11 @@ dataSources:
       #   - handler: handleBlock
   - kind: ethereum/contract
     name: StakeManager
-    network: kovan
+    network: arbitrum-goerli
     source:
-      address: "0x6E4601488588D82c47E6b83a1636afAEDd1C566e"
+      address: "0x777c32858660B3B38D54216c43589A74a4896220"
       abi: StakeManager
-      startBlock: 23366200
+      startBlock: 728327
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.4
@@ -92,11 +92,11 @@ dataSources:
           handler: handleStashBridged
   - kind: ethereum/contract
     name: ClusterRewards
-    network: kovan
+    network: arbitrum-goerli
     source:
-      address: "0xA83aD48E2c963a2dF6adcC710Ba520a97d237dCc"
+      address: "0xeC2Db76B4A331219F40b409DA3BB426aE0d955aD"
       abi: ClusterRewards
-      startBlock: 23366200
+      startBlock: 728395
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.4
@@ -120,11 +120,11 @@ dataSources:
           handler: handleClusterRewarded
   - kind: ethereum/contract
     name: RewardDelegators
-    network: kovan
+    network: arbitrum-goerli
     source:
-      address: "0x802E91F47e09E23eB253Ffcc97665497e12ec93D"
+      address: "0x38cF9E385aC857D641b6AAF73591fb4A75608CA8"
       abi: RewardDelegators
-      startBlock: 23366200
+      startBlock: 728304
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.4
