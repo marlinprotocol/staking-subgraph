@@ -118,3 +118,9 @@ type RewardWithdrawl @entity {
   isAuto: Boolean!
   txHash: String!
 }
+
+type SelectedClusters @entity {
+  id: ID!
+  epoch: BigInt!
+  address: String!
+}

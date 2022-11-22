@@ -4,7 +4,7 @@ import {
 import {
   Cluster, Stash, Token,
   State, DelegatorReward,
-  Delegator, Network, RewardWithdrawl, ClusterCount,
+  Delegator, Network, RewardWithdrawl, ClusterCount, SelectedClusters
 } from '../generated/schema';
 import {
   STATUS_REGISTERED,
@@ -55,6 +55,7 @@ import {
   ClusterRewardDistributed,
   RewardsWithdrawn,
 } from '../generated/RewardDelegators/RewardDelegators';
+import {  ClusterSelected } from "../generated/EpochSelector/EpochSelector";
 import {
   updateStashTokens,
   updateClustersInfo,
@@ -66,7 +67,6 @@ import {
   updateNetworkClustersReward,
   updateDelegatorTotalDelegation,
 } from "./utils/helpers";
-
 export function handleClusterRegistered(
   event: ClusterRegistered
 ): void {
@@ -729,5 +729,17 @@ export function handleBlock(
   if(blockNumber.gt(state.lastUpdatedBlock)) {
     let clusters = state.clusters as string[];
     updateClustersInfo(blockNumber, clusters);
+  }
+}
+
+export function handleClusterSelected(event: ClusterSelected): void {
+  let id = event.params.epoch.toString() +"-"+event.params.cluster.toString();
+  let selectedClusterData = SelectedClusters.load(id);
+
+  if(selectedClusterData == null){
+    selectedClusterData = new SelectedClusters(id);
+    selectedClusterData.epoch = event.params.epoch;
+    selectedClusterData.address = event.params.cluster.toString();
+    selectedClusterData.save();
   }
 }
