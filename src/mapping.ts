@@ -14,6 +14,7 @@ import {
   // FIRST_V2_BLOCK,
   BIGINT_ONE,
   REDELEGATION_LOCK_SELECTOR,
+  STATUS_NOT_REGISTERED,
 } from "./utils/constants";
 import {
   ClusterRegistered,
@@ -24,6 +25,7 @@ import {
   ClusterUnregisterRequested,
   LockTimeUpdated,
   CommissionUpdated,
+  ClusterUnregistered,
 } from '../generated/ClusterRegistry/ClusterRegistry';
 import {
   StashCreated,
@@ -587,6 +589,24 @@ export function handleClusterUnregisterRequested(
   let cluster = Cluster.load(id);
   cluster.clusterUnregistersAt = event.params.effectiveBlock;
   cluster.save();
+}
+
+export function handleClusterUnregistered(
+  event: ClusterUnregistered
+): void {
+  handleBlock(event.block);
+  let id = event.params.cluster.toHexString();
+  let cluster = Cluster.load(id);
+  cluster.status = STATUS_NOT_REGISTERED;
+  cluster.clusterUnregistersAt = BIGINT_ZERO;
+
+  updateNetworkClusters(
+      cluster.networkId,
+      new Bytes(0),
+      cluster,
+      "unregistered",
+  );
+  updateActiveClusterCount("unregister");
 }
 
 export function handleAddReward(
