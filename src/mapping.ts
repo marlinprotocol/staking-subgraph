@@ -26,6 +26,7 @@ import {
   LockTimeUpdated,
   CommissionUpdated,
   ClusterUnregistered,
+  NetworkSwitched,
 } from '../generated/ClusterRegistry/ClusterRegistry';
 import {
   StashCreated,
@@ -558,6 +559,25 @@ export function handleNetworkSwitchRequested(
   cluster.save();
 }
 
+export function handleNetworkSwitched(
+  event: NetworkSwitched
+): void {
+  let id = event.params.cluster.toHexString();
+  let cluster = Cluster.load(id);
+  updateNetworkClusters(
+    cluster.networkId,
+    cluster.updatedNetwork as Bytes,
+    id,
+    "changed",
+  );
+
+  cluster.networkId = cluster.updatedNetwork as Bytes;
+  cluster.updatedNetwork = null;
+  cluster.networkUpdatesAt = BIGINT_ZERO;
+
+  cluster?.save();
+}
+
 export function handleCommissionUpdateRequested(
   event: CommissionUpdateRequested
 ): void {
@@ -603,10 +623,11 @@ export function handleClusterUnregistered(
   updateNetworkClusters(
       cluster.networkId,
       new Bytes(0),
-      cluster,
+      id,
       "unregistered",
   );
   updateActiveClusterCount("unregister");
+  cluster?.save();
 }
 
 export function handleAddReward(
@@ -774,11 +795,6 @@ export function handleBlock(
     state.undelegationWaitTime = BIGINT_ZERO;
     state.redelegationWaitTime = BIGINT_ZERO;
     state.save();
-  }
-
-  if(blockNumber.gt(state.lastUpdatedBlock)) {
-    let clusters = state.clusters as string[];
-    updateClustersInfo(blockNumber, clusters);
   }
 }
 

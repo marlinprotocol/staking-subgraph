@@ -549,67 +549,6 @@ export function updateAllClustersList(
     state.save();
 }
 
-export function updateClustersInfo(
-    blockNumber: BigInt,
-    clusters: string[]
-): void {
-    if (clusters.length > 0) {
-        for (let i = 0; i < clusters.length; i++) {
-            let cluster = Cluster.load(clusters[i]);
-
-            let networkUpdateBlock =
-                cluster.networkUpdatesAt as BigInt;
-            let commissionUpdateBlock =
-                cluster.commissionUpdatesAt as BigInt;
-            let unregisterBlock =
-                cluster.clusterUnregistersAt as BigInt;
-
-            if (
-                networkUpdateBlock.gt(BIGINT_ZERO) &&
-                blockNumber.ge(networkUpdateBlock)
-            ) {
-                updateNetworkClusters(
-                    cluster.networkId,
-                    cluster.updatedNetwork as Bytes,
-                    clusters[i],
-                    "changed",
-                );
-
-                cluster.networkId = cluster.updatedNetwork as Bytes;
-                cluster.updatedNetwork = null;
-                cluster.networkUpdatesAt = BIGINT_ZERO;
-            }
-
-            if (
-                commissionUpdateBlock.gt(BIGINT_ZERO) &&
-                blockNumber.ge(commissionUpdateBlock)
-            ) {
-                cluster.commission = cluster.updatedCommission as BigInt;
-                cluster.updatedCommission = null;
-                cluster.commissionUpdatesAt = BIGINT_ZERO;
-            }
-
-            if (
-                unregisterBlock.gt(BIGINT_ZERO) &&
-                blockNumber.ge(unregisterBlock)
-            ) {
-                cluster.status = STATUS_NOT_REGISTERED;
-                cluster.clusterUnregistersAt = BIGINT_ZERO;
-
-                updateNetworkClusters(
-                    cluster.networkId,
-                    new Bytes(0),
-                    clusters[i],
-                    "unregistered",
-                );
-                updateActiveClusterCount("unregister");
-            }
-
-            cluster.save();
-        };
-    }
-}
-
 export function updateActiveClusterCount(operation: string): void {
     let state = State.load("state");
     if (state == null) {
