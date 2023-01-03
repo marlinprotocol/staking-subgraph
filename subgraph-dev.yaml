@@ -22,23 +22,23 @@ dataSources:
         - name: ClusterRegistry
           file: ./abis/ClusterRegistry.json
       eventHandlers:
-        - event: ClusterRegistered(address,bytes32,uint256,address,address)
+        - event: ClusterRegistered(indexed address,indexed bytes32,uint256,address,address)
           handler: handleClusterRegistered
-        - event: RewardAddressUpdated(address,address)
+        - event: RewardAddressUpdated(indexed address,address)
           handler: handleRewardAddressUpdated
-        - event: ClientKeyUpdated(address,address)
+        - event: ClientKeyUpdated(indexed address,address)
           handler: handleClientKeyUpdated
-        - event: CommissionUpdateRequested(address,uint256,uint256)
+        - event: CommissionUpdateRequested(indexed address,uint256,uint256)
           handler: handleCommissionUpdateRequested
-        - event: NetworkSwitchRequested(address,bytes32,uint256)
+        - event: NetworkSwitchRequested(indexed address,indexed bytes32,uint256)
           handler: handleNetworkSwitchRequested
-        - event: ClusterUnregisterRequested(address,uint256)
+        - event: ClusterUnregisterRequested(indexed address,uint256)
           handler: handleClusterUnregisterRequested
-        - event: CommissionUpdated(address,uint256,uint256)
+        - event: CommissionUpdated(indexed address,uint256,uint256)
           handler: handleCommissionUpdated
-        - event: NetworkSwitched(address,bytes32,uint256)
+        - event: NetworkSwitched(indexed address,indexed bytes32,uint256)
           handler: handleNetworkSwitched
-        - event: ClusterUnregistered(address,uint256)
+        - event: ClusterUnregistered(indexed address,uint256)
           handler: handleClusterUnregistered
       # blockHandlers:
       #   - handler: handleBlock
@@ -60,42 +60,26 @@ dataSources:
         - name: StakeManager
           file: ./abis/StakeManager.json
       eventHandlers:
-        - event: StashCreated(indexed address,bytes32,uint256,bytes32[],uint256[])
+        - event: StashCreated(indexed bytes32,indexed address)
           handler: handleStashCreated
-        - event: StashSplit(bytes32,bytes32,uint256,bytes32[],uint256[])
-          handler: handleStashSplit
-        - event: StashesMerged(bytes32,bytes32)
-          handler: handleStashesMerged
-        - event: StashDelegated(bytes32,address)
+        - event: StashDeposit(indexed bytes32,bytes32[],uint256[])
+          handler: handleStashDeposit
+        - event: StashWithdraw(indexed bytes32,bytes32[],uint256[])
+          handler: handleStashWithdraw
+        - event: StashMove(indexed bytes32,indexed bytes32,bytes32[],uint256[])
+          handler: handleStashMove
+        - event: StashDelegated(indexed bytes32,indexed address)
           handler: handleStashDelegated
-        - event: StashUndelegated(bytes32,address,uint256)
+        - event: StashUndelegated(indexed bytes32,indexed address)
           handler: handleStashUndelegated
-        - event: StashWithdrawn(bytes32,bytes32[],uint256[])
-          handler: handleStashWithdrawn
-        - event: StashClosed(bytes32,indexed address)
-          handler: handleStashClosed
-        - event: AddedToStash(bytes32,address,bytes32[],uint256[])
-          handler: handleAddedToStash
         - event: TokenAdded(bytes32,address)
           handler: handleTokenAdded
-        - event: TokenRemoved(bytes32)
-          handler: handleTokenRemoved
-        - event: TokenUpdated(bytes32,address)
+        - event: TokenUpdated(bytes32,address,address)
           handler: handleTokenUpdated
-        - event: RedelegationRequested(bytes32,address,address,uint256)
-          handler: handleRedelegationRequested
-        - event: Redelegated(bytes32,address)
-          handler: handleRedelegated
-        - event: RedelegationCancelled(indexed bytes32)
-          handler: handleRedelegationCancelled
-        - event: StashUndelegationCancelled(bytes32)
-          handler: handleStashUndelegationCancelled
-        - event: UndelegationWaitTimeUpdated(uint256)
-          handler: handleUndelegationWaitTimeUpdated
-        - event: LockTimeUpdated(bytes32,uint256,uint256)
-          handler: handleLockTimeUpdated
-        - event: StashesBridged(indexed uint256,bytes32[])
-          handler: handleStashBridged
+        - event: LockCreated(indexed bytes32,indexed bytes32,uint256,uint256)
+          handler: handleLockCreated
+        - event: LockDeleted(indexed bytes32,indexed bytes32,uint256)
+          handler: handleLockDeleted
   - kind: ethereum/contract
     name: ClusterRewards
     network: arbitrum-goerli
