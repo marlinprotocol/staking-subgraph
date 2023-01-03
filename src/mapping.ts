@@ -68,7 +68,6 @@ import {
   stashWithdraw,
   stashDelegation,
   stashUndelegation,
-  updateClustersInfo,
   updateNetworkClusters,
   updateAllClustersList,
   updateActiveClusterCount,
@@ -575,7 +574,7 @@ export function handleNetworkSwitched(
   cluster.updatedNetwork = null;
   cluster.networkUpdatesAt = BIGINT_ZERO;
 
-  cluster?.save();
+  cluster.save();
 }
 
 export function handleCommissionUpdateRequested(
@@ -627,7 +626,7 @@ export function handleClusterUnregistered(
       "unregistered",
   );
   updateActiveClusterCount("unregister");
-  cluster?.save();
+  cluster.save();
 }
 
 export function handleAddReward(
