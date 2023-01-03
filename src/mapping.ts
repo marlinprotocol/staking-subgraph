@@ -23,6 +23,7 @@ import {
   CommissionUpdateRequested,
   ClusterUnregisterRequested,
   LockTimeUpdated,
+  CommissionUpdated,
 } from '../generated/ClusterRegistry/ClusterRegistry';
 import {
   StashCreated,
@@ -563,6 +564,18 @@ export function handleCommissionUpdateRequested(
   let cluster = Cluster.load(id);
   cluster.updatedCommission = event.params.commissionAfterUpdate;
   cluster.commissionUpdatesAt = event.params.effectiveBlock;
+  cluster.save();
+}
+
+export function handleCommissionUpdated(
+  event: CommissionUpdated
+): void {
+  handleBlock(event.block);
+  let id = event.params.cluster.toHexString();
+  let cluster = Cluster.load(id);
+  cluster.commission = cluster.updatedCommission as BigInt;
+  cluster.updatedCommission = null;
+  cluster.commissionUpdatesAt = BIGINT_ZERO;
   cluster.save();
 }
 

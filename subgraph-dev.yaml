@@ -34,6 +34,12 @@ dataSources:
           handler: handleNetworkSwitchRequested
         - event: ClusterUnregisterRequested(address,uint256)
           handler: handleClusterUnregisterRequested
+        - event: CommissionUpdated(address,uint256,uint256)
+          handler: handleCommissionUpdated
+        - event: NetworkSwitched(address,bytes32,uint256)
+          handler: handleNetworkSwitched
+        - event: ClusterUnregistered(address,uint256)
+          handler: handleClusterUnregistered
       # blockHandlers:
       #   - handler: handleBlock
   - kind: ethereum/contract
