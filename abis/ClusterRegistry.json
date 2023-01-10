@@ -810,7 +810,7 @@
         "type": "uint256"
       }
     ],
-    "name": "requestCommisionUpdate",
+    "name": "requestCommissionUpdate",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -908,6 +908,34 @@
       }
     ],
     "name": "updateClientKey",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_commission",
+        "type": "uint256"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "_networkId",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "address",
+        "name": "_rewardAddress",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_clientKey",
+        "type": "address"
+      }
+    ],
+    "name": "updateCluster",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

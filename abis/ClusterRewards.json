@@ -1,16 +1,8 @@
 [
   {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "bytes32",
-        "name": "networkId",
-        "type": "bytes32"
-      }
-    ],
-    "name": "ClusterRewarded",
-    "type": "event"
+    "inputs": [],
+    "stateMutability": "nonpayable",
+    "type": "constructor"
   },
   {
     "anonymous": false,
@@ -18,11 +10,43 @@
       {
         "indexed": false,
         "internalType": "address",
-        "name": "_newFeeder",
+        "name": "previousAdmin",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "newAdmin",
         "type": "address"
       }
     ],
-    "name": "FeederChanged",
+    "name": "AdminChanged",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "beacon",
+        "type": "address"
+      }
+    ],
+    "name": "BeaconUpgraded",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint8",
+        "name": "version",
+        "type": "uint8"
+      }
+    ],
+    "name": "Initialized",
     "type": "event"
   },
   {
@@ -39,6 +63,12 @@
         "internalType": "uint256",
         "name": "rewardPerEpoch",
         "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "epochSelector",
+        "type": "address"
       }
     ],
     "name": "NetworkAdded",
@@ -71,54 +101,15 @@
         "internalType": "uint256",
         "name": "updatedRewardPerEpoch",
         "type": "uint256"
-      }
-    ],
-    "name": "NetworkRewardUpdated",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "previousOwner",
-        "type": "address"
       },
       {
-        "indexed": true,
+        "indexed": false,
         "internalType": "address",
-        "name": "newOwner",
+        "name": "epochSelector",
         "type": "address"
       }
     ],
-    "name": "OwnershipTransferred",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "address",
-        "name": "_updatedPOND",
-        "type": "address"
-      }
-    ],
-    "name": "PONDAddressUpdated",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "_updatedPayoutDenomination",
-        "type": "uint256"
-      }
-    ],
-    "name": "PayoutDenominationChanged",
+    "name": "NetworkUpdated",
     "type": "event"
   },
   {
@@ -127,11 +118,11 @@
       {
         "indexed": false,
         "internalType": "address",
-        "name": "_updatedRewardDelegator",
+        "name": "receiverStaking",
         "type": "address"
       }
     ],
-    "name": "RewardDelegatorAddressUpdated",
+    "name": "ReceiverStakingUpdated",
     "type": "event"
   },
   {
@@ -140,20 +131,7 @@
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "_updatedRewardDistributionWaitTime",
-        "type": "uint256"
-      }
-    ],
-    "name": "RewardDistributionWaitTimeUpdated",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "_updatedRewardPerEpoch",
+        "name": "updatedRewardPerEpoch",
         "type": "uint256"
       }
     ],
@@ -161,326 +139,147 @@
     "type": "event"
   },
   {
-    "constant": true,
+    "anonymous": false,
     "inputs": [
       {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "name": "clusterRewards",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "constant": true,
-    "inputs": [],
-    "name": "feeder",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "constant": true,
-    "inputs": [],
-    "name": "isOwner",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "",
-        "type": "bool"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "constant": true,
-    "inputs": [],
-    "name": "owner",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "constant": false,
-    "inputs": [],
-    "name": "renounceOwnership",
-    "outputs": [],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "constant": true,
-    "inputs": [],
-    "name": "rewardDistributionWaitTime",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "constant": true,
-    "inputs": [
-      {
+        "indexed": true,
         "internalType": "bytes32",
-        "name": "",
+        "name": "role",
+        "type": "bytes32"
+      },
+      {
+        "indexed": true,
+        "internalType": "bytes32",
+        "name": "previousAdminRole",
+        "type": "bytes32"
+      },
+      {
+        "indexed": true,
+        "internalType": "bytes32",
+        "name": "newAdminRole",
         "type": "bytes32"
       }
     ],
-    "name": "rewardWeight",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
+    "name": "RoleAdminChanged",
+    "type": "event"
   },
   {
-    "constant": true,
-    "inputs": [],
-    "name": "totalRewardsPerEpoch",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "constant": false,
+    "anonymous": false,
     "inputs": [
       {
+        "indexed": true,
+        "internalType": "bytes32",
+        "name": "role",
+        "type": "bytes32"
+      },
+      {
+        "indexed": true,
         "internalType": "address",
-        "name": "newOwner",
+        "name": "account",
         "type": "address"
-      }
-    ],
-    "name": "transferOwnership",
-    "outputs": [],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "constant": false,
-    "inputs": [
+      },
       {
+        "indexed": true,
         "internalType": "address",
         "name": "sender",
         "type": "address"
       }
     ],
-    "name": "initialize",
-    "outputs": [],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "function"
+    "name": "RoleGranted",
+    "type": "event"
   },
   {
-    "constant": false,
+    "anonymous": false,
     "inputs": [
       {
-        "internalType": "address",
-        "name": "_owner",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "_rewardDelegatorsAddress",
-        "type": "address"
-      },
-      {
-        "internalType": "bytes32[]",
-        "name": "_networkIds",
-        "type": "bytes32[]"
-      },
-      {
-        "internalType": "uint256[]",
-        "name": "_rewardWeight",
-        "type": "uint256[]"
-      },
-      {
-        "internalType": "uint256",
-        "name": "_totalRewardsPerEpoch",
-        "type": "uint256"
-      },
-      {
-        "internalType": "address",
-        "name": "_PONDAddress",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "_payoutDenomination",
-        "type": "uint256"
-      },
-      {
-        "internalType": "address",
-        "name": "_feeder",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "_rewardDistributionWaitTime",
-        "type": "uint256"
-      }
-    ],
-    "name": "initialize",
-    "outputs": [],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "constant": false,
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "_newFeeder",
-        "type": "address"
-      }
-    ],
-    "name": "changeFeeder",
-    "outputs": [],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "constant": false,
-    "inputs": [
-      {
+        "indexed": true,
         "internalType": "bytes32",
-        "name": "_networkId",
+        "name": "role",
         "type": "bytes32"
       },
       {
+        "indexed": true,
+        "internalType": "address",
+        "name": "account",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "sender",
+        "type": "address"
+      }
+    ],
+    "name": "RoleRevoked",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "bytes32",
+        "name": "networkId",
+        "type": "bytes32"
+      },
+      {
+        "indexed": true,
         "internalType": "uint256",
-        "name": "_rewardWeight",
+        "name": "epoch",
         "type": "uint256"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "user",
+        "type": "address"
       }
     ],
-    "name": "addNetwork",
-    "outputs": [],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "function"
+    "name": "TicketsIssued",
+    "type": "event"
   },
   {
-    "constant": false,
+    "anonymous": false,
     "inputs": [
       {
+        "indexed": true,
+        "internalType": "address",
+        "name": "implementation",
+        "type": "address"
+      }
+    ],
+    "name": "Upgraded",
+    "type": "event"
+  },
+  {
+    "inputs": [],
+    "name": "CLAIMER_ROLE",
+    "outputs": [
+      {
         "internalType": "bytes32",
-        "name": "_networkId",
+        "name": "",
         "type": "bytes32"
       }
     ],
-    "name": "removeNetwork",
-    "outputs": [],
-    "payable": false,
-    "stateMutability": "nonpayable",
+    "stateMutability": "view",
     "type": "function"
   },
   {
-    "constant": false,
-    "inputs": [
+    "inputs": [],
+    "name": "DEFAULT_ADMIN_ROLE",
+    "outputs": [
       {
         "internalType": "bytes32",
-        "name": "_networkId",
+        "name": "",
         "type": "bytes32"
-      },
-      {
-        "internalType": "uint256",
-        "name": "_updatedRewardWeight",
-        "type": "uint256"
       }
     ],
-    "name": "changeNetworkReward",
-    "outputs": [],
-    "payable": false,
-    "stateMutability": "nonpayable",
+    "stateMutability": "view",
     "type": "function"
   },
   {
-    "constant": false,
-    "inputs": [
-      {
-        "internalType": "bytes32",
-        "name": "_networkId",
-        "type": "bytes32"
-      },
-      {
-        "internalType": "address[]",
-        "name": "_clusters",
-        "type": "address[]"
-      },
-      {
-        "internalType": "uint256[]",
-        "name": "_payouts",
-        "type": "uint256[]"
-      },
-      {
-        "internalType": "uint256",
-        "name": "_epoch",
-        "type": "uint256"
-      }
-    ],
-    "name": "feed",
-    "outputs": [],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "constant": true,
-    "inputs": [
-      {
-        "internalType": "bytes32",
-        "name": "_networkId",
-        "type": "bytes32"
-      }
-    ],
-    "name": "getRewardPerEpoch",
+    "inputs": [],
+    "name": "RECEIVER_TICKETS_PER_EPOCH",
     "outputs": [
       {
         "internalType": "uint256",
@@ -488,12 +287,104 @@
         "type": "uint256"
       }
     ],
-    "payable": false,
     "stateMutability": "view",
     "type": "function"
   },
   {
-    "constant": false,
+    "inputs": [],
+    "name": "__unused_1",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "name": "__unused_2",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "__unused_3",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "__unused_4",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "_networkId",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_rewardWeight",
+        "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "_epochSelector",
+        "type": "address"
+      }
+    ],
+    "name": "addNetwork",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_updatedRewardPerEpoch",
+        "type": "uint256"
+      }
+    ],
+    "name": "changeRewardPerEpoch",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
     "inputs": [
       {
         "internalType": "address",
@@ -509,14 +400,18 @@
         "type": "uint256"
       }
     ],
-    "payable": false,
     "stateMutability": "nonpayable",
     "type": "function"
   },
   {
-    "constant": false,
-    "inputs": [],
-    "name": "transferRewardsToRewardDelegators",
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "name": "clusterRewards",
     "outputs": [
       {
         "internalType": "uint256",
@@ -524,83 +419,478 @@
         "type": "uint256"
       }
     ],
-    "payable": false,
-    "stateMutability": "nonpayable",
+    "stateMutability": "view",
     "type": "function"
   },
   {
-    "constant": false,
     "inputs": [
       {
-        "internalType": "address",
-        "name": "_updatedRewardDelegator",
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
+      }
+    ],
+    "name": "epochSelectors",
+    "outputs": [
+      {
+        "internalType": "contract IEpochSelector",
+        "name": "",
         "type": "address"
       }
     ],
-    "name": "updateRewardDelegatorAddress",
-    "outputs": [],
-    "payable": false,
-    "stateMutability": "nonpayable",
+    "stateMutability": "view",
     "type": "function"
   },
   {
-    "constant": false,
     "inputs": [
       {
+        "internalType": "bytes32",
+        "name": "_networkId",
+        "type": "bytes32"
+      }
+    ],
+    "name": "getRewardPerEpoch",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "role",
+        "type": "bytes32"
+      }
+    ],
+    "name": "getRoleAdmin",
+    "outputs": [
+      {
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "role",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "uint256",
+        "name": "index",
+        "type": "uint256"
+      }
+    ],
+    "name": "getRoleMember",
+    "outputs": [
+      {
         "internalType": "address",
-        "name": "_updatedPOND",
+        "name": "",
         "type": "address"
       }
     ],
-    "name": "updatePONDAddress",
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "role",
+        "type": "bytes32"
+      }
+    ],
+    "name": "getRoleMemberCount",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "role",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "address",
+        "name": "account",
+        "type": "address"
+      }
+    ],
+    "name": "grantRole",
     "outputs": [],
-    "payable": false,
     "stateMutability": "nonpayable",
     "type": "function"
   },
   {
-    "constant": false,
     "inputs": [
       {
+        "internalType": "bytes32",
+        "name": "role",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "address",
+        "name": "account",
+        "type": "address"
+      }
+    ],
+    "name": "hasRole",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_admin",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_claimer",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_receiverStaking",
+        "type": "address"
+      },
+      {
+        "internalType": "bytes32[]",
+        "name": "_networkIds",
+        "type": "bytes32[]"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "_rewardWeight",
+        "type": "uint256[]"
+      },
+      {
+        "internalType": "address[]",
+        "name": "_epochSelectors",
+        "type": "address[]"
+      },
+      {
         "internalType": "uint256",
-        "name": "_updatedRewardPerEpoch",
+        "name": "_totalRewardsPerEpoch",
         "type": "uint256"
       }
     ],
-    "name": "changeRewardPerEpoch",
+    "name": "initialize",
     "outputs": [],
-    "payable": false,
     "stateMutability": "nonpayable",
     "type": "function"
   },
   {
-    "constant": false,
     "inputs": [
       {
-        "internalType": "uint256",
-        "name": "_updatedPayoutDenomination",
-        "type": "uint256"
+        "internalType": "bytes32",
+        "name": "_networkId",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "_epoch",
+        "type": "uint256[]"
+      },
+      {
+        "internalType": "address[][]",
+        "name": "_clusters",
+        "type": "address[][]"
+      },
+      {
+        "internalType": "uint256[][]",
+        "name": "_tickets",
+        "type": "uint256[][]"
       }
     ],
-    "name": "changePayoutDenomination",
+    "name": "issueTickets",
     "outputs": [],
-    "payable": false,
     "stateMutability": "nonpayable",
     "type": "function"
   },
   {
-    "constant": false,
     "inputs": [
       {
+        "internalType": "bytes32",
+        "name": "_networkId",
+        "type": "bytes32"
+      },
+      {
         "internalType": "uint256",
-        "name": "_updatedRewardDistributionWaitTime",
+        "name": "_epoch",
+        "type": "uint256"
+      },
+      {
+        "internalType": "address[]",
+        "name": "_clusters",
+        "type": "address[]"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "_tickets",
+        "type": "uint256[]"
+      }
+    ],
+    "name": "issueTickets",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "proxiableUUID",
+    "outputs": [
+      {
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "receiverStaking",
+    "outputs": [
+      {
+        "internalType": "contract IReceiverStaking",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "_networkId",
+        "type": "bytes32"
+      }
+    ],
+    "name": "removeNetwork",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "role",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "address",
+        "name": "account",
+        "type": "address"
+      }
+    ],
+    "name": "renounceRole",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "role",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "address",
+        "name": "account",
+        "type": "address"
+      }
+    ],
+    "name": "revokeRole",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
+      }
+    ],
+    "name": "rewardWeight",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
         "type": "uint256"
       }
     ],
-    "name": "updateRewardDistributionWaitTime",
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes4",
+        "name": "interfaceId",
+        "type": "bytes4"
+      }
+    ],
+    "name": "supportsInterface",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "name": "ticketsIssued",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "totalRewardWeight",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "totalRewardsPerEpoch",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "_networkId",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_updatedRewardWeight",
+        "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "_updatedEpochSelector",
+        "type": "address"
+      }
+    ],
+    "name": "updateNetwork",
     "outputs": [],
-    "payable": false,
     "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_receiverStaking",
+        "type": "address"
+      }
+    ],
+    "name": "updateReceiverStaking",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "newImplementation",
+        "type": "address"
+      }
+    ],
+    "name": "upgradeTo",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "newImplementation",
+        "type": "address"
+      },
+      {
+        "internalType": "bytes",
+        "name": "data",
+        "type": "bytes"
+      }
+    ],
+    "name": "upgradeToAndCall",
+    "outputs": [],
+    "stateMutability": "payable",
     "type": "function"
   }
 ]
