@@ -124,3 +124,10 @@ type SelectedClusters @entity {
   epoch: BigInt!
   address: String!
 }
+
+type ReceiverStake @entity {
+  id: ID!,
+  address: String!,
+  epoch: BigInt!,
+  stake: BigInt!
+}

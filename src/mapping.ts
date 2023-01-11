@@ -4,7 +4,7 @@ import {
 import {
   Cluster, Stash, Token,
   State, DelegatorReward,
-  Delegator, Network, RewardWithdrawl, ClusterCount, SelectedClusters
+  Delegator, Network, RewardWithdrawl, ClusterCount, SelectedClusters, ReceiverStake
 } from '../generated/schema';
 import {
   STATUS_REGISTERED,
@@ -56,6 +56,7 @@ import {
   RewardsWithdrawn,
 } from '../generated/RewardDelegators/RewardDelegators';
 import {  ClusterSelected } from "../generated/EpochSelector/EpochSelector";
+import { BalanceUpdate } from "../generated/ReceiverStaking/ReceiverStaking"
 import {
   updateStashTokens,
   updateClustersInfo,
@@ -742,4 +743,19 @@ export function handleClusterSelected(event: ClusterSelected): void {
     selectedClusterData.address = event.params.cluster.toString();
     selectedClusterData.save();
   }
+}
+
+export function handleBalanceUpdate(event: BalanceUpdate ) : void {
+  let id = event.params._address+"-"+event.params.epoch.toString();
+
+  let receiverData = ReceiverStake.load(id);
+
+  if(receiverData == null){
+    receiverData = new ReceiverStake(id);
+    receiverData.address = event.params._address.toString();
+    receiverData.epoch = event.params.epoch;
+  }
+
+  receiverData.stake = event.params.balance;
+  receiverData.save();
 }
