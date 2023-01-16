@@ -131,3 +131,8 @@ type ReceiverStake @entity {
   epoch: BigInt!,
   stake: BigInt!
 }
+
+type ReceiveBalance @entity {
+  id: ID!,
+  balance: BigInt!
+}
