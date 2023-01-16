@@ -108,14 +108,14 @@ dataSources:
         - name: RewardDelegators
           file: ./abis/RewardDelegators.json
       eventHandlers:
-        - event: NetworkAdded(bytes32,uint256)
+        - event: NetworkUpdated(bytes32,uint256,address)
           handler: handleNetworkAdded
         - event: NetworkRemoved(bytes32)
           handler: handleNetworkRemoved
-        - event: NetworkRewardUpdated(bytes32,uint256)
+        - event: NetworkUpdated(bytes32,uint256,address)
           handler: handleNetworkRewardUpdated
-        - event: ClusterRewarded(bytes32)
-          handler: handleClusterRewarded
+        - event: TicketsIssued(indexed bytes32,indexed uint256,indexed address)
+          handler: handleTicketIssued
   - kind: ethereum/contract
     name: RewardDelegators
     network: arbitrum-rinkeby
