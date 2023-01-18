@@ -1,4 +1,11 @@
-import { Bytes, BigInt, store, ethereum, log } from "@graphprotocol/graph-ts";
+import {
+  Bytes,
+  BigInt,
+  store,
+  ethereum,
+  log,
+  Address
+} from "@graphprotocol/graph-ts";
 import {
   Cluster,
   Stash,
@@ -11,7 +18,8 @@ import {
   ClusterCount,
   SelectedClusters,
   ReceiverStake,
-  ReceiveBalance
+  ReceiveBalance,
+  TicketsIssued as TicketsIssuedStore
 } from "../generated/schema";
 import {
   STATUS_REGISTERED,
@@ -53,7 +61,9 @@ import {
   NetworkAdded,
   NetworkRemoved,
   NetworkUpdated,
-  TicketsIssued
+  TicketsIssued,
+  IssueTicketsCall,
+  IssueTickets1Call
 } from "../generated/ClusterRewards/ClusterRewards";
 import {
   AddReward,
@@ -256,9 +266,16 @@ export function handleStashesMerged(event: StashesMerged): void {
   }
 
   // remove the stash from delegator
-  let staker = Stash.load(stashId2).staker;
+  let tempStash = Stash.load(stashId2);
+  if (!tempStash) {
+    tempStash = new Stash(stashId2);
+  }
+  let staker = tempStash.staker;
   store.remove("Stash", stashId2);
   let delegator = Delegator.load(staker.toHexString());
+  if (!delegator) {
+    delegator = new Delegator(staker.toHexString());
+  }
   let stashes = delegator.stashes;
   let stashIndex = stashes.indexOf(stashId2);
   stashes.splice(stashIndex, 1);
@@ -377,7 +394,13 @@ export function handleStashWithdrawn(event: StashWithdrawn): void {
 export function handleStashClosed(event: StashClosed): void {
   handleBlock(event.block);
   let id = event.params.stashId.toHexString();
-  let staker = Stash.load(id).staker;
+
+  let tempStash = Stash.load(id);
+  if (!tempStash) {
+    tempStash = new Stash(id);
+  }
+
+  let staker = tempStash.staker;
   store.remove("Stash", id);
   let delegator = Delegator.load(staker.toHexString());
 
@@ -820,3 +843,61 @@ export function handleTransfer(event: Transfer): void {
     // this should not occur
   }
 }
+
+export function handleCallIssueTicketsSingleEpoch(
+  call: IssueTickets1Call
+): void {
+  const inputs = call.inputs;
+  saveTickets(
+    inputs._networkId,
+    inputs._epoch,
+    inputs._clusters,
+    inputs._tickets,
+    call.from
+  );
+}
+
+export function handleCallIssueTicketsMultipleEpoch(
+  call: IssueTicketsCall
+): void {
+  const inputs = call.inputs;
+  for (let index = 0; index < inputs._epoch.length; index++) {
+    const epoch = inputs._epoch[index];
+    const clusters = inputs._clusters[index];
+    const tickets = inputs._tickets[index];
+    saveTickets(inputs._networkId, epoch, clusters, tickets, call.from);
+  }
+}
+
+function saveTickets(
+  networkId: Bytes,
+  epoch: BigInt,
+  clusters: Address[],
+  tickets: BigInt[],
+  from: Address
+): void {
+  for (let index = 0; index < clusters.length; index++) {
+    const cluster = clusters[index];
+    const ticket = tickets[index];
+    const id =
+      networkId.toHexString() +
+      "#" +
+      epoch.toHexString() +
+      "#" +
+      cluster.toHexString() +
+      from.toHexString();
+
+    let ticketData = TicketsIssuedStore.load(id);
+    if (!ticketData) {
+      ticketData = new TicketsIssuedStore(id);
+      ticketData.networkId = networkId.toHexString();
+      ticketData.epoch = epoch;
+      ticketData.cluster = cluster.toHexString();
+      ticketData.issuedBy = from.toHexString();
+      ticketData.tickets = ticket;
+      ticketData.save();
+    }
+  }
+}
+
+//TODO multi-epoch call data

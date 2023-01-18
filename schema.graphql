@@ -136,3 +136,13 @@ type ReceiveBalance @entity {
   id: ID!,
   balance: BigInt!
 }
+
+# networkId + epoch + cluster + issuedBy is unique
+type TicketsIssued @entity {
+  id: ID!,
+  networkId: String!
+  epoch: BigInt!, 
+  cluster: String!,
+  issuedBy: String!
+  tickets: BigInt!
+}

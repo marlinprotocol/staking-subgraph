@@ -28,6 +28,9 @@ export function updateStashTokens(
   updateTotalDele: boolean
 ): void {
   let stash = Stash.load(stashId);
+  if(!stash){
+    stash = new Stash(stashId);
+  }
   let delegatedCluster = stash.delegatedCluster;
   let tokensDelegatedId = stash.tokensDelegatedId as Bytes[];
   let tokensDelegatedAmount = stash.tokensDelegatedAmount as BigInt[];
@@ -36,7 +39,9 @@ export function updateStashTokens(
   for (let i = 0; i < tokens.length; i++) {
     let tokenDataId = tokens[i].toHexString() + stashId;
     let tokenData = TokenData.load(tokenDataId);
-
+    if(!tokenData){
+      tokenData = new TokenData(tokenDataId);
+    }
     if (action === "add") {
       if (tokenData == null) {
         tokenData = new TokenData(tokenDataId);
@@ -103,13 +108,16 @@ export function updateClusterDelegatorInfo(
   operation: string
 ): void {
   let stash = Stash.load(stashId);
+  if(!stash){
+    stash = new Stash(stashId);
+  }
   let cluster = Cluster.load(clusterId);
   if (cluster == null) {
     cluster = new Cluster(clusterId);
     cluster.commission = BIGINT_ZERO;
-    cluster.rewardAddress = null;
-    cluster.clientKey = null;
-    cluster.networkId = null;
+    cluster.rewardAddress = Bytes.fromHexString("0x");
+    cluster.clientKey = Bytes.fromHexString("0x");
+    cluster.networkId = Bytes.fromHexString("0x");
     cluster.status = STATUS_NOT_REGISTERED;
     cluster.delegators = [];
     cluster.pendingRewards = BIGINT_ZERO;
@@ -169,6 +177,9 @@ export function updateClusterDelegation(
       let id = tokens[i].toHexString() + clusterId;
 
       let delegation = Delegation.load(id);
+      if (!delegation){
+        delegation = new Delegation(id);
+      }
 
       if (delegation == null && amounts[i] == BIGINT_ZERO) {
         continue;
@@ -223,6 +234,9 @@ export function updateDelegatorTokens(
 
   let delegatorTokenId = delegatorId + token;
   let delegatorToken = DelegatorToken.load(delegatorTokenId);
+  if(!delegatorToken){
+    delegatorToken = new DelegatorToken(delegatorTokenId);
+  }
 
   if (action === "add") {
     if (delegatorToken == null) {
@@ -256,6 +270,9 @@ export function updateNetworkClusters(
 ): void {
   if (operation !== "add") {
     let existingNetwork = Network.load(existingNetworkId.toHexString());
+    if(!existingNetwork){
+      existingNetwork = new Network(existingNetworkId.toHexString());
+    }
     let index = existingNetwork.clusters.indexOf(clusterId);
 
     if (index > -1) {
@@ -292,12 +309,18 @@ export function updateNetworkClustersReward(
   clusterRewardsAddress: Address
 ): void {
   let network = Network.load(networkId);
+  if(!network){
+    network = new Network(networkId);
+  }
   let clusters = network.clusters as string[];
   let clusterRewardsContract = ClusterRewardsContract.bind(
     clusterRewardsAddress
   );
   for (let i = 0; i < clusters.length; i++) {
     let cluster = Cluster.load(clusters[i]);
+    if(!cluster){
+      cluster = new Cluster(clusters[i]);
+    }
 
     let result = clusterRewardsContract.clusterRewards(
       Address.fromString(clusters[i])
@@ -319,6 +342,9 @@ export function updateClusterDelegatorsReward(
   clusterRewardsAddress: Address
 ): void {
   let cluster = Cluster.load(clusterId);
+  if(!cluster){
+    cluster = new Cluster(clusterId);
+  }
   let delegators = cluster.delegators as string[];
 
   for (let i = 0; i < delegators.length; i++) {
@@ -344,7 +370,9 @@ export function updateClusterDelegatorsReward(
     if (!result.reverted) {
       let reward = result.value;
       let delegator = Delegator.load(delegators[i]);
-
+      if(!delegator){
+        delegator = new Delegator(delegators[i]);
+      }
       delegator.totalPendingReward = delegator.totalPendingReward
         .plus(reward)
         .minus(delegatorReward.amount);
@@ -384,6 +412,9 @@ export function updateClustersInfo(
   if (clusters.length > 0) {
     for (let i = 0; i < clusters.length; i++) {
       let cluster = Cluster.load(clusters[i]);
+      if(!cluster){
+        cluster = new Cluster(clusters[i]);
+      }
 
       let networkUpdateBlock = cluster.networkUpdatesAt as BigInt;
       let commissionUpdateBlock = cluster.commissionUpdatesAt as BigInt;

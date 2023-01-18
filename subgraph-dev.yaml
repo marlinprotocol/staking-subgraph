@@ -1,4 +1,4 @@
-specVersion: 0.0.2
+specVersion: 0.0.4
 description: Marlin Staking Subgraph
 repository: https://github.com/marlinprotocol/staking-subgraph
 schema:
@@ -13,7 +13,7 @@ dataSources:
       startBlock: 23366200
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.4
+      apiVersion: 0.0.6
       language: wasm/assemblyscript
       file: ./src/mapping.ts
       entities:
@@ -45,7 +45,7 @@ dataSources:
       startBlock: 23366200
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.4
+      apiVersion: 0.0.6
       language: wasm/assemblyscript
       file: ./src/mapping.ts
       entities:
@@ -97,7 +97,7 @@ dataSources:
       startBlock: 23366200
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.4
+      apiVersion: 0.0.6
       language: wasm/assemblyscript
       file: ./src/mapping.ts
       entities:
@@ -116,6 +116,11 @@ dataSources:
           handler: handleNetworkRewardUpdated
         - event: TicketsIssued(indexed bytes32,indexed uint256,indexed address)
           handler: handleTicketIssued
+      callHandlers:
+        - function: issueTickets(bytes32,uint256,address[],uint256[])
+          handler: handleCallIssueTicketsSingleEpoch
+        - function: issueTickets(bytes32,uint256[],address[][],uint256[][])
+          handler: handleCallIssueTicketsMultipleEpoch
   - kind: ethereum/contract
     name: RewardDelegators
     network: arbitrum-rinkeby
@@ -125,7 +130,7 @@ dataSources:
       startBlock: 23366200
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.4
+      apiVersion: 0.0.6
       language: wasm/assemblyscript
       file: ./src/mapping.ts
       entities:
@@ -153,7 +158,7 @@ dataSources:
       startBlock: 23366200
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.4
+      apiVersion: 0.0.6
       language: wasm/assemblyscript
       file: ./src/mapping.ts
       entities:
@@ -173,7 +178,7 @@ dataSources:
       startBlock: 23366200
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.4
+      apiVersion: 0.0.6
       language: wasm/assemblyscript
       file: ./src/mapping.ts
       entities:
