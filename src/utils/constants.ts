@@ -10,7 +10,7 @@ export const UPDATE_REWARDS_FUNC_SIG = "0x2bc51f6d";
 export const WITHDRAW_REWARDS_FUNC_SIG = "0xe20981ca";
 export const REDELEGATION_LOCK_SELECTOR = "0xc9fb5027edad04dc7cbd44766b39dcb7d42c498b3b47b80001805039c63cf1e0";
 // TODO: to be removed after moving to arbitrum
-export let FIRST_V2_BLOCK = BigInt.fromString("12716894");
+// export let FIRST_V2_BLOCK = BigInt.fromString("12716894");
 
 export function getRewardDelegatorAddress(clusterRewardsAddress: Address): Address {
     if(clusterRewardsAddress.equals(Address.fromString("0xA83aD48E2c963a2dF6adcC710Ba520a97d237dCc"))) {

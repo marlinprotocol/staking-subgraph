@@ -11,9 +11,10 @@ import {
   BIGINT_ZERO,
   WITHDRAW_REWARDS_FUNC_SIG,
   UPDATE_REWARDS_FUNC_SIG,
-  FIRST_V2_BLOCK,
+  // FIRST_V2_BLOCK,
   BIGINT_ONE,
   REDELEGATION_LOCK_SELECTOR,
+  STATUS_NOT_REGISTERED,
 } from "./utils/constants";
 import {
   ClusterRegistered,
@@ -23,6 +24,9 @@ import {
   CommissionUpdateRequested,
   ClusterUnregisterRequested,
   LockTimeUpdated,
+  CommissionUpdated,
+  ClusterUnregistered,
+  NetworkSwitched,
 } from '../generated/ClusterRegistry/ClusterRegistry';
 import {
   StashCreated,
@@ -64,7 +68,6 @@ import {
   stashWithdraw,
   stashDelegation,
   stashUndelegation,
-  updateClustersInfo,
   updateNetworkClusters,
   updateAllClustersList,
   updateActiveClusterCount,
@@ -168,7 +171,6 @@ export function handleStashDeposit(
 ): void {
   handleBlock(event.block);
   let id = event.params.stashId.toHexString();
-  let stash = Stash.load(id);
 
   let tokens = event.params.tokenIds as Bytes[];
   let amounts = event.params.amounts as BigInt[];
@@ -557,6 +559,25 @@ export function handleNetworkSwitchRequested(
   cluster.save();
 }
 
+export function handleNetworkSwitched(
+  event: NetworkSwitched
+): void {
+  let id = event.params.cluster.toHexString();
+  let cluster = Cluster.load(id);
+  updateNetworkClusters(
+    cluster.networkId,
+    cluster.updatedNetwork as Bytes,
+    id,
+    "changed",
+  );
+
+  cluster.networkId = cluster.updatedNetwork as Bytes;
+  cluster.updatedNetwork = null;
+  cluster.networkUpdatesAt = BIGINT_ZERO;
+
+  cluster.save();
+}
+
 export function handleCommissionUpdateRequested(
   event: CommissionUpdateRequested
 ): void {
@@ -568,6 +589,18 @@ export function handleCommissionUpdateRequested(
   cluster.save();
 }
 
+export function handleCommissionUpdated(
+  event: CommissionUpdated
+): void {
+  handleBlock(event.block);
+  let id = event.params.cluster.toHexString();
+  let cluster = Cluster.load(id);
+  cluster.commission = cluster.updatedCommission as BigInt;
+  cluster.updatedCommission = null;
+  cluster.commissionUpdatesAt = BIGINT_ZERO;
+  cluster.save();
+}
+
 export function handleClusterUnregisterRequested(
   event: ClusterUnregisterRequested
 ): void {
@@ -575,6 +608,25 @@ export function handleClusterUnregisterRequested(
   let id = event.params.cluster.toHexString();
   let cluster = Cluster.load(id);
   cluster.clusterUnregistersAt = event.params.effectiveBlock;
+  cluster.save();
+}
+
+export function handleClusterUnregistered(
+  event: ClusterUnregistered
+): void {
+  handleBlock(event.block);
+  let id = event.params.cluster.toHexString();
+  let cluster = Cluster.load(id);
+  cluster.status = STATUS_NOT_REGISTERED;
+  cluster.clusterUnregistersAt = BIGINT_ZERO;
+
+  updateNetworkClusters(
+      cluster.networkId,
+      new Bytes(0),
+      id,
+      "unregistered",
+  );
+  updateActiveClusterCount("unregister");
   cluster.save();
 }
 
@@ -743,11 +795,6 @@ export function handleBlock(
     state.undelegationWaitTime = BIGINT_ZERO;
     state.redelegationWaitTime = BIGINT_ZERO;
     state.save();
-  }
-
-  if(blockNumber.gt(state.lastUpdatedBlock)) {
-    let clusters = state.clusters as string[];
-    updateClustersInfo(blockNumber, clusters);
   }
 }
 
