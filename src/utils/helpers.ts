@@ -124,6 +124,8 @@ export function stashDelegation(
     stashId: string,
     cluster: string,
 ): void {
+    if(cluster == "") return;
+
     let stash = Stash.load(stashId);
     let tokenIds = stash.tokenIds as Bytes[];
 
@@ -182,6 +184,8 @@ export function stashUndelegation(
     stashId: string,
     cluster: string,
 ): void {
+    if(cluster == "") return;
+
     let stash = Stash.load(stashId);
     let tokenIds = stash.tokenIds as Bytes[];
 
