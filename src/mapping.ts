@@ -220,10 +220,11 @@ export function handleStashDelegated(
     stash.isBridged = false;
   }
 
+
   {
     let stashLog = Stash.load(id);
     for(let i = 0; i < (stashLog.tokensDelegatedAmount as BigInt[]).length; i++) {
-      log.info("HSD1: {}, {}, {}", [
+      log.info("HSD10: {}, {}, {}", [
           stashLog.staker.toHexString(),
           stashLog.delegatedCluster,
           (stashLog.tokensDelegatedAmount as BigInt[])[i].toHexString(),
