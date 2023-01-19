@@ -118,3 +118,31 @@ type RewardWithdrawl @entity {
   isAuto: Boolean!
   txHash: String!
 }
+
+type SelectedClusters @entity {
+  id: ID!
+  epoch: BigInt!
+  address: String!
+}
+
+type ReceiverStake @entity {
+  id: ID!,
+  address: String!,
+  epoch: BigInt!,
+  stake: BigInt!
+}
+
+type ReceiveBalance @entity {
+  id: ID!,
+  balance: BigInt!
+}
+
+# networkId + epoch + cluster + issuedBy is unique
+type TicketsIssued @entity {
+  id: ID!,
+  networkId: String!
+  epoch: BigInt!, 
+  cluster: String!,
+  issuedBy: String!
+  tickets: BigInt!
+}

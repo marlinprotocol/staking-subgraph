@@ -1,4 +1,4 @@
-specVersion: 0.0.2
+specVersion: 0.0.4
 description: Marlin Staking Subgraph
 repository: https://github.com/marlinprotocol/staking-subgraph
 schema:
@@ -13,7 +13,7 @@ dataSources:
       startBlock: 11579000
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.4
+      apiVersion: 0.0.6
       language: wasm/assemblyscript
       file: ./src/mapping.ts
       entities:
@@ -45,7 +45,7 @@ dataSources:
       startBlock: 11579000
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.4
+      apiVersion: 0.0.6
       language: wasm/assemblyscript
       file: ./src/mapping.ts
       entities:
@@ -97,7 +97,7 @@ dataSources:
       startBlock: 11579000
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.4
+      apiVersion: 0.0.6
       language: wasm/assemblyscript
       file: ./src/mapping.ts
       entities:
@@ -125,7 +125,7 @@ dataSources:
       startBlock: 11579000
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.4
+      apiVersion: 0.0.6
       language: wasm/assemblyscript
       file: ./src/mapping.ts
       entities:

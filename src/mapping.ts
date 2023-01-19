@@ -1,11 +1,26 @@
 import {
-  Bytes, BigInt, store, ethereum, log
+  Bytes,
+  BigInt,
+  store,
+  ethereum,
+  log,
+  Address
 } from "@graphprotocol/graph-ts";
 import {
-  Cluster, Stash, Token,
-  State, DelegatorReward,
-  Delegator, Network, RewardWithdrawl, ClusterCount,
-} from '../generated/schema';
+  Cluster,
+  Stash,
+  Token,
+  State,
+  DelegatorReward,
+  Delegator,
+  Network,
+  RewardWithdrawl,
+  ClusterCount,
+  SelectedClusters,
+  ReceiverStake,
+  ReceiveBalance,
+  TicketsIssued as TicketsIssuedStore
+} from "../generated/schema";
 import {
   STATUS_REGISTERED,
   BIGINT_ZERO,
@@ -13,7 +28,7 @@ import {
   UPDATE_REWARDS_FUNC_SIG,
   FIRST_V2_BLOCK,
   BIGINT_ONE,
-  REDELEGATION_LOCK_SELECTOR,
+  REDELEGATION_LOCK_SELECTOR
 } from "./utils/constants";
 import {
   ClusterRegistered,
@@ -22,8 +37,8 @@ import {
   NetworkSwitchRequested,
   CommissionUpdateRequested,
   ClusterUnregisterRequested,
-  LockTimeUpdated,
-} from '../generated/ClusterRegistry/ClusterRegistry';
+  LockTimeUpdated
+} from "../generated/ClusterRegistry/ClusterRegistry";
 import {
   StashCreated,
   StashSplit,
@@ -41,20 +56,27 @@ import {
   RedelegationCancelled,
   StashUndelegationCancelled,
   UndelegationWaitTimeUpdated
-} from '../generated/StakeManager/StakeManager';
+} from "../generated/StakeManager/StakeManager";
 import {
   NetworkAdded,
   NetworkRemoved,
-  NetworkRewardUpdated,
-  ClusterRewarded,
-} from '../generated/ClusterRewards/ClusterRewards';
+  NetworkUpdated,
+  TicketsIssued,
+  IssueTicketsCall,
+  IssueTickets1Call
+} from "../generated/ClusterRewards/ClusterRewards";
 import {
   AddReward,
   RemoveReward,
   RewardsUpdated,
   ClusterRewardDistributed,
-  RewardsWithdrawn,
-} from '../generated/RewardDelegators/RewardDelegators';
+  RewardsWithdrawn
+} from "../generated/RewardDelegators/RewardDelegators";
+import { ClusterSelected } from "../generated/EpochSelector/EpochSelector";
+import {
+  BalanceUpdate,
+  Transfer
+} from "../generated/ReceiverStaking/ReceiverStaking";
 import {
   updateStashTokens,
   updateClustersInfo,
@@ -64,12 +86,9 @@ import {
   updateClusterDelegation,
   updateClusterDelegatorInfo,
   updateNetworkClustersReward,
-  updateDelegatorTotalDelegation,
+  updateDelegatorTotalDelegation
 } from "./utils/helpers";
-
-export function handleClusterRegistered(
-  event: ClusterRegistered
-): void {
+export function handleClusterRegistered(event: ClusterRegistered): void {
   handleBlock(event.block);
   let id = event.params.cluster.toHexString();
   let cluster = Cluster.load(id);
@@ -96,34 +115,33 @@ export function handleClusterRegistered(
     new Bytes(0),
     event.params.networkId,
     event.params.cluster.toHexString(),
-    "add",
+    "add"
   );
 }
 
-export function handleRewardAddressUpdated(
-  event: RewardAddressUpdated
-): void {
-
+export function handleRewardAddressUpdated(event: RewardAddressUpdated): void {
   handleBlock(event.block);
   let id = event.params.cluster.toHexString();
   let cluster = Cluster.load(id);
+  if (!cluster) {
+    cluster = new Cluster(id);
+  }
   cluster.rewardAddress = event.params.updatedRewardAddress;
   cluster.save();
 }
 
-export function handleClientKeyUpdated(
-  event: ClientKeyUpdated
-): void {
+export function handleClientKeyUpdated(event: ClientKeyUpdated): void {
   handleBlock(event.block);
   let id = event.params.cluster.toHexString();
   let cluster = Cluster.load(id);
+  if (!cluster) {
+    cluster = new Cluster(id);
+  }
   cluster.clientKey = event.params.clientKey;
   cluster.save();
 }
 
-export function handleStashCreated(
-  event: StashCreated
-): void {
+export function handleStashCreated(event: StashCreated): void {
   handleBlock(event.block);
   let id = event.params.stashId.toHexString();
   let stash = Stash.load(id);
@@ -145,7 +163,7 @@ export function handleStashCreated(
 
   updateStashTokens(id, tokens, amounts, "add", true);
   let delegatorId = event.params.creator.toHexString();
-  let delegator = Delegator.load(delegatorId)
+  let delegator = Delegator.load(delegatorId);
   if (delegator == null) {
     delegator = new Delegator(delegatorId);
     delegator.address = delegatorId;
@@ -160,14 +178,15 @@ export function handleStashCreated(
   delegator.save();
 }
 
-export function handleStashSplit(
-  event: StashSplit
-): void {
+export function handleStashSplit(event: StashSplit): void {
   handleBlock(event.block);
   let oldStashId = event.params._stashId.toHexString();
   let newStashId = event.params._newStashId.toHexString();
   let oldStash = Stash.load(oldStashId);
 
+  if (!oldStash) {
+    oldStash = new Stash(oldStashId);
+  }
   let newStash = new Stash(newStashId);
   newStash.stashId = event.params._newStashId;
   newStash.staker = oldStash.staker;
@@ -180,8 +199,11 @@ export function handleStashSplit(
   newStash.undelegationRequestedAt = oldStash.undelegationRequestedAt;
   newStash.save();
 
-  if(oldStash.delegatedCluster != "") {
+  if (oldStash.delegatedCluster != "") {
     let cluster = Cluster.load(oldStash.delegatedCluster);
+    if (!cluster) {
+      cluster = new Cluster(oldStash.delegatedCluster);
+    }
     let delegators = cluster.delegators;
     delegators.push(oldStash.staker.toHexString());
     cluster.delegators = delegators;
@@ -196,6 +218,9 @@ export function handleStashSplit(
   // add new shash id to delegator array
   let delegatorId = oldStash.staker.toHexString();
   let delegator = Delegator.load(delegatorId);
+  if (!delegator) {
+    delegator = new Delegator(delegatorId);
+  }
   let stashes = delegator.stashes;
   stashes.push(newStashId);
   delegator.stashes = stashes;
@@ -203,59 +228,68 @@ export function handleStashSplit(
   delegator.save();
 }
 
-export function handleStashesMerged(
-  event: StashesMerged
-): void {
+export function handleStashesMerged(event: StashesMerged): void {
   handleBlock(event.block);
   let stashId1 = event.params._stashId1.toHexString();
   let stashId2 = event.params._stashId2.toHexString();
   let stash2 = Stash.load(stashId2);
 
-  updateStashTokens(stashId1,
+  if (!stash2) {
+    stash2 = new Stash(stashId2);
+  }
+  updateStashTokens(
+    stashId1,
     stash2.tokensDelegatedId as Bytes[],
     stash2.tokensDelegatedAmount as BigInt[],
     "add",
     false
   );
-  updateStashTokens(stashId2,
+  updateStashTokens(
+    stashId2,
     stash2.tokensDelegatedId as Bytes[],
     stash2.tokensDelegatedAmount as BigInt[],
     "withdraw",
     false
   );
-  
-  if(stash2.delegatedCluster != "") {
+
+  if (stash2.delegatedCluster != "") {
     // remove one instance of the delegator from cluster
     let cluster = Cluster.load(stash2.delegatedCluster);
+    if (!cluster) {
+      cluster = new Cluster(stash2.delegatedCluster);
+    }
     let delegators = cluster.delegators;
-    let index = delegators.indexOf(
-        stash2.staker.toHexString()
-    );
+    let index = delegators.indexOf(stash2.staker.toHexString());
     delegators.splice(index, 1);
     cluster.delegators = delegators;
     cluster.save();
   }
-  
+
   // remove the stash from delegator
-  let staker = Stash.load(stashId2).staker;
-  store.remove('Stash', stashId2);
+  let tempStash = Stash.load(stashId2);
+  if (!tempStash) {
+    tempStash = new Stash(stashId2);
+  }
+  let staker = tempStash.staker;
+  store.remove("Stash", stashId2);
   let delegator = Delegator.load(staker.toHexString());
+  if (!delegator) {
+    delegator = new Delegator(staker.toHexString());
+  }
   let stashes = delegator.stashes;
   let stashIndex = stashes.indexOf(stashId2);
   stashes.splice(stashIndex, 1);
   delegator.stashes = stashes;
 
-  delegator.save()
+  delegator.save();
 }
 
-export function handleStashDelegated(
-  event: StashDelegated
-): void {
+export function handleStashDelegated(event: StashDelegated): void {
   handleBlock(event.block);
   let id = event.params.stashId.toHexString();
   let delegatedCluster = event.params.delegatedCluster.toHexString();
   let stash = Stash.load(id);
-  
+
   // is this possible?
   if (stash == null) {
     stash = new Stash(id);
@@ -269,29 +303,25 @@ export function handleStashDelegated(
   updateClusterDelegatorInfo(
     event.params.stashId.toHexString(),
     event.params.delegatedCluster.toHexString(),
-    "delegated",
+    "delegated"
   );
 
   updateDelegatorTotalDelegation(
     stash.staker,
     stash.tokensDelegatedId as Bytes[],
     stash.tokensDelegatedAmount as BigInt[],
-    "delegated",
+    "delegated"
   );
 }
 
-export function handleStashUndelegated(
-  event: StashUndelegated
-): void {
+export function handleStashUndelegated(event: StashUndelegated): void {
   handleBlock(event.block);
   let id = event.params.stashId.toHexString();
   let stash = Stash.load(id);
-
-  updateClusterDelegatorInfo(
-    id,
-    stash.delegatedCluster,
-    "undelegated",
-  );
+  if (!stash) {
+    stash = new Stash(id);
+  }
+  updateClusterDelegatorInfo(id, stash.delegatedCluster, "undelegated");
 
   stash.delegatedCluster = "";
   stash.undelegationRequestedAt = event.block.timestamp;
@@ -302,16 +332,19 @@ export function handleStashUndelegated(
     stash.staker,
     stash.tokensDelegatedId as Bytes[],
     stash.tokensDelegatedAmount as BigInt[],
-    "undelegated",
+    "undelegated"
   );
 
   // cancel redelegation of the stash
   let _stash = Stash.load(id);
+  if (!_stash) {
+    _stash = new Stash(id);
+  }
   _stash.redelegationUpdateBlockV1 = null;
   _stash.redelegationUpdateBlock = null;
   _stash.redelegationUpdatedClusterV1 = null;
   _stash.redelegationUpdatedCluster = null;
-  _stash.save()
+  _stash.save();
 }
 
 export function handleStashUndelegationCancelled(
@@ -320,19 +353,21 @@ export function handleStashUndelegationCancelled(
   handleBlock(event.block);
   let id = event.params._stashId.toHexString();
   let stash = Stash.load(id);
-
+  if (!stash) {
+    stash = new Stash(id);
+  }
   stash.undelegationRequestedAt = null;
   stash.undelegatesAt = null;
   stash.save();
 }
 
-export function handleAddedToStash(
-  event: AddedToStash
-): void {
+export function handleAddedToStash(event: AddedToStash): void {
   handleBlock(event.block);
   let id = event.params.stashId.toHexString();
   let stash = Stash.load(id);
-
+  if (!stash) {
+    stash = new Stash(id);
+  }
   let tokens = event.params.tokens as Bytes[];
   let amounts = event.params.amounts as BigInt[];
   updateStashTokens(id, tokens, amounts, "add", true);
@@ -342,14 +377,12 @@ export function handleAddedToStash(
       stash.delegatedCluster,
       tokens,
       amounts,
-      "delegated",
+      "delegated"
     );
   }
 }
 
-export function handleStashWithdrawn(
-  event: StashWithdrawn
-): void {
+export function handleStashWithdrawn(event: StashWithdrawn): void {
   handleBlock(event.block);
   let id = event.params.stashId.toHexString();
 
@@ -358,24 +391,31 @@ export function handleStashWithdrawn(
   updateStashTokens(id, tokens, amounts, "withdraw", true);
 }
 
-export function handleStashClosed(
-  event: StashClosed
-): void {
+export function handleStashClosed(event: StashClosed): void {
   handleBlock(event.block);
   let id = event.params.stashId.toHexString();
-  let staker = Stash.load(id).staker;
-  store.remove('Stash', id);
+
+  let tempStash = Stash.load(id);
+  if (!tempStash) {
+    tempStash = new Stash(id);
+  }
+
+  let staker = tempStash.staker;
+  store.remove("Stash", id);
   let delegator = Delegator.load(staker.toHexString());
+
+  if (!delegator) {
+    delegator = new Delegator(staker.toHexString());
+  }
+
   let stashes = delegator.stashes;
   let stashIndex = stashes.indexOf(id);
   stashes.splice(stashIndex, 1);
   delegator.stashes = stashes;
-  delegator.save()
+  delegator.save();
 }
 
-export function handleTokenAdded(
-  event: TokenAdded
-): void {
+export function handleTokenAdded(event: TokenAdded): void {
   handleBlock(event.block);
   let id = event.params.tokenId.toHexString();
   let token = Token.load(id);
@@ -390,64 +430,58 @@ export function handleTokenAdded(
   token.save();
 }
 
-export function handleTokenRemoved(
-  event: TokenRemoved
-): void {
+export function handleTokenRemoved(event: TokenRemoved): void {
   handleBlock(event.block);
   let id = event.params.tokenId.toHexString();
   let token = Token.load(id);
+  if (!token) {
+    token = new Token(id);
+  }
   token.enabled = false;
   token.save();
 }
 
-export function handleTokenUpdated(
-  event: TokenUpdated
-): void {
+export function handleTokenUpdated(event: TokenUpdated): void {
   handleBlock(event.block);
   let id = event.params.tokenId.toHexString();
   let token = Token.load(id);
+  if (!token) {
+    token = new Token(id);
+  }
   token.tokenId = event.params.tokenId;
   token.tokenAddress = event.params.tokenAddress;
   token.save();
 }
 
-export function handleRedelegated(
-  event: Redelegated
-): void {
+export function handleRedelegated(event: Redelegated): void {
   handleBlock(event.block);
   let id = event.params.stashId.toHexString();
   let stash = Stash.load(id);
+  if (!stash) {
+    stash = new Stash(id);
+  }
   let prevCluster = stash.delegatedCluster;
 
-  if(stash.delegatedCluster != "") {
-    updateClusterDelegatorInfo(
-      id,
-      prevCluster,
-      "undelegated",
-    );
+  if (stash.delegatedCluster != "") {
+    updateClusterDelegatorInfo(id, prevCluster, "undelegated");
   } else {
     updateDelegatorTotalDelegation(
       stash.staker,
       stash.tokensDelegatedId as Bytes[],
       stash.tokensDelegatedAmount as BigInt[],
-      "delegated",
+      "delegated"
     );
   }
 
-  stash.delegatedCluster = event.params
-    .updatedCluster.toHexString();
+  stash.delegatedCluster = event.params.updatedCluster.toHexString();
   stash.redelegationUpdateBlockV1 = null;
   stash.redelegationUpdateBlock = null;
   stash.redelegationUpdatedClusterV1 = null;
   stash.redelegationUpdatedCluster = null;
   stash.save();
 
-  updateClusterDelegatorInfo(
-    id,
-    stash.delegatedCluster,
-    "delegated",
-  );
-  
+  updateClusterDelegatorInfo(id, stash.delegatedCluster, "delegated");
+
   // if(stash.delegatedCluster == "") {
   //   updateDelegatorTotalDelegation(
   //     stash.staker,
@@ -464,6 +498,9 @@ export function handleRedelegationCancelled(
   handleBlock(event.block);
   let id = event.params._stashId.toHexString();
   let stash = Stash.load(id);
+  if (!stash) {
+    stash = new Stash(id);
+  }
   stash.redelegationUpdateBlockV1 = null;
   stash.redelegationUpdateBlock = null;
   stash.redelegationUpdatedClusterV1 = null;
@@ -477,26 +514,22 @@ export function handleRedelegationRequested(
   handleBlock(event.block);
   let id = event.params.stashId.toHexString();
   let stash = Stash.load(id);
-  
+  if (!stash) {
+    stash = new Stash(id);
+  }
   // check if the block is V2
   if (event.block.number.gt(FIRST_V2_BLOCK)) {
-    stash.redelegationUpdateBlock = event.params
-    .redelegatesAt;
-    stash.redelegationUpdatedCluster = event.params
-    .updatedCluster.toHexString();
+    stash.redelegationUpdateBlock = event.params.redelegatesAt;
+    stash.redelegationUpdatedCluster = event.params.updatedCluster.toHexString();
   } else {
-    stash.redelegationUpdateBlockV1 = event.params
-    .redelegatesAt;
-    stash.redelegationUpdatedClusterV1 = event.params
-    .updatedCluster.toHexString();
+    stash.redelegationUpdateBlockV1 = event.params.redelegatesAt;
+    stash.redelegationUpdatedClusterV1 = event.params.updatedCluster.toHexString();
   }
 
   stash.save();
 }
 
-export function handleNetworkAdded(
-  event: NetworkAdded
-): void {
+export function handleNetworkAdded(event: NetworkAdded): void {
   handleBlock(event.block);
   let id = event.params.networkId.toHexString();
   let network = Network.load(id);
@@ -509,20 +542,19 @@ export function handleNetworkAdded(
   }
 }
 
-export function handleNetworkRemoved(
-  event: NetworkRemoved
-): void {
+export function handleNetworkRemoved(event: NetworkRemoved): void {
   handleBlock(event.block);
   let id = event.params.networkId.toHexString();
-  store.remove('Network', id);
+  store.remove("Network", id);
 }
 
-export function handleNetworkRewardUpdated(
-  event: NetworkRewardUpdated
-): void {
+export function handleNetworkRewardUpdated(event: NetworkUpdated): void {
   handleBlock(event.block);
   let id = event.params.networkId.toHexString();
   let network = Network.load(id);
+  if (!network) {
+    network = new Network(id);
+  }
   network.rewardPerEpoch = event.params.updatedRewardPerEpoch;
   network.save();
 }
@@ -533,6 +565,9 @@ export function handleNetworkSwitchRequested(
   handleBlock(event.block);
   let id = event.params.cluster.toHexString();
   let cluster = Cluster.load(id);
+  if (!cluster) {
+    cluster = new Cluster(id);
+  }
   cluster.updatedNetwork = event.params.networkId;
   cluster.networkUpdatesAt = event.params.effectiveBlock;
   cluster.save();
@@ -544,6 +579,9 @@ export function handleCommissionUpdateRequested(
   handleBlock(event.block);
   let id = event.params.cluster.toHexString();
   let cluster = Cluster.load(id);
+  if (!cluster) {
+    cluster = new Cluster(id);
+  }
   cluster.updatedCommission = event.params.commissionAfterUpdate;
   cluster.commissionUpdatesAt = event.params.effectiveBlock;
   cluster.save();
@@ -555,43 +593,47 @@ export function handleClusterUnregisterRequested(
   handleBlock(event.block);
   let id = event.params.cluster.toHexString();
   let cluster = Cluster.load(id);
+  if (!cluster) {
+    cluster = new Cluster(id);
+  }
   cluster.clusterUnregistersAt = event.params.effectiveBlock;
   cluster.save();
 }
 
-export function handleAddReward(
-  event: AddReward
-): void {
+export function handleAddReward(event: AddReward): void {
   handleBlock(event.block);
   let id = event.params.tokenId.toHexString();
   let token = Token.load(id);
+  if (!token) {
+    token = new Token(id);
+  }
   token.rewardFactor = event.params.rewardFactor;
   token.save();
 }
 
-export function handleRemoveReward(
-  event: RemoveReward
-): void {
+export function handleRemoveReward(event: RemoveReward): void {
   handleBlock(event.block);
   let id = event.params.tokenId.toHexString();
   let token = Token.load(id);
+  if (!token) {
+    token = new Token(id);
+  }
   token.rewardFactor = BIGINT_ZERO;
   token.save();
 }
 
-export function handleRewardsUpdated(
-  event: RewardsUpdated
-): void {
+export function handleRewardsUpdated(event: RewardsUpdated): void {
   handleBlock(event.block);
   let id = event.params.tokenId.toHexString();
   let token = Token.load(id);
+  if (!token) {
+    token = new Token(id);
+  }
   token.rewardFactor = event.params.rewardFactor;
   token.save();
 }
 
-export function handleClusterRewarded(
-  event: ClusterRewarded
-): void {
+export function handleTicketIssued(event: TicketsIssued): void {
   handleBlock(event.block);
   let id = event.params.networkId.toHexString();
 
@@ -608,19 +650,25 @@ export function handleClusterRewardDistributed(
 
   let id = txHash;
   let clutserRewardWithdrawl = RewardWithdrawl.load(id);
-  while(clutserRewardWithdrawl != null) {
-      id = id + "0";
-      clutserRewardWithdrawl = RewardWithdrawl.load(id);
+  while (clutserRewardWithdrawl != null) {
+    id = id + "0";
+    clutserRewardWithdrawl = RewardWithdrawl.load(id);
   }
   clutserRewardWithdrawl = new RewardWithdrawl(id);
 
   clutserRewardWithdrawl.isAuto = true;
-  
-  if(event.transaction.input.toHexString().substr(0, 10) == UPDATE_REWARDS_FUNC_SIG) {
+
+  if (
+    event.transaction.input.toHexString().substr(0, 10) ==
+    UPDATE_REWARDS_FUNC_SIG
+  ) {
     clutserRewardWithdrawl.isAuto = false;
   }
 
   clutserRewardWithdrawl.cluster = clusterId;
+  if (!cluster) {
+    cluster = new Cluster(clusterId);
+  }
   clutserRewardWithdrawl.amount = cluster.pendingRewards;
   clutserRewardWithdrawl.timestamp = event.block.timestamp;
   clutserRewardWithdrawl.delegator = null;
@@ -631,18 +679,14 @@ export function handleClusterRewardDistributed(
   cluster.save();
 }
 
-export function handleRewardsWithdrawn(
-  event: RewardsWithdrawn
-): void {
+export function handleRewardsWithdrawn(event: RewardsWithdrawn): void {
   handleBlock(event.block);
   let clusterId = event.params.cluster.toHexString();
   let delegatorId = event.params.delegator.toHexString();
 
-  let delegatorReward = DelegatorReward.load(
-    delegatorId + clusterId
-  );
+  let delegatorReward = DelegatorReward.load(delegatorId + clusterId);
 
-  if(delegatorReward == null) {
+  if (delegatorReward == null) {
     delegatorReward = new DelegatorReward(delegatorId + clusterId);
     delegatorReward.cluster = clusterId;
     delegatorReward.delegator = delegatorId;
@@ -654,33 +698,41 @@ export function handleRewardsWithdrawn(
   let delegator = Delegator.load(delegatorId);
   let amount = event.params.rewards;
 
-  if(delegator.totalPendingReward.lt(amount)) {
-    log.warning("Amount more than pending reward is withdrawn", [delegator.totalPendingReward.toString(), amount.toString(), delegator.address.toString()]);
+  if (!delegator) {
+    delegator = new Delegator(delegatorId);
+  }
+  if (delegator.totalPendingReward.lt(amount)) {
+    log.warning("Amount more than pending reward is withdrawn", [
+      delegator.totalPendingReward.toString(),
+      amount.toString(),
+      delegator.address.toString()
+    ]);
     amount = delegator.totalPendingReward;
   }
 
-  delegator.totalPendingReward = delegator
-    .totalPendingReward.minus(amount);
+  delegator.totalPendingReward = delegator.totalPendingReward.minus(amount);
   delegator.totalRewardsClaimed = delegator.totalRewardsClaimed.plus(amount);
   delegator.save();
   let txHash = event.transaction.hash.toHexString();
 
   let id = txHash;
   let rewardWithdrawl = RewardWithdrawl.load(id);
-  while(rewardWithdrawl != null) {
-      id = id + "0";
-      rewardWithdrawl = RewardWithdrawl.load(id);
+  while (rewardWithdrawl != null) {
+    id = id + "0";
+    rewardWithdrawl = RewardWithdrawl.load(id);
   }
   rewardWithdrawl = new RewardWithdrawl(id);
 
   rewardWithdrawl.isAuto = true;
-  
-  if(event.transaction.input.toHexString().substr(0, 10) == WITHDRAW_REWARDS_FUNC_SIG) {
+
+  if (
+    event.transaction.input.toHexString().substr(0, 10) ==
+    WITHDRAW_REWARDS_FUNC_SIG
+  ) {
     rewardWithdrawl.isAuto = false;
   }
 
-  rewardWithdrawl.cluster = event.params.cluster
-    .toHexString();
+  rewardWithdrawl.cluster = event.params.cluster.toHexString();
   rewardWithdrawl.amount = event.params.rewards;
   rewardWithdrawl.delegator = delegatorId;
   rewardWithdrawl.timestamp = event.block.timestamp;
@@ -693,25 +745,26 @@ export function handleUndelegationWaitTimeUpdated(
 ): void {
   handleBlock(event.block);
   let state = State.load("state");
+  if (!state) {
+    state = new State("state");
+  }
   state.undelegationWaitTime = event.params.undelegationWaitTime;
   state.save();
 }
 
-export function handleLockTimeUpdated(
-  event: LockTimeUpdated
-): void {
+export function handleLockTimeUpdated(event: LockTimeUpdated): void {
   handleBlock(event.block);
   let state = State.load("state");
-
-  if(event.params.selector.toHexString() == REDELEGATION_LOCK_SELECTOR) {
+  if (!state) {
+    state = new State("state");
+  }
+  if (event.params.selector.toHexString() == REDELEGATION_LOCK_SELECTOR) {
     state.redelegationWaitTime = event.params.updatedLockTime;
     state.save();
   }
 }
 
-export function handleBlock(
-  block: ethereum.Block
-): void {
+export function handleBlock(block: ethereum.Block): void {
   let blockNumber = block.number;
   let state = State.load("state");
 
@@ -726,8 +779,125 @@ export function handleBlock(
     state.save();
   }
 
-  if(blockNumber.gt(state.lastUpdatedBlock)) {
+  if (blockNumber.gt(state.lastUpdatedBlock)) {
     let clusters = state.clusters as string[];
     updateClustersInfo(blockNumber, clusters);
   }
 }
+
+export function handleClusterSelected(event: ClusterSelected): void {
+  let id =
+    event.params.epoch.toString() + "-" + event.params.cluster.toString();
+  let selectedClusterData = SelectedClusters.load(id);
+
+  if (selectedClusterData == null) {
+    selectedClusterData = new SelectedClusters(id);
+    selectedClusterData.epoch = event.params.epoch;
+    selectedClusterData.address = event.params.cluster.toString();
+    selectedClusterData.save();
+  }
+}
+
+export function handleBalanceUpdate(event: BalanceUpdate): void {
+  let id =
+    event.params._address.toString() + "-" + event.params.epoch.toString();
+
+  let receiverData = ReceiverStake.load(id);
+
+  if (receiverData == null) {
+    receiverData = new ReceiverStake(id);
+    receiverData.address = event.params._address.toString();
+    receiverData.epoch = event.params.epoch;
+  }
+
+  receiverData.stake = event.params.balance;
+  receiverData.save();
+}
+
+export function handleTransfer(event: Transfer): void {
+  // transfer happen only between staker and contract
+
+  // when sent to contract
+  if (event.params.to.equals(event.address)) {
+    let stakerId = event.params.to.toString();
+    let staker = ReceiveBalance.load(stakerId);
+
+    if (staker == null) {
+      staker = new ReceiveBalance(stakerId);
+      staker.balance = event.params.value;
+    } else {
+      staker.balance = staker.balance.plus(event.params.value);
+    }
+    staker.save();
+  }
+  // when sent from contract to other
+  else if (event.params.from.equals(event.address)) {
+    let stakerId = event.params.to.toString();
+    let staker = ReceiveBalance.load(stakerId);
+    if (staker == null) {
+    } else {
+      staker.balance = staker.balance.minus(event.params.value);
+      staker.save();
+    }
+  } else {
+    // this should not occur
+  }
+}
+
+export function handleCallIssueTicketsSingleEpoch(
+  call: IssueTickets1Call
+): void {
+  const inputs = call.inputs;
+  saveTickets(
+    inputs._networkId,
+    inputs._epoch,
+    inputs._clusters,
+    inputs._tickets,
+    call.from
+  );
+}
+
+export function handleCallIssueTicketsMultipleEpoch(
+  call: IssueTicketsCall
+): void {
+  const inputs = call.inputs;
+  for (let index = 0; index < inputs._epoch.length; index++) {
+    const epoch = inputs._epoch[index];
+    const clusters = inputs._clusters[index];
+    const tickets = inputs._tickets[index];
+    saveTickets(inputs._networkId, epoch, clusters, tickets, call.from);
+  }
+}
+
+function saveTickets(
+  networkId: Bytes,
+  epoch: BigInt,
+  clusters: Address[],
+  tickets: BigInt[],
+  from: Address
+): void {
+  for (let index = 0; index < clusters.length; index++) {
+    const cluster = clusters[index];
+    const ticket = tickets[index];
+    const id =
+      networkId.toHexString() +
+      "#" +
+      epoch.toHexString() +
+      "#" +
+      cluster.toHexString() +
+      from.toHexString();
+
+    let ticketData = TicketsIssuedStore.load(id);
+    if (!ticketData) {
+      ticketData = new TicketsIssuedStore(id);
+      ticketData.networkId = networkId.toHexString();
+      ticketData.epoch = epoch;
+      ticketData.cluster = cluster.toHexString();
+      ticketData.issuedBy = from.toHexString();
+      ticketData.tickets = ticket;
+      ticketData.save();
+    }
+  }
+}
+
+//TODO multi-epoch call data
