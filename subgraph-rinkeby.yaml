@@ -6,11 +6,11 @@ schema:
 dataSources:
   - kind: ethereum/contract
     name: ClusterRegistry
-    network: arbitrum-goerli
+    network: rinkeby
     source:
-      address: "0x5E478CB7576906fe2a443684aDcD9A0dfc547abD"
+      address: "0xf7273443ac05D6B90c08ac300257E068c91D34Cc"
       abi: ClusterRegistry
-      startBlock: 4225165
+      startBlock: 9610000
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.4
@@ -22,33 +22,27 @@ dataSources:
         - name: ClusterRegistry
           file: ./abis/ClusterRegistry.json
       eventHandlers:
-        - event: ClusterRegistered(indexed address,indexed bytes32,uint256,address,address)
+        - event: ClusterRegistered(address,bytes32,uint256,address,address)
           handler: handleClusterRegistered
-        - event: RewardAddressUpdated(indexed address,address)
+        - event: RewardAddressUpdated(address,address)
           handler: handleRewardAddressUpdated
-        - event: ClientKeyUpdated(indexed address,address)
+        - event: ClientKeyUpdated(address,address)
           handler: handleClientKeyUpdated
-        - event: CommissionUpdateRequested(indexed address,uint256,uint256)
+        - event: CommissionUpdateRequested(address,uint256,uint256)
           handler: handleCommissionUpdateRequested
-        - event: NetworkSwitchRequested(indexed address,indexed bytes32,uint256)
+        - event: NetworkSwitchRequested(address,bytes32,uint256)
           handler: handleNetworkSwitchRequested
-        - event: ClusterUnregisterRequested(indexed address,uint256)
+        - event: ClusterUnregisterRequested(address,uint256)
           handler: handleClusterUnregisterRequested
-        - event: CommissionUpdated(indexed address,uint256,uint256)
-          handler: handleCommissionUpdated
-        - event: NetworkSwitched(indexed address,indexed bytes32,uint256)
-          handler: handleNetworkSwitched
-        - event: ClusterUnregistered(indexed address,uint256)
-          handler: handleClusterUnregistered
       # blockHandlers:
       #   - handler: handleBlock
   - kind: ethereum/contract
     name: StakeManager
-    network: arbitrum-goerli
+    network: rinkeby
     source:
-      address: "0xe43EFeA7f40a885f4B35a149CAB5FC3fE01564C6"
+      address: "0xbD3678C4423514AF7Cc9fB61524781F363E63862"
       abi: StakeManager
-      startBlock: 4225165
+      startBlock: 9610000
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.4
@@ -60,33 +54,49 @@ dataSources:
         - name: StakeManager
           file: ./abis/StakeManager.json
       eventHandlers:
-        - event: StashCreated(indexed bytes32,indexed address)
+        - event: StashCreated(indexed address,bytes32,uint256,bytes32[],uint256[])
           handler: handleStashCreated
-        - event: StashDeposit(indexed bytes32,bytes32[],uint256[])
-          handler: handleStashDeposit
-        - event: StashWithdraw(indexed bytes32,bytes32[],uint256[])
-          handler: handleStashWithdraw
-        - event: StashMove(indexed bytes32,indexed bytes32,bytes32[],uint256[])
-          handler: handleStashMove
-        - event: StashDelegated(indexed bytes32,indexed address)
+        - event: StashSplit(bytes32,bytes32,uint256,bytes32[],uint256[])
+          handler: handleStashSplit
+        - event: StashesMerged(bytes32,bytes32)
+          handler: handleStashesMerged
+        - event: StashDelegated(bytes32,address)
           handler: handleStashDelegated
-        - event: StashUndelegated(indexed bytes32,indexed address)
+        - event: StashUndelegated(bytes32,address,uint256)
           handler: handleStashUndelegated
+        - event: StashWithdrawn(bytes32,bytes32[],uint256[])
+          handler: handleStashWithdrawn
+        - event: StashClosed(bytes32,indexed address)
+          handler: handleStashClosed
+        - event: AddedToStash(bytes32,address,bytes32[],uint256[])
+          handler: handleAddedToStash
         - event: TokenAdded(bytes32,address)
           handler: handleTokenAdded
-        - event: TokenUpdated(bytes32,address,address)
+        - event: TokenRemoved(bytes32)
+          handler: handleTokenRemoved
+        - event: TokenUpdated(bytes32,address)
           handler: handleTokenUpdated
-        - event: LockCreated(indexed bytes32,indexed bytes32,uint256,uint256)
-          handler: handleLockCreated
-        - event: LockDeleted(indexed bytes32,indexed bytes32,uint256)
-          handler: handleLockDeleted
+        - event: RedelegationRequested(bytes32,address,address,uint256)
+          handler: handleRedelegationRequested
+        - event: Redelegated(bytes32,address)
+          handler: handleRedelegated
+        - event: RedelegationCancelled(indexed bytes32)
+          handler: handleRedelegationCancelled
+        - event: StashUndelegationCancelled(bytes32)
+          handler: handleStashUndelegationCancelled
+        - event: UndelegationWaitTimeUpdated(uint256)
+          handler: handleUndelegationWaitTimeUpdated
+        - event: LockTimeUpdated(bytes32,uint256,uint256)
+          handler: handleLockTimeUpdated
+        - event: StashesBridged(indexed uint256,bytes32[])
+          handler: handleStashBridged
   - kind: ethereum/contract
     name: ClusterRewards
-    network: arbitrum-goerli
+    network: rinkeby
     source:
-      address: "0xF4F4CDBdb0109d1B42B06B36eb0b7d27576f3446"
+      address: "0x307D5c72A8bA07B999d71270e3E3614EcD3b2013"
       abi: ClusterRewards
-      startBlock: 4225165
+      startBlock: 9610000
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.4
@@ -110,11 +120,11 @@ dataSources:
           handler: handleClusterRewarded
   - kind: ethereum/contract
     name: RewardDelegators
-    network: arbitrum-goerli
+    network: rinkeby
     source:
-      address: "0xDcD2846DCA523Db1C8F3c842a41A58099dE26A0A"
+      address: "0xAd805cF042A3758c3BF424238f8e2A8eA1F5cC3b"
       abi: RewardDelegators
-      startBlock: 4225165
+      startBlock: 9610000
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.4
@@ -136,16 +146,3 @@ dataSources:
           handler: handleClusterRewardDistributed
         - event: RewardsWithdrawn(address,address,bytes32[],uint256)
           handler: handleRewardsWithdrawn
-  - kind: ethereum/contract
-    name: ReceiverStaking
-    network: arbitrum-goerli
-    source:
-      address: "0xE554d2Be7E093FBca1FC1D78dbEa7eF145185E85"
-      abi: ReceiverStaking
-      startBlock: 4225165
-    mapping:
-      kind: etthereum/events
-      apiVersion: 0.0.4
-      language: wasm/assemblyscript
-      file: ./src/mapping.ts
-      
