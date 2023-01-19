@@ -137,6 +137,26 @@ dataSources:
         - event: RewardsWithdrawn(address,address,bytes32[],uint256)
           handler: handleRewardsWithdrawn
   - kind: ethereum/contract
+    name: EpochSelector
+    network: arbitrum-goerli
+    source:
+      address: "0x3867A88adcab3470c3c787216Eb5cc4F32230874"
+      abi: EpochSelector
+      startBlock: 4225165
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      file: ./src/mapping.ts
+      entities:
+        - Cluster
+      abis:
+        - name: EpochSelector
+          file: ./abis/EpochSelector.json
+      eventHandlers:
+        - event: ClusterSelected(indexed uint256,indexed address)
+          handler: handleClusterSelected
+  - kind: ethereum/contract
     name: ReceiverStaking
     network: arbitrum-goerli
     source:
@@ -144,8 +164,18 @@ dataSources:
       abi: ReceiverStaking
       startBlock: 4225165
     mapping:
-      kind: etthereum/events
-      apiVersion: 0.0.4
+      kind: ethereum/events
+      apiVersion: 0.0.6
       language: wasm/assemblyscript
       file: ./src/mapping.ts
+      entities:
+        - Cluster
+      abis:
+        - name: ReceiverStaking
+          file: ./abis/ReceiverStaking.json
+      eventHandlers:
+        - event: BalanceUpdate(indexed address,indexed uint256,uint256)
+          handler: handleBalanceUpdate
+        - event: Transfer(indexed address,indexed address,uint256)
+          handler: handleTransfer
       

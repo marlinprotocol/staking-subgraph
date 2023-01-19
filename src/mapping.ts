@@ -104,7 +104,7 @@ export function handleClusterRegistered(event: ClusterRegistered): void {
     cluster.status = STATUS_REGISTERED;
     cluster.updatedNetwork = null;
     cluster.networkUpdatesAt = BIGINT_ZERO;
-    cluster.updatedCommission = null;
+    cluster.updatedCommission = BIGINT_ZERO;
     cluster.commissionUpdatesAt = BIGINT_ZERO;
     cluster.clusterUnregistersAt = BIGINT_ZERO;
     cluster.save();
@@ -601,7 +601,7 @@ export function handleCommissionUpdated(event: CommissionUpdated): void {
         cluster = new Cluster(id);
     }
     cluster.commission = cluster.updatedCommission as BigInt;
-    cluster.updatedCommission = null;
+    cluster.updatedCommission = BIGINT_ZERO;
     cluster.commissionUpdatesAt = BIGINT_ZERO;
     cluster.save();
 }
@@ -626,6 +626,10 @@ export function handleClusterUnregistered(event: ClusterUnregistered): void {
     }
     cluster.status = STATUS_NOT_REGISTERED;
     cluster.clusterUnregistersAt = BIGINT_ZERO;
+    cluster.commissionUpdatesAt =  BIGINT_ZERO;
+    cluster.networkUpdatesAt = BIGINT_ZERO;
+    cluster.updatedCommission = BIGINT_ZERO;
+    cluster.updatedNetwork = null;
 
     updateNetworkClusters(cluster.networkId, new Bytes(0), id, "unregistered");
     updateActiveClusterCount("unregister");
