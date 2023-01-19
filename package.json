@@ -6,15 +6,15 @@
     "codegen": "graph codegen",
     "build": "graph build",
     "deploy": "graph deploy marlinprotocol/staking-arb1 --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/ --access-token",
-    "codegen-kovan": "graph codegen subgraph-kovan.yaml",
-    "build-kovan": "graph build subgraph-kovan.yaml",
-    "deploy-kovan": "graph deploy marlinprotocol/staking-kovan subgraph-kovan.yaml --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/ --access-token",
+    "codegen-app3": "graph codegen subgraph-app3.yaml",
+    "build-app3": "graph build subgraph-app3.yaml",
+    "deploy-app3": "graph deploy marlinprotocol/staking-kovan subgraph-app3.yaml --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/ --access-token",
     "codegen-rinkeby": "graph codegen subgraph-rinkeby.yaml",
     "build-rinkeby": "graph build subgraph-rinkeby.yaml",
     "deploy-rinkeby": "graph deploy marlinprotocol/staking-rinkeby subgraph-rinkeby.yaml --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/ --access-token",
-    "codegen-dev": "graph codegen subgraph-dev.yaml",
-    "build-dev": "graph build subgraph-dev.yaml",
-    "deploy-dev": "graph deploy marlinprotocol/staking-dev subgraph-dev.yaml --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/ --access-token"
+    "codegen-app2": "graph codegen subgraph-app2.yaml",
+    "build-app2": "graph build subgraph-app2.yaml",
+    "deploy-app2": "graph deploy marlinprotocol/staking-dev subgraph-app2.yaml --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/ --access-token"
   },
   "devDependencies": {
     "@graphprotocol/graph-cli": "0.35.0",
