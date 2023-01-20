@@ -9,6 +9,7 @@ import {
 } from "../../generated/ClusterRewards/ClusterRewards";
 import { Network } from "../../generated/schema";
 import { updateNetworkClustersReward } from "../utils/helpers";
+import { saveTickets } from "./common";
 
 export function handleNetworkAdded(event: NetworkAdded): void {
     let id = event.params.networkId.toHexString();
