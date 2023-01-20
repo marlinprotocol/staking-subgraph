@@ -14,10 +14,8 @@ import {
 } from "../../generated/StakeManager/StakeManager";
 import { BIGINT_ZERO, REDELEGATION_LOCK_SELECTOR } from "../utils/constants";
 import { stashDelegation, stashDeposit, stashUndelegation, stashWithdraw } from "../utils/helpers";
-import { handleBlock } from "./common";
 
 export function handleStashCreated(event: StashCreated): void {
-    handleBlock(event.block);
     let id = event.params.stashId.toHexString();
     let stash = new Stash(id);
 
@@ -51,7 +49,6 @@ export function handleStashCreated(event: StashCreated): void {
 }
 
 export function handleStashDeposit(event: StashDeposit): void {
-    handleBlock(event.block);
     let id = event.params.stashId.toHexString();
 
     let tokens = event.params.tokenIds as Bytes[];
@@ -60,7 +57,6 @@ export function handleStashDeposit(event: StashDeposit): void {
 }
 
 export function handleStashWithdraw(event: StashWithdraw): void {
-    handleBlock(event.block);
     let id = event.params.stashId.toHexString();
 
     let tokens = event.params.tokenIds as Bytes[];
@@ -69,7 +65,6 @@ export function handleStashWithdraw(event: StashWithdraw): void {
 }
 
 export function handleStashMove(event: StashMove): void {
-    handleBlock(event.block);
     let fromId = event.params.fromStashId.toHexString();
     let toId = event.params.toStashId.toHexString();
     let stash = Stash.load(fromId);
@@ -93,7 +88,6 @@ export function handleStashMove(event: StashMove): void {
 }
 
 export function handleStashDelegated(event: StashDelegated): void {
-    handleBlock(event.block);
     let id = event.params.stashId.toHexString();
     let delegatedCluster = event.params.delegatedCluster.toHexString();
     let stash = Stash.load(id);
@@ -140,7 +134,6 @@ export function handleStashDelegated(event: StashDelegated): void {
 }
 
 export function handleStashUndelegated(event: StashUndelegated): void {
-    handleBlock(event.block);
     let id = event.params.stashId.toHexString();
     let stash = Stash.load(id);
     if (!stash) {
@@ -184,7 +177,6 @@ export function handleStashUndelegated(event: StashUndelegated): void {
 }
 
 export function handleTokenAdded(event: TokenAdded): void {
-    handleBlock(event.block);
     let id = event.params.tokenId.toHexString();
     let token = Token.load(id);
     if (token == null) {
@@ -199,7 +191,6 @@ export function handleTokenAdded(event: TokenAdded): void {
 }
 
 export function handleTokenUpdated(event: TokenUpdated): void {
-    handleBlock(event.block);
     let id = event.params.tokenId.toHexString();
     let token = Token.load(id);
     if (!token) {
@@ -211,7 +202,6 @@ export function handleTokenUpdated(event: TokenUpdated): void {
 }
 
 export function handleLockCreated(event: LockCreated): void {
-    handleBlock(event.block);
     let id = event.params.key.toHexString();
     let stash = Stash.load(id);
     if (!stash) {
@@ -233,7 +223,6 @@ export function handleLockCreated(event: LockCreated): void {
 }
 
 export function handleLockDeleted(event: LockDeleted): void {
-    handleBlock(event.block);
     let id = event.params.key.toHexString();
     let stash = Stash.load(id);
     if (!stash) {

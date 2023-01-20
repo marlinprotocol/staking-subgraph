@@ -9,10 +9,8 @@ import {
 } from "../../generated/ClusterRewards/ClusterRewards";
 import { Network } from "../../generated/schema";
 import { updateNetworkClustersReward } from "../utils/helpers";
-import { handleBlock, saveTickets } from "./common";
 
 export function handleNetworkAdded(event: NetworkAdded): void {
-    handleBlock(event.block);
     let id = event.params.networkId.toHexString();
     let network = Network.load(id);
     if (network == null) {
@@ -25,13 +23,11 @@ export function handleNetworkAdded(event: NetworkAdded): void {
 }
 
 export function handleNetworkRemoved(event: NetworkRemoved): void {
-    handleBlock(event.block);
     let id = event.params.networkId.toHexString();
     store.remove("Network", id);
 }
 
 export function handleNetworkRewardUpdated(event: NetworkUpdated): void {
-    handleBlock(event.block);
     let id = event.params.networkId.toHexString();
     let network = Network.load(id);
     if (!network) {
@@ -42,7 +38,6 @@ export function handleNetworkRewardUpdated(event: NetworkUpdated): void {
 }
 
 export function handleTicketIssued(event: TicketsIssued): void {
-    handleBlock(event.block);
     let id = event.params.networkId.toHexString();
 
     updateNetworkClustersReward(id, event.address);

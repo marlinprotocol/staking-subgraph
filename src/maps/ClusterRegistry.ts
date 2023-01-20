@@ -8,10 +8,8 @@ import {
 import { Cluster } from "../../generated/schema";
 import { BIGINT_ZERO, STATUS_REGISTERED, STATUS_NOT_REGISTERED } from "../utils/constants";
 import { updateActiveClusterCount, updateAllClustersList, updateNetworkClusters } from "../utils/helpers";
-import { handleBlock } from "./common";
 
 export function handleClusterRegistered(event: ClusterRegistered): void {
-    handleBlock(event.block);
     let id = event.params.cluster.toHexString();
     let cluster = Cluster.load(id);
     if (cluster == null) {
@@ -37,7 +35,6 @@ export function handleClusterRegistered(event: ClusterRegistered): void {
 }
 
 export function handleRewardAddressUpdated(event: RewardAddressUpdated): void {
-    handleBlock(event.block);
     let id = event.params.cluster.toHexString();
     let cluster = Cluster.load(id);
     if (!cluster) {
@@ -48,7 +45,6 @@ export function handleRewardAddressUpdated(event: RewardAddressUpdated): void {
 }
 
 export function handleClientKeyUpdated(event: ClientKeyUpdated): void {
-    handleBlock(event.block);
     let id = event.params.cluster.toHexString();
     let cluster = Cluster.load(id);
     if (!cluster) {
@@ -59,7 +55,6 @@ export function handleClientKeyUpdated(event: ClientKeyUpdated): void {
 }
 
 export function handleCommissionUpdateRequested(event: CommissionUpdateRequested): void {
-    handleBlock(event.block);
     let id = event.params.cluster.toHexString();
     let cluster = Cluster.load(id);
     if (!cluster) {
@@ -71,7 +66,6 @@ export function handleCommissionUpdateRequested(event: CommissionUpdateRequested
 }
 
 export function handleNetworkSwitchRequested(event: NetworkSwitchRequested): void {
-    handleBlock(event.block);
     let id = event.params.cluster.toHexString();
     let cluster = Cluster.load(id);
     if (!cluster) {
@@ -83,7 +77,6 @@ export function handleNetworkSwitchRequested(event: NetworkSwitchRequested): voi
 }
 
 export function handleClusterUnregisterRequested(event: ClusterUnregisterRequested): void {
-    handleBlock(event.block);
     let id = event.params.cluster.toHexString();
     let cluster = Cluster.load(id);
     if (!cluster) {
@@ -94,7 +87,6 @@ export function handleClusterUnregisterRequested(event: ClusterUnregisterRequest
 }
 
 export function handleCommissionUpdated(event: CommissionUpdated): void {
-    handleBlock(event.block);
     let id = event.params.cluster.toHexString();
     let cluster = Cluster.load(id);
     if (!cluster) {
@@ -122,7 +114,6 @@ export function handleNetworkSwitched(event: NetworkSwitched): void {
 }
 
 export function handleClusterUnregistered(event: ClusterUnregistered): void {
-    handleBlock(event.block);
     let id = event.params.cluster.toHexString();
     let cluster = Cluster.load(id);
     if (!cluster) {

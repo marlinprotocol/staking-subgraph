@@ -101,9 +101,9 @@ type State @entity {
   id: ID!
   clusters: [String!]!
   activeClusterCount: BigInt!
-  lastUpdatedBlock: BigInt!
-  redelegationWaitTime: BigInt!
-  undelegationWaitTime: BigInt!
+  # lastUpdatedBlock: BigInt!
+  # redelegationWaitTime: BigInt!
+  # undelegationWaitTime: BigInt!
 }
 
 type DelegatorReward @entity {

@@ -1,23 +1,5 @@
-import { ethereum, Bytes, Address, BigInt } from "@graphprotocol/graph-ts";
-import { State, TicketsIssued as TicketsIssuedStore } from "../../generated/schema";
-
-import { BIGINT_ZERO } from "../utils/constants";
-
-export function handleBlock(block: ethereum.Block): void {
-    let blockNumber = block.timestamp;
-    let state = State.load("state");
-
-    if (state == null) {
-        state = new State("state");
-        state.clusters = [];
-        state.lastUpdatedBlock = blockNumber;
-        state.activeClusterCount = BIGINT_ZERO;
-        // NOTE: This is initialized to 0 to avoid usage of stake contract in constants
-        state.undelegationWaitTime = BIGINT_ZERO;
-        state.redelegationWaitTime = BIGINT_ZERO;
-        state.save();
-    }
-}
+import { Bytes, Address, BigInt } from "@graphprotocol/graph-ts";
+import { TicketsIssued as TicketsIssuedStore } from "../../generated/schema";
 
 export function saveTickets(networkId: Bytes, epoch: BigInt, clusters: Address[], tickets: BigInt[], from: Address): void {
     for (let index = 0; index < clusters.length; index++) {

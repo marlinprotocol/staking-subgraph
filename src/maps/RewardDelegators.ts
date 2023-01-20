@@ -8,10 +8,8 @@ import {
 } from "../../generated/RewardDelegators/RewardDelegators";
 import { Cluster, Delegator, DelegatorReward, RewardWithdrawl, Token } from "../../generated/schema";
 import { BIGINT_ZERO, UPDATE_REWARDS_FUNC_SIG, WITHDRAW_REWARDS_FUNC_SIG } from "../utils/constants";
-import { handleBlock } from "./common";
 
 export function handleAddReward(event: AddReward): void {
-    handleBlock(event.block);
     let id = event.params.tokenId.toHexString();
     let token = Token.load(id);
     if (!token) {
@@ -22,7 +20,6 @@ export function handleAddReward(event: AddReward): void {
 }
 
 export function handleRemoveReward(event: RemoveReward): void {
-    handleBlock(event.block);
     let id = event.params.tokenId.toHexString();
     let token = Token.load(id);
     if (!token) {
@@ -33,7 +30,6 @@ export function handleRemoveReward(event: RemoveReward): void {
 }
 
 export function handleRewardsUpdated(event: RewardsUpdated): void {
-    handleBlock(event.block);
     let id = event.params.tokenId.toHexString();
     let token = Token.load(id);
     if (!token) {
@@ -44,7 +40,6 @@ export function handleRewardsUpdated(event: RewardsUpdated): void {
 }
 
 export function handleClusterRewardDistributed(event: ClusterRewardDistributed): void {
-    handleBlock(event.block);
     let clusterId = event.params.cluster.toHexString();
     let cluster = Cluster.load(clusterId);
     let txHash = event.transaction.hash.toHexString();
@@ -78,7 +73,6 @@ export function handleClusterRewardDistributed(event: ClusterRewardDistributed):
 }
 
 export function handleRewardsWithdrawn(event: RewardsWithdrawn): void {
-    handleBlock(event.block);
     let clusterId = event.params.cluster.toHexString();
     let delegatorId = event.params.delegator.toHexString();
 

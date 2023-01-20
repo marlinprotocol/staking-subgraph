@@ -40,8 +40,6 @@ dataSources:
           handler: handleNetworkSwitched
         - event: ClusterUnregistered(indexed address,uint256)
           handler: handleClusterUnregistered
-      # blockHandlers:
-      #   - handler: handleBlock
   - kind: ethereum/contract
     name: StakeManager
     network: arbitrum-goerli

@@ -3,7 +3,6 @@ export * from "./maps";
 // export function handleStashUndelegationCancelled(
 //   event: StashUndelegationCancelled
 // ): void {
-//   handleBlock(event.block);
 //   let id = event.params._stashId.toHexString();
 //   let stash = Stash.load(id);
 
@@ -15,7 +14,6 @@ export * from "./maps";
 // export function handleAddedToStash(
 //   event: AddedToStash
 // ): void {
-//   handleBlock(event.block);
 //   let id = event.params.stashId.toHexString();
 //   let stash = Stash.load(id);
 
@@ -36,7 +34,6 @@ export * from "./maps";
 // export function handleStashWithdrawn(
 //   event: StashWithdrawn
 // ): void {
-//   handleBlock(event.block);
 //   let id = event.params.stashId.toHexString();
 
 //   let tokens = event.params.tokens as Bytes[];
@@ -47,7 +44,6 @@ export * from "./maps";
 // export function handleStashClosed(
 //   event: StashClosed
 // ): void {
-//   handleBlock(event.block);
 //   let id = event.params.stashId.toHexString();
 //   let staker = Stash.load(id).staker;
 //   store.remove('Stash', id);
@@ -62,7 +58,6 @@ export * from "./maps";
 // export function handleTokenRemoved(
 //   event: TokenRemoved
 // ): void {
-//   handleBlock(event.block);
 //   let id = event.params.tokenId.toHexString();
 //   let token = Token.load(id);
 //   token.enabled = false;
@@ -72,7 +67,6 @@ export * from "./maps";
 // export function handleRedelegated(
 //   event: Redelegated
 // ): void {
-//   handleBlock(event.block);
 //   let id = event.params.stashId.toHexString();
 //   let stash = Stash.load(id);
 //   let prevCluster = stash.delegatedCluster;
@@ -119,7 +113,6 @@ export * from "./maps";
 // export function handleRedelegationCancelled(
 //   event: RedelegationCancelled
 // ): void {
-//   handleBlock(event.block);
 //   let id = event.params._stashId.toHexString();
 //   let stash = Stash.load(id);
 //   stash.redelegationUpdateBlockV1 = null;
@@ -132,7 +125,6 @@ export * from "./maps";
 // export function handleRedelegationRequested(
 //   event: RedelegationRequested
 // ): void {
-//   handleBlock(event.block);
 //   let id = event.params.stashId.toHexString();
 //   let stash = Stash.load(id);
 
@@ -155,7 +147,6 @@ export * from "./maps";
 // export function handleUndelegationWaitTimeUpdated(
 //   event: UndelegationWaitTimeUpdated
 // ): void {
-//   handleBlock(event.block);
 //   let state = State.load("state");
 //   state.undelegationWaitTime = event.params.undelegationWaitTime;
 // if (!state) {
@@ -164,8 +155,7 @@ export * from "./maps";
 //   state.save();
 // }
 
-// export function handleLockTimeUpdated(event: LockTimeUpdated): void {
-//     handleBlock(event.block);
+// export function handleLockTimeUpdated(event: LockTimeUpdated): void {;
 //     let state = State.load("state");
 //     if (!state) {
 //         state = new State("state");

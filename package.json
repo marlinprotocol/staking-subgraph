@@ -1,11 +1,12 @@
 {
   "name": "staking",
-  "version": "0.1.0",
+  "version": "0.1.3",
   "scripts": {
     "prettier":"npx prettier --write ./src/**/* && npx prettier --write ./src/*",
     "codegen": "graph codegen",
     "build": "graph build",
-    "deploy": "graph deploy marlinprotocol/staking-arb1 --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/ --access-token",
+    "version:bump": "npm version patch",
+    "deploy": "npm run version:bump && graph deploy marlinprotocol/staking-arb1 --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/ --access-token",
     "codegen-app3": "graph codegen subgraph-app3.yaml",
     "build-app3": "graph build subgraph-app3.yaml",
     "deploy-app3": "graph deploy marlinprotocol/staking-kovan subgraph-app3.yaml --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/ --access-token",
