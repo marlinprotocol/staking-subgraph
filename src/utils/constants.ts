@@ -1,4 +1,4 @@
-import { BigDecimal, BigInt, Address } from "@graphprotocol/graph-ts";
+import { BigDecimal, BigInt, Address, Bytes } from "@graphprotocol/graph-ts";
 
 export const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
 export let BIGINT_ZERO = BigInt.fromI32(0);
@@ -9,6 +9,7 @@ export const STATUS_NOT_REGISTERED = "NOT_REGISTERED";
 export const UPDATE_REWARDS_FUNC_SIG = "0x2bc51f6d";
 export const WITHDRAW_REWARDS_FUNC_SIG = "0xe20981ca";
 export const REDELEGATION_LOCK_SELECTOR = "0xc9fb5027edad04dc7cbd44766b39dcb7d42c498b3b47b80001805039c63cf1e0";
+export const EMPTY_BYTES = Bytes.fromHexString("0x");
 // TODO: to be removed after moving to arbitrum
 // export let FIRST_V2_BLOCK = BigInt.fromString("12716894");
 
