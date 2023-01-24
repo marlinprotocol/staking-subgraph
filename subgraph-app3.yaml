@@ -1,4 +1,4 @@
-specVersion: 0.0.2
+specVersion: 0.0.4
 description: Marlin Staking Subgraph
 repository: https://github.com/marlinprotocol/staking-subgraph
 schema:
@@ -13,7 +13,7 @@ dataSources:
       startBlock: 4225165
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.4
+      apiVersion: 0.0.6
       language: wasm/assemblyscript
       file: ./src/mapping.ts
       entities:
@@ -40,8 +40,6 @@ dataSources:
           handler: handleNetworkSwitched
         - event: ClusterUnregistered(indexed address,uint256)
           handler: handleClusterUnregistered
-      # blockHandlers:
-      #   - handler: handleBlock
   - kind: ethereum/contract
     name: StakeManager
     network: arbitrum-goerli
@@ -51,7 +49,7 @@ dataSources:
       startBlock: 4225165
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.4
+      apiVersion: 0.0.6
       language: wasm/assemblyscript
       file: ./src/mapping.ts
       entities:
@@ -89,7 +87,7 @@ dataSources:
       startBlock: 4225165
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.4
+      apiVersion: 0.0.6
       language: wasm/assemblyscript
       file: ./src/mapping.ts
       entities:
@@ -100,14 +98,14 @@ dataSources:
         - name: RewardDelegators
           file: ./abis/RewardDelegators.json
       eventHandlers:
-        - event: NetworkAdded(bytes32,uint256)
+        - event: NetworkUpdated(bytes32,uint256,address)
           handler: handleNetworkAdded
         - event: NetworkRemoved(bytes32)
           handler: handleNetworkRemoved
-        - event: NetworkRewardUpdated(bytes32,uint256)
+        - event: NetworkUpdated(bytes32,uint256,address)
           handler: handleNetworkRewardUpdated
-        - event: ClusterRewarded(bytes32)
-          handler: handleClusterRewarded
+        - event: TicketsIssued(indexed bytes32,indexed uint256,indexed address)
+          handler: handleTicketIssued
   - kind: ethereum/contract
     name: RewardDelegators
     network: arbitrum-goerli
@@ -117,7 +115,7 @@ dataSources:
       startBlock: 4225165
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.4
+      apiVersion: 0.0.6
       language: wasm/assemblyscript
       file: ./src/mapping.ts
       entities:
@@ -144,8 +142,36 @@ dataSources:
       abi: ReceiverStaking
       startBlock: 4225165
     mapping:
-      kind: etthereum/events
-      apiVersion: 0.0.4
+      kind: ethereum/events
+      apiVersion: 0.0.6
       language: wasm/assemblyscript
       file: ./src/mapping.ts
-      
+      entities:
+        - Cluster
+      abis:
+        - name: ReceiverStaking
+          file: ./abis/ReceiverStaking.json
+      eventHandlers:
+        - event: BalanceUpdate(indexed address,indexed uint256,uint256)
+          handler: handleBalanceUpdate
+        - event: Transfer(indexed address,indexed address,uint256)
+          handler: handleTransfer
+templates:
+  - kind: ethereum/contract
+    name: EpochSelector
+    network: arbitrum-goerli
+    source:
+      abi: EpochSelector
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      file: ./src/mapping.ts
+      entities:
+        - Cluster
+      abis:
+        - name: EpochSelector
+          file: ./abis/EpochSelector.json
+      eventHandlers:
+        - event: ClusterSelected(indexed uint256,indexed address)
+          handler: handleClusterSelected      

@@ -51,11 +51,17 @@ type Token @entity {
   enabled: Boolean!
 }
 
+type Selector @entity {
+  id: ID!,
+  networkId: Bytes!
+}
+
 type Network @entity {
   id: ID!
   networkId: Bytes!
   rewardPerEpoch: BigInt
   clusters: [String!]!
+  epochSelector: String!
 }
 
 type TokenData @entity {
@@ -101,9 +107,9 @@ type State @entity {
   id: ID!
   clusters: [String!]!
   activeClusterCount: BigInt!
-  lastUpdatedBlock: BigInt!
-  redelegationWaitTime: BigInt!
-  undelegationWaitTime: BigInt!
+  # lastUpdatedBlock: BigInt!
+  # redelegationWaitTime: BigInt!
+  # undelegationWaitTime: BigInt!
 }
 
 type DelegatorReward @entity {
@@ -121,4 +127,40 @@ type RewardWithdrawl @entity {
   timestamp: BigInt!
   isAuto: Boolean!
   txHash: String!
+}
+
+# (networkId + epoch + cluster) is the unique ID
+type SelectedCluster @entity {
+  id: ID!
+  networkId: Bytes!
+  epoch: BigInt!
+  address: String!
+}
+
+type ReceiverStake @entity {
+  id: ID!,
+  address: String!,
+  epoch: BigInt!,
+  stake: BigInt!
+}
+
+type ReceiveBalance @entity {
+  id: ID!,
+  balance: BigInt!
+}
+
+# networkId + epoch + cluster + issuedBy is unique
+type TicketsIssued @entity {
+  id: ID!,
+  networkId: Bytes!
+  epoch: BigInt!, 
+  cluster: String!,
+  issuedBy: String!
+  tickets: BigInt!
+}
+
+# ID is address of the cluster
+type ClusterRewardTracker @entity {
+  id: ID!,
+  reward: BigInt!,
 }
