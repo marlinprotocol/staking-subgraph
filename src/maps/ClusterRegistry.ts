@@ -3,7 +3,12 @@ import {
     ClusterRegistered,
     RewardAddressUpdated,
     ClientKeyUpdated,
-    CommissionUpdateRequested, NetworkSwitchRequested, ClusterUnregisterRequested, CommissionUpdated, NetworkSwitched, ClusterUnregistered
+    CommissionUpdateRequested,
+    NetworkSwitchRequested,
+    ClusterUnregisterRequested,
+    CommissionUpdated,
+    NetworkSwitched,
+    ClusterUnregistered
 } from "../../generated/ClusterRegistry/ClusterRegistry";
 import { Cluster } from "../../generated/schema";
 import { BIGINT_ZERO, STATUS_REGISTERED, STATUS_NOT_REGISTERED } from "../utils/constants";
