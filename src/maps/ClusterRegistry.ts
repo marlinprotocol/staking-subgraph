@@ -8,11 +8,13 @@ import {
     ClusterUnregisterRequested,
     CommissionUpdated,
     NetworkSwitched,
-    ClusterUnregistered
+    ClusterUnregistered,
+    Initialized
 } from "../../generated/ClusterRegistry/ClusterRegistry";
 import { Cluster } from "../../generated/schema";
-import { BIGINT_ZERO, STATUS_REGISTERED, STATUS_NOT_REGISTERED } from "../utils/constants";
+import { BIGINT_ZERO, STATUS_REGISTERED, STATUS_NOT_REGISTERED, CLUSTER_REGISTRY } from "../utils/constants";
 import { updateActiveClusterCount, updateAllClustersList, updateNetworkClusters } from "../utils/helpers";
+import { saveContract } from "./common";
 
 export function handleClusterRegistered(event: ClusterRegistered): void {
     let id = event.params.cluster.toHexString();
@@ -134,4 +136,8 @@ export function handleClusterUnregistered(event: ClusterUnregistered): void {
     updateNetworkClusters(cluster.networkId, new Bytes(0), id, "unregistered");
     updateActiveClusterCount("unregister");
     cluster.save();
+}
+
+export function handleClusterRegistryInitialized(event: Initialized): void {
+    saveContract(CLUSTER_REGISTRY, event.address.toHexString());
 }

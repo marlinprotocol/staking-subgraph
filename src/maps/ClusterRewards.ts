@@ -1,13 +1,14 @@
 import { Bytes, store } from "@graphprotocol/graph-ts";
-import { NetworkAdded, NetworkRemoved, NetworkUpdated, TicketsIssued } from "../../generated/ClusterRewards/ClusterRewards";
+import { NetworkAdded, NetworkRemoved, NetworkUpdated, TicketsIssued, Initialized } from "../../generated/ClusterRewards/ClusterRewards";
 import { Network, Selector } from "../../generated/schema";
 import { EpochSelector } from "../../generated/templates";
 import { updateNetworkClustersReward } from "../utils/helpers";
-import { saveTicket } from "./common";
+import { saveContract, saveTicket } from "./common";
 
 import { ClusterRewards as ClusterRewardsContract } from "../../generated/ClusterRewards/ClusterRewards";
 import { EpochSelector as EpochSelectorContract } from "../../generated/EpochSelector/EpochSelector";
 import { ReceiverStaking as ReceiverStakingContract } from "../../generated/ReceiverStaking/ReceiverStaking";
+import { CLUSTER_REWARD } from "../utils/constants";
 
 export function handleNetworkAdded(event: NetworkAdded): void {
     let id = event.params.networkId.toHexString();
@@ -38,7 +39,9 @@ export function handleNetworkRemoved(event: NetworkRemoved): void {
     let id = event.params.networkId.toHexString();
     let network = Network.load(id);
     if (network) {
-        store.remove("Selector", network.epochSelector);
+        if (network.epochSelector) {
+            store.remove("Selector", network.epochSelector as string);
+        }
         store.remove("Network", id);
     }
 }
@@ -53,7 +56,9 @@ export function handleNetworkRewardUpdated(event: NetworkUpdated): void {
     network.epochSelector = event.params.epochSelector.toHexString();
     network.save();
 
-    store.remove("Selector", network.epochSelector);
+    if (network.epochSelector) {
+        store.remove("Selector", network.epochSelector as string);
+    }
     addEpochSelector(event.params.epochSelector.toHexString(), event.params.networkId);
 }
 
@@ -96,6 +101,9 @@ export function handleTicketIssued(event: TicketsIssued): void {
     }
 }
 
+export function handleClusterRewardInitialized(event: Initialized): void {
+    saveContract(CLUSTER_REWARD, event.address.toHexString());
+}
 // incase callHandlers are used in future
 // export function handleCallIssueTicketsMultipleEpoch(call: IssueTicketsCall): void {
 //     const inputs = call.inputs;

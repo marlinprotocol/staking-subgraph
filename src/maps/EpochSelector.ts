@@ -4,14 +4,14 @@ import { SelectedCluster, Selector } from "../../generated/schema";
 export function handleClusterSelected(event: ClusterSelected): void {
     let selector = Selector.load(event.address.toHexString());
     if (selector) {
-        let id = selector.networkId.toHexString() + "-" + event.params.epoch.toString() + "-" + event.params.cluster.toString();
+        let id = selector.networkId.toHexString() + "-" + event.params.epoch.toHexString() + "-" + event.params.cluster.toHexString();
         let selectedClusterData = SelectedCluster.load(id);
 
         if (selectedClusterData == null) {
             selectedClusterData = new SelectedCluster(id);
             selectedClusterData.epoch = event.params.epoch;
-            selectedClusterData.address = event.params.cluster.toString();
-            selectedClusterData.networkId = selector.networkId;
+            selectedClusterData.address = event.params.cluster.toHexString();
+            selectedClusterData.networkId = selector.networkId.toHexString();
             selectedClusterData.save();
         }
     } else {

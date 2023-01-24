@@ -4,10 +4,12 @@ import {
     ClusterRewardDistributed,
     RemoveReward,
     RewardsUpdated,
-    RewardsWithdrawn
+    RewardsWithdrawn,
+    Initialized
 } from "../../generated/RewardDelegators/RewardDelegators";
 import { Cluster, Delegator, DelegatorReward, RewardWithdrawl, Token, ClusterRewardTracker } from "../../generated/schema";
-import { BIGINT_ONE, BIGINT_ZERO, UPDATE_REWARDS_FUNC_SIG, WITHDRAW_REWARDS_FUNC_SIG } from "../utils/constants";
+import { BIGINT_ONE, BIGINT_ZERO, REWARD_DELEGATORS, UPDATE_REWARDS_FUNC_SIG, WITHDRAW_REWARDS_FUNC_SIG } from "../utils/constants";
+import { saveContract } from "./common";
 
 export function handleAddReward(event: AddReward): void {
     let id = event.params.tokenId.toHexString();
@@ -134,4 +136,8 @@ export function handleRewardsWithdrawn(event: RewardsWithdrawn): void {
     rewardWithdrawl.timestamp = event.block.timestamp;
     rewardWithdrawl.txHash = txHash;
     rewardWithdrawl.save();
+}
+
+export function handleRewardDelegatorsInitialized(event: Initialized): void {
+    saveContract(REWARD_DELEGATORS, event.address.toHexString());
 }

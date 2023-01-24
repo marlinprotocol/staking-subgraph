@@ -10,10 +10,12 @@ import {
     StashUndelegated,
     StashWithdraw,
     TokenAdded,
-    TokenUpdated
+    TokenUpdated,
+    Initialized
 } from "../../generated/StakeManager/StakeManager";
-import { BIGINT_ZERO, REDELEGATION_LOCK_SELECTOR } from "../utils/constants";
+import { BIGINT_ZERO, REDELEGATION_LOCK_SELECTOR, STAKE_MANAGER } from "../utils/constants";
 import { stashDelegation, stashDeposit, stashUndelegation, stashWithdraw } from "../utils/helpers";
+import { saveContract } from "./common";
 
 export function handleStashCreated(event: StashCreated): void {
     let id = event.params.stashId.toHexString();
@@ -51,8 +53,8 @@ export function handleStashCreated(event: StashCreated): void {
 export function handleStashDeposit(event: StashDeposit): void {
     let id = event.params.stashId.toHexString();
 
-    let tokens = event.params.tokenIds as Bytes[];
-    let amounts = event.params.amounts as BigInt[];
+    let tokens = event.params.tokenIds;
+    let amounts = event.params.amounts;
     stashDeposit(id, tokens, amounts);
 }
 
@@ -239,4 +241,8 @@ export function handleLockDeleted(event: LockDeleted): void {
     }
 
     stash.save();
+}
+
+export function handleStakeManagerInitialized(event: Initialized): void {
+    saveContract(STAKE_MANAGER, event.address.toHexString());
 }

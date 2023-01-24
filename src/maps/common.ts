@@ -1,9 +1,9 @@
 import { ethereum, Bytes, Address, BigInt } from "@graphprotocol/graph-ts";
-import { State, TicketsIssued as TicketsIssuedStore, ClusterRewardTracker } from "../../generated/schema";
+import { State, TicketsIssued as TicketsIssuedStore, ClusterRewardTracker, ContractStore } from "../../generated/schema";
 
 import { ClusterRewards as ClusterRewardsContract } from "../../generated/ClusterRewards/ClusterRewards";
 
-import { BIGINT_ZERO } from "../utils/constants";
+import { BIGINT_ZERO, CLUSTER_REGISTRY } from "../utils/constants";
 
 export function saveTicket(
     clusterRewardContractAddress: Address,
@@ -41,7 +41,7 @@ export function saveTicket(
         ticket = new TicketsIssuedStore(ticketId);
     }
 
-    ticket.networkId = networkId;
+    ticket.networkId = networkId.toHexString();
     ticket.epoch = epoch;
     ticket.cluster = cluster.toHexString();
     ticket.issuedBy = receiver.toHexString();
@@ -50,6 +50,14 @@ export function saveTicket(
     ticket.save();
 }
 
+export function saveContract(marker: string, address: string): void {
+    let contract = ContractStore.load(marker);
+    if (!contract) {
+        contract = new ContractStore(marker);
+        contract.address = address;
+        contract.save();
+    }
+}
 // export function handleBlock(block: ethereum.Block): void {
 //     let blockNumber = block.timestamp;
 //     let state = State.load("state");

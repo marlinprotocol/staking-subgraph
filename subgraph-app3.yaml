@@ -40,6 +40,8 @@ dataSources:
           handler: handleNetworkSwitched
         - event: ClusterUnregistered(indexed address,uint256)
           handler: handleClusterUnregistered
+        - event: Initialized(uint8)
+          handler: handleClusterRegistryInitialized
   - kind: ethereum/contract
     name: StakeManager
     network: arbitrum-goerli
@@ -78,6 +80,8 @@ dataSources:
           handler: handleLockCreated
         - event: LockDeleted(indexed bytes32,indexed bytes32,uint256)
           handler: handleLockDeleted
+        - event: Initialized(uint8)
+          handler: handleStakeManagerInitialized
   - kind: ethereum/contract
     name: ClusterRewards
     network: arbitrum-goerli
@@ -106,6 +110,8 @@ dataSources:
           handler: handleNetworkRewardUpdated
         - event: TicketsIssued(indexed bytes32,indexed uint256,indexed address)
           handler: handleTicketIssued
+        - event: Initialized(uint8)
+          handler: handleClusterRewardInitialized
   - kind: ethereum/contract
     name: RewardDelegators
     network: arbitrum-goerli
@@ -134,6 +140,8 @@ dataSources:
           handler: handleClusterRewardDistributed
         - event: RewardsWithdrawn(address,address,bytes32[],uint256)
           handler: handleRewardsWithdrawn
+        - event: Initialized(uint8)
+          handler: handleRewardDelegatorsInitialized
   - kind: ethereum/contract
     name: ReceiverStaking
     network: arbitrum-goerli
@@ -156,6 +164,8 @@ dataSources:
           handler: handleBalanceUpdate
         - event: Transfer(indexed address,indexed address,uint256)
           handler: handleTransfer
+        - event: Initialized(uint8)
+          handler: handleReceiverStakingInitialized
 templates:
   - kind: ethereum/contract
     name: EpochSelector

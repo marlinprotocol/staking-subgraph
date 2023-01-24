@@ -421,7 +421,7 @@ export function updateClusterDelegatorsReward(clusterId: string, clusterRewardsA
             delegatorReward.delegator = delegators[i];
         }
 
-        let rewardDelegatorAddress = getRewardDelegatorAddress(clusterRewardsAddress);
+        let rewardDelegatorAddress = getRewardDelegatorAddress();
 
         if (rewardDelegatorAddress.toHexString() == ZERO_ADDRESS) {
             log.critical("rewardDelegator mapping doesnt exist for {}", [clusterRewardsAddress.toHexString()]);

@@ -52,7 +52,7 @@ type Token @entity {
 }
 
 type Selector @entity {
-  id: ID!,
+  id: ID! # Address of epoch selector
   networkId: Bytes!
 }
 
@@ -61,7 +61,7 @@ type Network @entity {
   networkId: Bytes!
   rewardPerEpoch: BigInt
   clusters: [String!]!
-  epochSelector: String!
+  epochSelector: Selector
 }
 
 type TokenData @entity {
@@ -129,38 +129,42 @@ type RewardWithdrawl @entity {
   txHash: String!
 }
 
-# (networkId + epoch + cluster) is the unique ID
 type SelectedCluster @entity {
-  id: ID!
-  networkId: Bytes!
+  id: ID! # (networkId + epoch + cluster) is the unique ID
+  networkId: Network!
   epoch: BigInt!
-  address: String!
+  address: String! # address of the selected cluster
 }
 
 type ReceiverStake @entity {
-  id: ID!,
+  id: ID!, # address + epoch  is unique
   address: String!,
   epoch: BigInt!,
   stake: BigInt!
+  balance: ReceiverBalance
 }
 
-type ReceiveBalance @entity {
+type ReceiverBalance @entity {
   id: ID!,
   balance: BigInt!
 }
 
-# networkId + epoch + cluster + issuedBy is unique
 type TicketsIssued @entity {
-  id: ID!,
-  networkId: Bytes!
+  id: ID!, # networkId + epoch + cluster + issuedBy is unique
+  networkId: Network!
   epoch: BigInt!, 
   cluster: String!,
   issuedBy: String!
   tickets: BigInt!
 }
 
-# ID is address of the cluster
+# ID is address of the cluster (only used for calculating tickets)
 type ClusterRewardTracker @entity {
   id: ID!,
   reward: BigInt!,
+}
+
+type ContractStore @entity {
+  id: ID! # ID added to constants
+  address: String!
 }
