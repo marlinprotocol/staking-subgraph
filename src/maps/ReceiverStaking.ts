@@ -4,7 +4,7 @@ import { ADDRESSS_ZERO, BIGINT_ZERO, RECEIVER_STAKING } from "../utils/constants
 import { saveContract } from "./common";
 
 export function handleBalanceUpdate(event: BalanceUpdate): void {
-    let id = event.params._address.toHexString() + "-" + event.params.epoch.toHexString();
+    let id = event.params._address.toHexString() + "#" + event.params.epoch.toHexString();
 
     let receiverData = ReceiverStake.load(id);
 

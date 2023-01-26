@@ -12,14 +12,22 @@ import {
     Initialized
 } from "../../generated/ClusterRegistry/ClusterRegistry";
 import { Cluster } from "../../generated/schema";
-import { BIGINT_ZERO, STATUS_REGISTERED, STATUS_NOT_REGISTERED, CLUSTER_REGISTRY } from "../utils/constants";
+import {
+    BIGINT_ZERO,
+    STATUS_REGISTERED,
+    STATUS_NOT_REGISTERED,
+    CLUSTER_REGISTRY,
+    NETWORK_CLUSTER_OPERATION,
+    ACTIVE_CLUSTER_COUNT_OPERATION,
+    EMPTY_BYTES
+} from "../utils/constants";
 import { updateActiveClusterCount, updateAllClustersList, updateNetworkClusters } from "../utils/helpers";
 import { saveContract } from "./common";
 
 export function handleClusterRegistered(event: ClusterRegistered): void {
     let id = event.params.cluster.toHexString();
     let cluster = Cluster.load(id);
-    if (cluster == null) {
+    if (!cluster) {
         cluster = new Cluster(id);
         cluster.delegators = [];
         cluster.pendingRewards = BIGINT_ZERO;
@@ -37,8 +45,8 @@ export function handleClusterRegistered(event: ClusterRegistered): void {
     cluster.save();
 
     updateAllClustersList(event.params.cluster);
-    updateActiveClusterCount("register");
-    updateNetworkClusters(new Bytes(0), event.params.networkId, event.params.cluster.toHexString(), "add");
+    updateActiveClusterCount(ACTIVE_CLUSTER_COUNT_OPERATION.REGISTER);
+    updateNetworkClusters(new Bytes(0), event.params.networkId, event.params.cluster.toHexString(), NETWORK_CLUSTER_OPERATION.ADD);
 }
 
 export function handleRewardAddressUpdated(event: RewardAddressUpdated): void {
@@ -100,6 +108,7 @@ export function handleCommissionUpdated(event: CommissionUpdated): void {
         cluster = new Cluster(id);
     }
     cluster.commission = cluster.updatedCommission as BigInt;
+
     cluster.updatedCommission = BIGINT_ZERO;
     cluster.commissionUpdatesAt = BIGINT_ZERO;
     cluster.save();
@@ -111,9 +120,9 @@ export function handleNetworkSwitched(event: NetworkSwitched): void {
     if (!cluster) {
         cluster = new Cluster(id);
     }
-    updateNetworkClusters(cluster.networkId, cluster.updatedNetwork as Bytes, id, "changed");
-
     cluster.networkId = cluster.updatedNetwork as Bytes;
+    updateNetworkClusters(cluster.networkId, cluster.updatedNetwork as Bytes, id, NETWORK_CLUSTER_OPERATION.CHANGED);
+
     cluster.updatedNetwork = null;
     cluster.networkUpdatesAt = BIGINT_ZERO;
 
@@ -133,8 +142,8 @@ export function handleClusterUnregistered(event: ClusterUnregistered): void {
     cluster.updatedCommission = BIGINT_ZERO;
     cluster.updatedNetwork = null;
 
-    updateNetworkClusters(cluster.networkId, new Bytes(0), id, "unregistered");
-    updateActiveClusterCount("unregister");
+    updateNetworkClusters(cluster.networkId, new Bytes(0), id, NETWORK_CLUSTER_OPERATION.UNREGISTERED);
+    updateActiveClusterCount(ACTIVE_CLUSTER_COUNT_OPERATION.REGISTER);
     cluster.save();
 }
 

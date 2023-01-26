@@ -61,8 +61,8 @@ export function handleStashDeposit(event: StashDeposit): void {
 export function handleStashWithdraw(event: StashWithdraw): void {
     let id = event.params.stashId.toHexString();
 
-    let tokens = event.params.tokenIds as Bytes[];
-    let amounts = event.params.amounts as BigInt[];
+    let tokens = event.params.tokenIds;
+    let amounts = event.params.amounts;
     stashWithdraw(id, tokens, amounts);
 }
 
@@ -80,8 +80,8 @@ export function handleStashMove(event: StashMove): void {
     toStash.delegatedCluster = stash.delegatedCluster;
     toStash.save();
 
-    let tokens = event.params.tokenIds as Bytes[];
-    let amounts = event.params.amounts as BigInt[];
+    let tokens = event.params.tokenIds;
+    let amounts = event.params.amounts;
     stashUndelegation(fromId, stash.delegatedCluster);
     stashWithdraw(fromId, tokens, amounts);
     stashDeposit(toId, tokens, amounts);
@@ -125,6 +125,7 @@ export function handleStashDelegated(event: StashDelegated): void {
         if (!stashLog) {
             stashLog = new Stash(id);
         }
+
         for (let i = 0; i < (stashLog.tokensDelegatedAmount as BigInt[]).length; i++) {
             log.info("HSD2: {}, {}, {}", [
                 stashLog.staker.toHexString(),
@@ -147,6 +148,7 @@ export function handleStashUndelegated(event: StashUndelegated): void {
         if (!stashLog) {
             stashLog = new Stash(id);
         }
+
         for (let i = 0; i < (stashLog.tokensDelegatedAmount as BigInt[]).length; i++) {
             log.info("HSU1: {}, {}, {}", [
                 stashLog.staker.toHexString(),

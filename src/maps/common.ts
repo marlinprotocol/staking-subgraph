@@ -1,9 +1,9 @@
-import { ethereum, Bytes, Address, BigInt } from "@graphprotocol/graph-ts";
-import { State, TicketsIssued as TicketsIssuedStore, ClusterRewardTracker, ContractStore } from "../../generated/schema";
+import { Bytes, Address, BigInt } from "@graphprotocol/graph-ts";
+import { TicketsIssued as TicketsIssuedStore, ClusterRewardTracker, ContractStore } from "../../generated/schema";
 
 import { ClusterRewards as ClusterRewardsContract } from "../../generated/ClusterRewards/ClusterRewards";
 
-import { BIGINT_ZERO, CLUSTER_REGISTRY } from "../utils/constants";
+import { BIGINT_ZERO } from "../utils/constants";
 
 export function saveTicket(
     clusterRewardContractAddress: Address,

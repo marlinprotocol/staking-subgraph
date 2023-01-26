@@ -13,7 +13,7 @@ import { CLUSTER_REWARD } from "../utils/constants";
 export function handleNetworkAdded(event: NetworkAdded): void {
     let id = event.params.networkId.toHexString();
     let network = Network.load(id);
-    if (network == null) {
+    if (!network) {
         network = new Network(id);
         network.networkId = event.params.networkId;
         network.rewardPerEpoch = event.params.rewardPerEpoch;
