@@ -45,3 +45,8 @@ export enum NETWORK_CLUSTER_OPERATION {
 export enum ACTIVE_CLUSTER_COUNT_OPERATION {
     REGISTER
 }
+
+export enum TOKENS_IN_USE {
+    POND,
+    MPOND
+}

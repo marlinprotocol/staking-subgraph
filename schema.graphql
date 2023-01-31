@@ -131,7 +131,7 @@ type RewardWithdrawl @entity {
 
 type SelectedCluster @entity {
   id: ID! # (networkId + epoch + cluster) is the unique ID
-  networkId: Network!
+  network: Network!
   epoch: BigInt!
   address: String! # address of the selected cluster
 }
@@ -167,4 +167,14 @@ type ClusterRewardTracker @entity {
 type ContractStore @entity {
   id: ID! # ID added to constants
   address: String!
+}
+
+type PondUser @entity {
+  id: ID!
+  balance: BigInt!
+}
+
+type MPondUser @entity {
+  id: ID!
+  balance: BigInt!
 }

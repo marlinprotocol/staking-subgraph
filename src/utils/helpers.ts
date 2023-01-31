@@ -376,7 +376,7 @@ export function updateNetworkClusters(
         let networkIdString = updatedNetworkId.toHexString();
         let network = Network.load(networkIdString);
 
-        if (network == null) {
+        if (!network) {
             network = new Network(networkIdString);
             network.networkId = updatedNetworkId;
             network.clusters = [];

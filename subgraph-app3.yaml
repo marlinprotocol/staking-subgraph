@@ -102,7 +102,7 @@ dataSources:
         - name: RewardDelegators
           file: ./abis/RewardDelegators.json
       eventHandlers:
-        - event: NetworkUpdated(bytes32,uint256,address)
+        - event: NetworkAdded(bytes32,uint256,address)
           handler: handleNetworkAdded
         - event: NetworkRemoved(bytes32)
           handler: handleNetworkRemoved
@@ -163,9 +163,49 @@ dataSources:
         - event: BalanceUpdate(indexed address,indexed uint256,uint256)
           handler: handleBalanceUpdate
         - event: Transfer(indexed address,indexed address,uint256)
-          handler: handleTransfer
+          handler: handleReceiverTokenTransfer
         - event: Initialized(uint8)
           handler: handleReceiverStakingInitialized
+  - kind: ethereum/contract
+    name: POND
+    network: arbitrum-goerli
+    source:
+      address: '0xa9472a9C135Cb33221de441a4DEd393FD515a69C'
+      abi: POND
+      startBlock: 600000
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - PondUser
+      abis:
+        - name: POND
+          file: ./abis/POND.json
+      eventHandlers:
+        - event: Transfer(indexed address,indexed address,uint256)
+          handler: handlePondTransfer
+      file: ./src/mapping.ts
+  - kind: ethereum/contract
+    name: MPondLogic
+    network: arbitrum-goerli
+    source:
+      address: "0x0B3d9b224496C2A2Fa1a4096D8EB4D350eFd9079"
+      abi: MPondLogic
+      startBlock: 600000 
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - MPondUser
+      abis:
+        - name: MPondLogic
+          file: ./abis/MPondLogic.json
+      eventHandlers:
+        - event: Transfer(indexed address,indexed address,uint256)
+          handler: handleMPondTransfer
+      file: ./src/mapping.ts
 templates:
   - kind: ethereum/contract
     name: EpochSelector

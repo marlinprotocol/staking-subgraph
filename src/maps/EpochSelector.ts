@@ -11,7 +11,7 @@ export function handleClusterSelected(event: ClusterSelected): void {
             selectedClusterData = new SelectedCluster(id);
             selectedClusterData.epoch = event.params.epoch;
             selectedClusterData.address = event.params.cluster.toHexString();
-            selectedClusterData.networkId = selector.networkId.toHexString();
+            selectedClusterData.network = selector.networkId.toHexString();
             selectedClusterData.save();
         }
     } else {

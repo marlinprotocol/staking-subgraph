@@ -19,9 +19,9 @@ export function handleBalanceUpdate(event: BalanceUpdate): void {
     receiverData.save();
 }
 
-export function handleTransfer(event: Transfer): void {
+export function handleReceiverTokenTransfer(event: Transfer): void {
     // when minted from contract
-    if (event.params.from.equals(event.address)) {
+    if (event.params.from.equals(ADDRESSS_ZERO)) {
         let receiverId = event.params.to.toHexString();
 
         let receiver = ReceiverBalance.load(receiverId);
