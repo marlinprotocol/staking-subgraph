@@ -136,16 +136,16 @@ type SelectedCluster @entity {
   address: String! # address of the selected cluster
 }
 
-type ReceiverStake @entity {
+type ReceiverBalanceSnapshot @entity {
   id: ID!, # address + epoch  is unique
   address: String!,
   epoch: BigInt!,
-  stake: BigInt!
-  balance: ReceiverBalance
+  balance: BigInt!
 }
 
 type ReceiverBalance @entity {
   id: ID!,
+  address: String! # added to make it identical to above schema, (else no use)
   balance: BigInt!
 }
 
@@ -169,12 +169,35 @@ type ContractStore @entity {
   address: String!
 }
 
+type Param @entity {
+  id: ID!
+  value: String!
+}
+
 type PondUser @entity {
   id: ID!
   balance: BigInt!
+  approvals: [PondApproval!]! @derivedFrom(field: "user")
 }
 
 type MPondUser @entity {
   id: ID!
   balance: BigInt!
+  approvals: [MPondApproval!]! @derivedFrom(field: "user")
+}
+
+type PondApproval @entity {
+  id: ID!
+  user: PondUser!
+  from: String!
+  to: String!
+  value: BigInt!
+}
+
+type MPondApproval @entity {
+  id: ID!
+  user: MPondUser!
+  from: String!
+  to: String!
+  value: BigInt!
 }

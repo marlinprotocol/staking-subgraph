@@ -1,5 +1,5 @@
 import { Bytes, Address, BigInt } from "@graphprotocol/graph-ts";
-import { TicketsIssued as TicketsIssuedStore, ClusterRewardTracker, ContractStore } from "../../generated/schema";
+import { TicketsIssued as TicketsIssuedStore, ClusterRewardTracker, ContractStore, Param } from "../../generated/schema";
 
 import { ClusterRewards as ClusterRewardsContract } from "../../generated/ClusterRewards/ClusterRewards";
 
@@ -56,6 +56,15 @@ export function saveContract(marker: string, address: string): void {
         contract = new ContractStore(marker);
         contract.address = address;
         contract.save();
+    }
+}
+
+export function saveParam(marker: string, data: string): void {
+    let param = Param.load(marker);
+    if (!param) {
+        param = new Param(marker);
+        param.value = data;
+        param.save();
     }
 }
 // export function handleBlock(block: ethereum.Block): void {

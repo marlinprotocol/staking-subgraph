@@ -185,6 +185,8 @@ dataSources:
       eventHandlers:
         - event: Transfer(indexed address,indexed address,uint256)
           handler: handlePondTransfer
+        - event: Approval(indexed address,indexed address,uint256)
+          handler: handlePondAllowance
       file: ./src/mapping.ts
   - kind: ethereum/contract
     name: MPondLogic
@@ -205,6 +207,8 @@ dataSources:
       eventHandlers:
         - event: Transfer(indexed address,indexed address,uint256)
           handler: handleMPondTransfer
+        - event: Approval(indexed address,indexed address,uint256)
+          handler: handlePondAllowance
       file: ./src/mapping.ts
 templates:
   - kind: ethereum/contract

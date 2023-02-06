@@ -1,6 +1,6 @@
 import { BigInt } from "@graphprotocol/graph-ts";
-import { PondUser as User } from "../../generated/schema";
-import { Transfer } from "../../generated/POND/POND";
+import { PondUser as User, PondApproval as ApprovalEntity } from "../../generated/schema";
+import { Transfer, Approval } from "../../generated/POND/POND";
 import { ADDRESSS_ZERO } from "../utils/constants";
 
 export function handlePondTransfer(event: Transfer): void {
@@ -23,4 +23,24 @@ export function handlePondTransfer(event: Transfer): void {
 
     toUser.balance = toUser.balance.plus(amount);
     toUser.save();
+}
+
+export function handlePondAllowance(event: Approval) : void{
+    let owner = event.params.owner;
+    let spender = event.params.spender;
+    let value = event.params.value;
+
+    let id = owner.toHexString()+"#"+spender.toHexString();
+
+    let approval = ApprovalEntity.load(id);
+    if(!approval){
+        approval = new ApprovalEntity(id);
+        
+        approval.user = owner.toHexString();
+        approval.from = owner.toHexString();
+        approval.to = spender.toHexString();
+    }
+
+    approval.value = value;
+    approval.save();
 }
