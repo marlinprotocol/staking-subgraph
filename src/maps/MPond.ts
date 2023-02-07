@@ -10,9 +10,11 @@ export function handleMPondTransfer(event: Transfer): void {
 
     // check if from is address(0)
     if (event.params.from.notEqual(ADDRESSS_ZERO)) {
-        let fromUser = User.load(from)!;
-        fromUser.balance = fromUser.balance.minus(amount);
-        fromUser.save();
+        let fromUser = User.load(from);
+        if (fromUser) {
+            fromUser.balance = fromUser.balance.minus(amount);
+            fromUser.save();
+        }
     }
 
     let toUser = User.load(to);
@@ -25,18 +27,17 @@ export function handleMPondTransfer(event: Transfer): void {
     toUser.save();
 }
 
-
-export function handleMPondAllowance(event: Approval) : void{
+export function handleMPondAllowance(event: Approval): void {
     let owner = event.params.owner;
     let spender = event.params.spender;
     let value = event.params.value;
 
-    let id = owner.toHexString()+"#"+spender.toHexString();
+    let id = owner.toHexString() + "#" + spender.toHexString();
 
     let approval = ApprovalEntity.load(id);
-    if(!approval){
+    if (!approval) {
         approval = new ApprovalEntity(id);
-        
+
         approval.user = owner.toHexString();
         approval.from = owner.toHexString();
         approval.to = spender.toHexString();

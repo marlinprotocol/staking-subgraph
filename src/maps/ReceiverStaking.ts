@@ -41,7 +41,10 @@ function _getCurrentSnapshotId(blockTime: BigInt): BigInt {
         // return (block.timestamp - START_TIME)/EPOCH_LENGTH + 1;
         const st = BigInt.fromString(startTime.value);
         const el = BigInt.fromString(epochLength.value);
-        return blockTime.minus(st).div(el).plus(BIGINT_ONE);
+        return blockTime
+            .minus(st)
+            .div(el)
+            .plus(BIGINT_ONE);
     } else {
         return BIGINT_ZERO;
     }
