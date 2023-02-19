@@ -1,14 +1,10 @@
-import { BalanceUpdate, Transfer, Initialized } from "../../generated/ReceiverStaking/ReceiverStaking";
-import { ReceiverBalanceSnapshot, ReceiverBalance, Param } from "../../generated/schema";
+import { Initialized, SignerUpdated, Transfer } from "../../generated/ReceiverStaking/ReceiverStaking";
+import { Param, ReceiverBalance, ReceiverBalanceSnapshot } from "../../generated/schema";
 import { ADDRESSS_ZERO, BIGINT_ONE, BIGINT_ZERO, EPOCH_LENGTH, RECEIVER_STAKING, START_TIME } from "../utils/constants";
 import { saveContract, saveParam } from "./common";
 
-import { ReceiverStaking as ReceiverStakingContract } from "../../generated/ReceiverStaking/ReceiverStaking";
 import { Address, BigInt } from "@graphprotocol/graph-ts";
-
-export function handleBalanceUpdate(event: BalanceUpdate): void {
-    // storeSnapshot(event.params._address, event.params.epoch, event.params.balance);
-}
+import { ReceiverStaking as ReceiverStakingContract } from "../../generated/ReceiverStaking/ReceiverStaking";
 
 function storeSnapshot(user: Address, epoch: BigInt, balance: BigInt): void {
     let id = user.toHexString() + "#" + epoch.toHexString();
@@ -89,4 +85,15 @@ export function handleReceiverStakingInitialized(event: Initialized): void {
 
     saveParam(EPOCH_LENGTH, receiverStaking.EPOCH_LENGTH().toString());
     saveParam(START_TIME, receiverStaking.START_TIME().toString());
+}
+
+export function handleSignerUpdated(event: SignerUpdated): void {
+    let receiverId = event.params.staker.toHexString();
+
+    let receiver = ReceiverBalance.load(receiverId);
+
+    if (receiver) {
+        receiver.signer = event.params.signer.toHexString();
+        receiver.save();
+    }
 }

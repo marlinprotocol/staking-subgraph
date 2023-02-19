@@ -147,6 +147,7 @@ type ReceiverBalance @entity {
   id: ID!,
   address: String! # added to make it identical to above schema, (else no use)
   balance: BigInt!
+  signer: String
 }
 
 type TicketsIssued @entity {

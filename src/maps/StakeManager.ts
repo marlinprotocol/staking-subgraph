@@ -1,8 +1,10 @@
 import { Bytes, BigInt, log } from "@graphprotocol/graph-ts";
 import { Delegator, Stash, Token } from "../../generated/schema";
 import {
+    Initialized,
     LockCreated,
     LockDeleted,
+    LockWaitTimeUpdated,
     StashCreated,
     StashDelegated,
     StashDeposit,
@@ -10,12 +12,12 @@ import {
     StashUndelegated,
     StashWithdraw,
     TokenAdded,
-    TokenUpdated,
-    Initialized
+    TokenUpdated
 } from "../../generated/StakeManager/StakeManager";
-import { BIGINT_ZERO, REDELEGATION_LOCK_SELECTOR, STAKE_MANAGER } from "../utils/constants";
+
+import { BIGINT_ZERO, REDELEGATION_LOCK_SELECTOR, REDELEGATION_WAIT_TIME, STAKE_MANAGER } from "../utils/constants";
 import { stashDelegation, stashDeposit, stashUndelegation, stashWithdraw } from "../utils/helpers";
-import { saveContract } from "./common";
+import { saveContract, saveParam } from "./common";
 
 export function handleStashCreated(event: StashCreated): void {
     let id = event.params.stashId.toHexString();
@@ -247,4 +249,10 @@ export function handleLockDeleted(event: LockDeleted): void {
 
 export function handleStakeManagerInitialized(event: Initialized): void {
     saveContract(STAKE_MANAGER, event.address.toHexString());
+}
+
+export function handleLockWaitTimeUpdated(event: LockWaitTimeUpdated): void {
+    if (event.params.selector.equals(Bytes.fromHexString(REDELEGATION_LOCK_SELECTOR))) {
+        saveParam(REDELEGATION_WAIT_TIME, event.params.updatedLockTime.toString());
+    }
 }

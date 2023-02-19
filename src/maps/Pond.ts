@@ -1,6 +1,6 @@
 import { BigInt } from "@graphprotocol/graph-ts";
-import { PondUser as User, PondApproval as ApprovalEntity } from "../../generated/schema";
-import { Transfer, Approval } from "../../generated/POND/POND";
+import { Approval, Transfer } from "../../generated/POND/POND";
+import { PondApproval as ApprovalEntity, PondUser as User } from "../../generated/schema";
 import { ADDRESSS_ZERO } from "../utils/constants";
 
 export function handlePondTransfer(event: Transfer): void {

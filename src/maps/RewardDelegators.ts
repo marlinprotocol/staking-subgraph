@@ -2,12 +2,12 @@ import { log } from "@graphprotocol/graph-ts";
 import {
     AddReward,
     ClusterRewardDistributed,
+    Initialized,
     RemoveReward,
     RewardsUpdated,
-    RewardsWithdrawn,
-    Initialized
+    RewardsWithdrawn
 } from "../../generated/RewardDelegators/RewardDelegators";
-import { Cluster, Delegator, DelegatorReward, RewardWithdrawl, Token, ClusterRewardTracker } from "../../generated/schema";
+import { Cluster, ClusterRewardTracker, Delegator, DelegatorReward, RewardWithdrawl, Token } from "../../generated/schema";
 import { BIGINT_ONE, BIGINT_ZERO, REWARD_DELEGATORS, UPDATE_REWARDS_FUNC_SIG, WITHDRAW_REWARDS_FUNC_SIG } from "../utils/constants";
 import { saveContract } from "./common";
 

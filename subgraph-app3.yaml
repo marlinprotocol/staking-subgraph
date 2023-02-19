@@ -82,6 +82,8 @@ dataSources:
           handler: handleLockDeleted
         - event: Initialized(uint8)
           handler: handleStakeManagerInitialized
+        - event: LockWaitTimeUpdated(indexed bytes32,uint256,uint256)
+          handler: handleLockWaitTimeUpdated
   - kind: ethereum/contract
     name: ClusterRewards
     network: arbitrum-goerli
@@ -160,12 +162,12 @@ dataSources:
         - name: ReceiverStaking
           file: ./abis/ReceiverStaking.json
       eventHandlers:
-        - event: BalanceUpdate(indexed address,indexed uint256,uint256)
-          handler: handleBalanceUpdate
         - event: Transfer(indexed address,indexed address,uint256)
           handler: handleReceiverTokenTransfer
         - event: Initialized(uint8)
           handler: handleReceiverStakingInitialized
+        - event: SignerUpdated(address,address)
+          handler: handleSignerUpdated
   - kind: ethereum/contract
     name: POND
     network: arbitrum-goerli

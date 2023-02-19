@@ -1,5 +1,5 @@
 import { Bytes, store } from "@graphprotocol/graph-ts";
-import { NetworkAdded, NetworkRemoved, NetworkUpdated, TicketsIssued, Initialized } from "../../generated/ClusterRewards/ClusterRewards";
+import { Initialized, NetworkAdded, NetworkRemoved, NetworkUpdated, TicketsIssued } from "../../generated/ClusterRewards/ClusterRewards";
 import { Network, Selector } from "../../generated/schema";
 import { EpochSelector } from "../../generated/templates";
 import { updateNetworkClustersReward } from "../utils/helpers";
@@ -77,9 +77,10 @@ export function handleTicketIssued(event: TicketsIssued): void {
 
     let clusters = epochSelector.getClusters(event.params.epoch);
 
-    let _stakeInfo = receiverStaking.getStakeInfo(event.params.sender, event.params.epoch);
-    let _epochTotalStake = _stakeInfo.value1;
-    let _epochReceiverStake = _stakeInfo.value0;
+    let _stakeInfo = receiverStaking.getEpochInfo(event.params.epoch);
+    let _epochTotalStake = _stakeInfo.value0;
+    let _epochReceiverStakeData = receiverStaking.balanceOfSignerAt(event.params.sender, event.params.epoch)
+    let _epochReceiverStake = _epochReceiverStakeData.value0;
 
     let RECEIVER_TICKETS_PER_EPOCH = clusterReward.RECEIVER_TICKETS_PER_EPOCH();
 

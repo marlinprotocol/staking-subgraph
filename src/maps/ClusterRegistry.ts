@@ -1,25 +1,25 @@
-import { Bytes, BigInt } from "@graphprotocol/graph-ts";
+import { BigInt, Bytes } from "@graphprotocol/graph-ts";
 import {
-    ClusterRegistered,
-    RewardAddressUpdated,
     ClientKeyUpdated,
-    CommissionUpdateRequested,
-    NetworkSwitchRequested,
+    ClusterRegistered,
+    ClusterUnregistered,
     ClusterUnregisterRequested,
     CommissionUpdated,
+    CommissionUpdateRequested,
+    Initialized,
     NetworkSwitched,
-    ClusterUnregistered,
-    Initialized
+    NetworkSwitchRequested,
+    RewardAddressUpdated
 } from "../../generated/ClusterRegistry/ClusterRegistry";
 import { Cluster } from "../../generated/schema";
 import {
-    BIGINT_ZERO,
-    STATUS_REGISTERED,
-    STATUS_NOT_REGISTERED,
-    CLUSTER_REGISTRY,
-    NETWORK_CLUSTER_OPERATION,
     ACTIVE_CLUSTER_COUNT_OPERATION,
-    EMPTY_BYTES
+    BIGINT_ZERO,
+    CLUSTER_REGISTRY,
+    EMPTY_BYTES,
+    NETWORK_CLUSTER_OPERATION,
+    STATUS_NOT_REGISTERED,
+    STATUS_REGISTERED
 } from "../utils/constants";
 import { updateActiveClusterCount, updateAllClustersList, updateNetworkClusters } from "../utils/helpers";
 import { saveContract } from "./common";
@@ -76,7 +76,7 @@ export function handleCommissionUpdateRequested(event: CommissionUpdateRequested
         cluster = new Cluster(id);
     }
     cluster.updatedCommission = event.params.commissionAfterUpdate;
-    cluster.commissionUpdatesAt = event.params.commissionAfterUpdate;
+    cluster.commissionUpdatesAt = event.params.effectiveTime;
     cluster.save();
 }
 

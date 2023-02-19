@@ -1,6 +1,6 @@
 import { BigInt } from "@graphprotocol/graph-ts";
-import { MPondUser as User, MPondApproval as ApprovalEntity } from "../../generated/schema";
-import { Transfer, Approval } from "../../generated/MPondLogic/MPondLogic";
+import { Approval, Transfer } from "../../generated/MPondLogic/MPondLogic";
+import { MPondApproval as ApprovalEntity, MPondUser as User } from "../../generated/schema";
 import { ADDRESSS_ZERO } from "../utils/constants";
 
 export function handleMPondTransfer(event: Transfer): void {

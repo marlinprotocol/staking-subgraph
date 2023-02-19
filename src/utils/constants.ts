@@ -17,10 +17,10 @@ export const ADDRESSS_ZERO = Address.fromString(ZERO_ADDRESS);
 
 export function getRewardDelegatorAddress(): Address {
     let store = ContractStore.load(REWARD_DELEGATORS);
-    if (store) {
-        return Address.fromString(store.address);
-    } else {
+    if (!store) {
         return ADDRESSS_ZERO;
+    } else {
+        return Address.fromString(store.address);
     }
 }
 
@@ -33,6 +33,7 @@ export const RECEIVER_STAKING = "RECEIVER_STAKING";
 
 export const EPOCH_LENGTH = "EPOCH_LENGTH";
 export const START_TIME = "START_TIME";
+export const REDELEGATION_WAIT_TIME = "REDELEGATION_WAIT_TIME";
 
 export enum DELEGATOR_TOKEN_ACTION {
     ADD,

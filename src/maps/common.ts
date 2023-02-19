@@ -1,5 +1,5 @@
-import { Bytes, Address, BigInt } from "@graphprotocol/graph-ts";
-import { TicketsIssued as TicketsIssuedStore, ClusterRewardTracker, ContractStore, Param } from "../../generated/schema";
+import { Address, BigInt, Bytes } from "@graphprotocol/graph-ts";
+import { ClusterRewardTracker, ContractStore, Param, TicketsIssued as TicketsIssuedStore } from "../../generated/schema";
 
 import { ClusterRewards as ClusterRewardsContract } from "../../generated/ClusterRewards/ClusterRewards";
 
