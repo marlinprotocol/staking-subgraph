@@ -148,9 +148,9 @@ dataSources:
     name: ReceiverStaking
     network: arbitrum-goerli
     source:
-      address: "0xE554d2Be7E093FBca1FC1D78dbEa7eF145185E85"
+      address: "0xb81741CeaAa9f1097e46a544d1b4de5049e5b6Ab"
       abi: ReceiverStaking
-      startBlock: 4225165
+      startBlock: 8363663
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -166,7 +166,7 @@ dataSources:
           handler: handleReceiverTokenTransfer
         - event: Initialized(uint8)
           handler: handleReceiverStakingInitialized
-        - event: SignerUpdated(address,address)
+        - event: SignerUpdated(indexed address,indexed address,indexed address)
           handler: handleSignerUpdated
   - kind: ethereum/contract
     name: POND

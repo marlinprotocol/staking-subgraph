@@ -93,7 +93,7 @@ export function handleSignerUpdated(event: SignerUpdated): void {
     let receiver = ReceiverBalance.load(receiverId);
 
     if (receiver) {
-        receiver.signer = event.params.signer.toHexString();
+        receiver.signer = event.params.to.toHexString();
         receiver.save();
     }
 }
