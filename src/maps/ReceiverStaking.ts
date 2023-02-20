@@ -72,9 +72,9 @@ export function handleReceiverTokenTransfer(event: Transfer): void {
         if (receiver) {
             receiver.balance = receiver.balance.minus(event.params.value);
             receiver.save();
-
-            // saveSnapshot(event.address, event.params.from, event.block.timestamp);
         }
+
+        saveSnapshot(event.address, event.params.from, event.block.timestamp);
     }
 }
 
@@ -92,8 +92,12 @@ export function handleSignerUpdated(event: SignerUpdated): void {
 
     let receiver = ReceiverBalance.load(receiverId);
 
-    if (receiver) {
-        receiver.signer = event.params.to.toHexString();
-        receiver.save();
+    if (!receiver) {
+        receiver = new ReceiverBalance(receiverId);
+        receiver.address = event.params.staker.toHexString();
+        receiver.balance = BIGINT_ZERO;
     }
+
+    receiver.signer = event.params.to.toHexString();
+    receiver.save();
 }
