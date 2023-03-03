@@ -267,7 +267,7 @@ export function updateClusterDelegation(clusterId: string, tokens: Bytes[], amou
                 continue;
             }
 
-            if (delegation == null) {
+            if (!delegation) {
                 delegation = new Delegation(id);
                 delegation.token = tokens[i].toHexString();
                 delegation.cluster = clusterId;
@@ -285,15 +285,18 @@ export function updateClusterDelegation(clusterId: string, tokens: Bytes[], amou
             let delegation = Delegation.load(id);
             if (!delegation) {
                 delegation = new Delegation(id);
-            }
+                delegation.token = tokens[i].toHexString();
+                delegation.cluster = clusterId;
+                delegation.amount = BIGINT_ZERO;
 
-            if (delegation == null && amounts[i] == BIGINT_ZERO) {
-                continue;
+                if (amounts[i].equals(BIGINT_ZERO)) {
+                    continue;
+                }
             }
 
             delegation.amount = delegation.amount.minus(amounts[i]);
 
-            if (delegation.amount == BIGINT_ZERO) {
+            if (delegation.amount.equals(BIGINT_ZERO)) {
                 store.remove("Delegation", id);
             } else {
                 delegation.save();

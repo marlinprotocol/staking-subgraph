@@ -79,7 +79,7 @@ export function handleTicketIssued(event: TicketsIssued): void {
 
     let _stakeInfo = receiverStaking.getEpochInfo(event.params.epoch);
     let _epochTotalStake = _stakeInfo.value0;
-    let _epochReceiverStakeData = receiverStaking.balanceOfSignerAt(event.params.sender, event.params.epoch)
+    let _epochReceiverStakeData = receiverStaking.balanceOfSignerAt(event.params.sender, event.params.epoch);
     let _epochReceiverStake = _epochReceiverStakeData.value0;
 
     let RECEIVER_TICKETS_PER_EPOCH = clusterReward.RECEIVER_TICKETS_PER_EPOCH();

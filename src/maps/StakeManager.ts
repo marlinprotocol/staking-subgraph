@@ -145,20 +145,20 @@ export function handleStashUndelegated(event: StashUndelegated): void {
         stash = new Stash(id);
     }
 
-    {
-        let stashLog = Stash.load(id);
-        if (!stashLog) {
-            stashLog = new Stash(id);
-        }
+    // {
+    //     let stashLog = Stash.load(id);
+    //     if (!stashLog) {
+    //         stashLog = new Stash(id);
+    //     }
 
-        for (let i = 0; i < (stashLog.tokensDelegatedAmount as BigInt[]).length; i++) {
-            log.info("HSU1: {}, {}, {}", [
-                stashLog.staker.toHexString(),
-                stashLog.delegatedCluster,
-                (stashLog.tokensDelegatedAmount as BigInt[])[i].toHexString()
-            ]);
-        }
-    }
+    //     for (let i = 0; i < (stashLog.tokensDelegatedAmount as BigInt[]).length; i++) {
+    //         log.info("HSU1: {}, {}, {}", [
+    //             stashLog.staker.toHexString(),
+    //             stashLog.delegatedCluster,
+    //             (stashLog.tokensDelegatedAmount as BigInt[])[i].toHexString()
+    //         ]);
+    //     }
+    // }
     stashUndelegation(id, stash.delegatedCluster);
 
     stash = Stash.load(id);
@@ -167,19 +167,19 @@ export function handleStashUndelegated(event: StashUndelegated): void {
     }
     stash.delegatedCluster = "";
     stash.save();
-    {
-        let stashLog = Stash.load(id);
-        if (!stashLog) {
-            stashLog = new Stash(id);
-        }
-        for (let i = 0; i < (stashLog.tokensDelegatedAmount as BigInt[]).length; i++) {
-            log.info("HSU2: {}, {}, {}", [
-                stashLog.staker.toHexString(),
-                stashLog.delegatedCluster,
-                (stashLog.tokensDelegatedAmount as BigInt[])[i].toHexString()
-            ]);
-        }
-    }
+    // {
+    //     let stashLog = Stash.load(id);
+    //     if (!stashLog) {
+    //         stashLog = new Stash(id);
+    //     }
+    //     for (let i = 0; i < (stashLog.tokensDelegatedAmount as BigInt[]).length; i++) {
+    //         log.info("HSU2: {}, {}, {}", [
+    //             stashLog.staker.toHexString(),
+    //             stashLog.delegatedCluster,
+    //             (stashLog.tokensDelegatedAmount as BigInt[])[i].toHexString()
+    //         ]);
+    //     }
+    // }
 }
 
 export function handleTokenAdded(event: TokenAdded): void {
