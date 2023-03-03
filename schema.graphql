@@ -157,6 +157,7 @@ type TicketsIssued @entity {
   cluster: String!,
   issuedBy: String!
   tickets: BigInt!
+  reward: BigInt!
 }
 
 # ID is address of the cluster (only used for calculating tickets)

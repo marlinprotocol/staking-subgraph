@@ -34,18 +34,23 @@ export function saveTicket(
         .div(_epochReceiverStake)
         .div(_totalNetworkRewardsPerEpoch);
 
+    let rewardIssued = currentReward.minus(existingReward);
+
     let ticketId = networkId.toHexString() + "#" + epoch.toHexString() + "#" + cluster.toHexString() + "#" + receiver.toHexString();
     let ticket = TicketsIssuedStore.load(ticketId);
 
     if (!ticket) {
         ticket = new TicketsIssuedStore(ticketId);
+        ticket.tickets = BIGINT_ZERO;
+        ticket.reward = BIGINT_ZERO;
     }
 
     ticket.networkId = networkId.toHexString();
     ticket.epoch = epoch;
     ticket.cluster = cluster.toHexString();
     ticket.issuedBy = receiver.toHexString();
-    ticket.tickets = ticketsIssued;
+    ticket.tickets = ticket.tickets.plus(ticketsIssued);
+    ticket.reward = ticket.reward.plus(rewardIssued);
 
     ticket.save();
 }
