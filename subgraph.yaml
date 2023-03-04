@@ -114,6 +114,8 @@ dataSources:
           handler: handleTicketIssued
         - event: Upgraded(indexed address)
           handler: handleClusterRewardInitialized
+        - event: ClusterRewarded(bytes32)
+          handler: handleClusterRewarded
   - kind: ethereum/contract
     name: RewardDelegators
     network: arbitrum-one

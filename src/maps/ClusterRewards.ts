@@ -1,5 +1,12 @@
 import { Bytes, store } from "@graphprotocol/graph-ts";
-import { NetworkAdded, NetworkRemoved, NetworkUpdated, TicketsIssued, Upgraded } from "../../generated/ClusterRewards/ClusterRewards";
+import {
+    NetworkAdded,
+    NetworkRemoved,
+    NetworkUpdated,
+    TicketsIssued,
+    Upgraded,
+    ClusterRewarded
+} from "../../generated/ClusterRewards/ClusterRewards";
 import { Network, Selector } from "../../generated/schema";
 import { EpochSelector } from "../../generated/templates";
 import { updateNetworkClustersReward } from "../utils/helpers";
@@ -100,6 +107,12 @@ export function handleTicketIssued(event: TicketsIssued): void {
             _totalNetworkRewardsPerEpoch
         );
     }
+}
+
+export function handleClusterRewarded(event: ClusterRewarded): void {
+    let id = event.params.networkId.toHexString();
+
+    updateNetworkClustersReward(id, event.address);
 }
 
 export function handleClusterRewardInitialized(event: Upgraded): void {
