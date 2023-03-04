@@ -1,7 +1,6 @@
 import { Bytes, BigInt, log } from "@graphprotocol/graph-ts";
 import { Delegator, Stash, Token } from "../../generated/schema";
 import {
-    Initialized,
     LockCreated,
     LockDeleted,
     LockWaitTimeUpdated,
@@ -12,7 +11,8 @@ import {
     StashUndelegated,
     StashWithdraw,
     TokenAdded,
-    TokenUpdated
+    TokenUpdated,
+    Upgraded
 } from "../../generated/StakeManager/StakeManager";
 
 import { BIGINT_ZERO, REDELEGATION_LOCK_SELECTOR, REDELEGATION_WAIT_TIME, STAKE_MANAGER } from "../utils/constants";
@@ -247,7 +247,7 @@ export function handleLockDeleted(event: LockDeleted): void {
     stash.save();
 }
 
-export function handleStakeManagerInitialized(event: Initialized): void {
+export function handleStakeManagerInitialized(event: Upgraded): void {
     saveContract(STAKE_MANAGER, event.address.toHexString());
 }
 

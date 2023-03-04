@@ -40,7 +40,7 @@ dataSources:
           handler: handleNetworkSwitched
         - event: ClusterUnregistered(indexed address,uint256)
           handler: handleClusterUnregistered
-        - event: Initialized(uint8)
+        - event: Upgraded(indexed address)
           handler: handleClusterRegistryInitialized
   - kind: ethereum/contract
     name: StakeManager
@@ -80,7 +80,7 @@ dataSources:
           handler: handleLockCreated
         - event: LockDeleted(indexed bytes32,indexed bytes32,uint256)
           handler: handleLockDeleted
-        - event: Initialized(uint8)
+        - event: Upgraded(indexed address)
           handler: handleStakeManagerInitialized
         - event: LockWaitTimeUpdated(indexed bytes32,uint256,uint256)
           handler: handleLockWaitTimeUpdated
@@ -112,7 +112,7 @@ dataSources:
           handler: handleNetworkRewardUpdated
         - event: TicketsIssued(indexed bytes32,indexed uint256,indexed address)
           handler: handleTicketIssued
-        - event: Initialized(uint8)
+        - event: Upgraded(indexed address)
           handler: handleClusterRewardInitialized
   - kind: ethereum/contract
     name: RewardDelegators
@@ -142,7 +142,7 @@ dataSources:
           handler: handleClusterRewardDistributed
         - event: RewardsWithdrawn(address,address,bytes32[],uint256)
           handler: handleRewardsWithdrawn
-        - event: Initialized(uint8)
+        - event: Upgraded(indexed address)
           handler: handleRewardDelegatorsInitialized
   - kind: ethereum/contract
     name: ReceiverStaking

@@ -1,5 +1,5 @@
 import { Bytes, store } from "@graphprotocol/graph-ts";
-import { Initialized, NetworkAdded, NetworkRemoved, NetworkUpdated, TicketsIssued } from "../../generated/ClusterRewards/ClusterRewards";
+import { NetworkAdded, NetworkRemoved, NetworkUpdated, TicketsIssued, Upgraded } from "../../generated/ClusterRewards/ClusterRewards";
 import { Network, Selector } from "../../generated/schema";
 import { EpochSelector } from "../../generated/templates";
 import { updateNetworkClustersReward } from "../utils/helpers";
@@ -102,7 +102,7 @@ export function handleTicketIssued(event: TicketsIssued): void {
     }
 }
 
-export function handleClusterRewardInitialized(event: Initialized): void {
+export function handleClusterRewardInitialized(event: Upgraded): void {
     saveContract(CLUSTER_REWARD, event.address.toHexString());
 }
 // incase callHandlers are used in future

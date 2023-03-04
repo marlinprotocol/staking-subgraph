@@ -6,10 +6,10 @@ import {
     ClusterUnregisterRequested,
     CommissionUpdated,
     CommissionUpdateRequested,
-    Initialized,
     NetworkSwitched,
     NetworkSwitchRequested,
-    RewardAddressUpdated
+    RewardAddressUpdated,
+    Upgraded
 } from "../../generated/ClusterRegistry/ClusterRegistry";
 import { Cluster } from "../../generated/schema";
 import {
@@ -147,6 +147,6 @@ export function handleClusterUnregistered(event: ClusterUnregistered): void {
     cluster.save();
 }
 
-export function handleClusterRegistryInitialized(event: Initialized): void {
+export function handleClusterRegistryInitialized(event: Upgraded): void {
     saveContract(CLUSTER_REGISTRY, event.address.toHexString());
 }

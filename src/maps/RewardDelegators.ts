@@ -2,10 +2,10 @@ import { log } from "@graphprotocol/graph-ts";
 import {
     AddReward,
     ClusterRewardDistributed,
-    Initialized,
     RemoveReward,
     RewardsUpdated,
-    RewardsWithdrawn
+    RewardsWithdrawn,
+    Upgraded
 } from "../../generated/RewardDelegators/RewardDelegators";
 import { Cluster, ClusterRewardTracker, Delegator, DelegatorReward, RewardWithdrawl, Token } from "../../generated/schema";
 import { BIGINT_ONE, BIGINT_ZERO, REWARD_DELEGATORS, UPDATE_REWARDS_FUNC_SIG, WITHDRAW_REWARDS_FUNC_SIG } from "../utils/constants";
@@ -138,6 +138,6 @@ export function handleRewardsWithdrawn(event: RewardsWithdrawn): void {
     rewardWithdrawl.save();
 }
 
-export function handleRewardDelegatorsInitialized(event: Initialized): void {
+export function handleRewardDelegatorsInitialized(event: Upgraded): void {
     saveContract(REWARD_DELEGATORS, event.address.toHexString());
 }
