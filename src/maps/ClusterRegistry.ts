@@ -15,9 +15,11 @@ import { Cluster } from "../../generated/schema";
 import {
     ACTIVE_CLUSTER_COUNT_OPERATION,
     BIGINT_ZERO,
+    CLUSTER_OPERATION,
     CLUSTER_REGISTRY,
     EMPTY_BYTES,
     NETWORK_CLUSTER_OPERATION,
+    saveClusterHistory,
     STATUS_NOT_REGISTERED,
     STATUS_REGISTERED
 } from "../utils/constants";
@@ -47,6 +49,8 @@ export function handleClusterRegistered(event: ClusterRegistered): void {
     updateAllClustersList(event.params.cluster);
     updateActiveClusterCount(ACTIVE_CLUSTER_COUNT_OPERATION.REGISTER);
     updateNetworkClusters(new Bytes(0), event.params.networkId, event.params.cluster.toHexString(), NETWORK_CLUSTER_OPERATION.ADD);
+
+    saveClusterHistory(id, CLUSTER_OPERATION.REGISTERED, event.transaction.hash, event.block.timestamp);
 }
 
 export function handleRewardAddressUpdated(event: RewardAddressUpdated): void {
@@ -57,6 +61,7 @@ export function handleRewardAddressUpdated(event: RewardAddressUpdated): void {
     }
     cluster.rewardAddress = event.params.updatedRewardAddress;
     cluster.save();
+    saveClusterHistory(id, CLUSTER_OPERATION.UPDATE_REWARD_ADDRESS, event.transaction.hash, event.block.timestamp);
 }
 
 export function handleClientKeyUpdated(event: ClientKeyUpdated): void {
@@ -67,6 +72,7 @@ export function handleClientKeyUpdated(event: ClientKeyUpdated): void {
     }
     cluster.clientKey = event.params.clientKey;
     cluster.save();
+    saveClusterHistory(id, CLUSTER_OPERATION.CLIENT_KEY_UPDATED, event.transaction.hash, event.block.timestamp);
 }
 
 export function handleCommissionUpdateRequested(event: CommissionUpdateRequested): void {
@@ -78,6 +84,7 @@ export function handleCommissionUpdateRequested(event: CommissionUpdateRequested
     cluster.updatedCommission = event.params.commissionAfterUpdate;
     cluster.commissionUpdatesAt = event.params.effectiveTime;
     cluster.save();
+    saveClusterHistory(id, CLUSTER_OPERATION.COMISSION_UPDATE_REQUESTED, event.transaction.hash, event.block.timestamp);
 }
 
 export function handleNetworkSwitchRequested(event: NetworkSwitchRequested): void {
@@ -89,6 +96,7 @@ export function handleNetworkSwitchRequested(event: NetworkSwitchRequested): voi
     cluster.updatedNetwork = event.params.networkId;
     cluster.networkUpdatesAt = event.params.effectiveTime;
     cluster.save();
+    saveClusterHistory(id, CLUSTER_OPERATION.NETWORK_SWITCH_REQUESTED, event.transaction.hash, event.block.timestamp);
 }
 
 export function handleClusterUnregisterRequested(event: ClusterUnregisterRequested): void {
@@ -99,6 +107,7 @@ export function handleClusterUnregisterRequested(event: ClusterUnregisterRequest
     }
     cluster.clusterUnregistersAt = event.params.effectiveTime;
     cluster.save();
+    saveClusterHistory(id, CLUSTER_OPERATION.CLUSTER_UNREGISTER_REQUESTED, event.transaction.hash, event.block.timestamp);
 }
 
 export function handleCommissionUpdated(event: CommissionUpdated): void {
@@ -112,6 +121,7 @@ export function handleCommissionUpdated(event: CommissionUpdated): void {
     cluster.updatedCommission = BIGINT_ZERO;
     cluster.commissionUpdatesAt = BIGINT_ZERO;
     cluster.save();
+    saveClusterHistory(id, CLUSTER_OPERATION.COMISSION_UPDATED, event.transaction.hash, event.block.timestamp);
 }
 
 export function handleNetworkSwitched(event: NetworkSwitched): void {
@@ -127,6 +137,7 @@ export function handleNetworkSwitched(event: NetworkSwitched): void {
     cluster.networkUpdatesAt = BIGINT_ZERO;
 
     cluster.save();
+    saveClusterHistory(id, CLUSTER_OPERATION.NETWORK_SWITCHED, event.transaction.hash, event.block.timestamp);
 }
 
 export function handleClusterUnregistered(event: ClusterUnregistered): void {
@@ -145,6 +156,7 @@ export function handleClusterUnregistered(event: ClusterUnregistered): void {
     updateNetworkClusters(cluster.networkId, new Bytes(0), id, NETWORK_CLUSTER_OPERATION.UNREGISTERED);
     updateActiveClusterCount(ACTIVE_CLUSTER_COUNT_OPERATION.REGISTER);
     cluster.save();
+    saveClusterHistory(id, CLUSTER_OPERATION.CLUSTER_UNREGISTERED, event.transaction.hash, event.block.timestamp);
 }
 
 export function handleClusterRegistryInitialized(event: Upgraded): void {

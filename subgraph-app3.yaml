@@ -103,6 +103,8 @@ dataSources:
           file: ./abis/ClusterRewards.json
         - name: RewardDelegators
           file: ./abis/RewardDelegators.json
+        - name: ClusterSelector
+          file: ./abis/ClusterSelector.json
       eventHandlers:
         - event: NetworkAdded(bytes32,uint256,address)
           handler: handleNetworkAdded
@@ -214,10 +216,10 @@ dataSources:
       file: ./src/mapping.ts
 templates:
   - kind: ethereum/contract
-    name: EpochSelector
+    name: ClusterSelector
     network: arbitrum-goerli
     source:
-      abi: EpochSelector
+      abi: ClusterSelector
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -226,8 +228,8 @@ templates:
       entities:
         - Cluster
       abis:
-        - name: EpochSelector
-          file: ./abis/EpochSelector.json
+        - name: ClusterSelector
+          file: ./abis/ClusterSelector.json
       eventHandlers:
         - event: ClusterSelected(indexed uint256,indexed address)
           handler: handleClusterSelected      

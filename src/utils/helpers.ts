@@ -10,7 +10,9 @@ import {
     BIGINT_ONE,
     DELEGATOR_TOKEN_ACTION,
     NETWORK_CLUSTER_OPERATION,
-    ACTIVE_CLUSTER_COUNT_OPERATION
+    ACTIVE_CLUSTER_COUNT_OPERATION,
+    saveClusterHistory,
+    CLUSTER_OPERATION
 } from "./constants";
 
 export function stashDeposit(stashId: string, tokens: Bytes[], amounts: BigInt[]): void {
@@ -396,7 +398,7 @@ export function updateNetworkClusters(
     }
 }
 
-export function updateNetworkClustersReward(networkId: string, clusterRewardsAddress: Address): void {
+export function updateNetworkClustersReward(networkId: string, clusterRewardsAddress: Address, hash: Bytes, timestamp: BigInt): void {
     let network = Network.load(networkId);
     if (!network) {
         network = new Network(networkId);
@@ -417,6 +419,7 @@ export function updateNetworkClustersReward(networkId: string, clusterRewardsAdd
         cluster.save();
 
         updateClusterDelegatorsReward(clusters[i], clusterRewardsAddress);
+        saveClusterHistory(clusters[i], CLUSTER_OPERATION.CLUSTER_REWARDED, hash, timestamp);
     }
 }
 
