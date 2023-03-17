@@ -1,4 +1,4 @@
-import { Bytes, store } from "@graphprotocol/graph-ts";
+import { Bytes, store, log } from "@graphprotocol/graph-ts";
 import {
     NetworkAdded,
     NetworkRemoved,
@@ -13,8 +13,8 @@ import { updateNetworkClustersReward } from "../utils/helpers";
 import { saveContract, saveTicket } from "./common";
 
 import { ClusterRewards as ClusterRewardsContract } from "../../generated/ClusterRewards/ClusterRewards";
-import { EpochSelector as EpochSelectorContract } from "../../generated/EpochSelector/EpochSelector";
-import { ReceiverStaking as ReceiverStakingContract } from "../../generated/ReceiverStaking/ReceiverStaking";
+import { ClusterSelector as ClusterSelectorContract } from "../../generated/ClusterRewards/ClusterSelector";
+import { ReceiverStaking as ReceiverStakingContract } from "../../generated/ClusterRewards/ReceiverStaking";
 import { CLUSTER_OPERATION, CLUSTER_REWARD, saveClusterHistory } from "../utils/constants";
 
 export function handleNetworkAdded(event: NetworkAdded): void {
@@ -77,7 +77,7 @@ export function handleTicketIssued(event: TicketsIssued): void {
     let clusterReward = ClusterRewardsContract.bind(event.address);
 
     let clusterSelectorContractAddress = clusterReward.clusterSelectors(event.params.networkId);
-    let clusterSelector = EpochSelectorContract.bind(clusterSelectorContractAddress);
+    let clusterSelector = ClusterSelectorContract.bind(clusterSelectorContractAddress);
 
     let receiverStakingContractAddress = clusterReward.receiverStaking();
     let receiverStaking = ReceiverStakingContract.bind(receiverStakingContractAddress);
@@ -95,6 +95,14 @@ export function handleTicketIssued(event: TicketsIssued): void {
 
     for (let index = 0; index < clusters.length; index++) {
         const cluster = clusters[index];
+
+        // log.info("RS:hti: {}, {}, {}, {}", [
+        //     _epochTotalStake.toHexString(),
+        //     RECEIVER_TICKETS_PER_EPOCH.toHexString(),
+        //     _epochReceiverStake.toHexString(),
+        //     _totalNetworkRewardsPerEpoch.toHexString()
+        // ]);
+
         const ticketsIssued = saveTicket(
             event.address,
             event.params.networkId,

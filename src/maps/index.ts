@@ -1,6 +1,6 @@
 export * from "./ClusterRegistry";
 export * from "./ClusterRewards";
-export * from "./EpochSelector";
+export * from "./ClusterSelector";
 export * from "./MPond";
 export * from "./Pond";
 export * from "./ReceiverStaking";

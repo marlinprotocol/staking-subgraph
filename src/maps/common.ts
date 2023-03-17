@@ -27,12 +27,14 @@ export function saveTicket(
     }
 
     // formula to calc tickets issued
-    let ticketsIssued = currentReward
-        .minus(existingReward)
-        .times(_epochTotalStake)
-        .times(RECEIVER_TICKETS_PER_EPOCH)
-        .div(_epochReceiverStake)
-        .div(_totalNetworkRewardsPerEpoch);
+    let ticketsIssued = _epochTotalStake.equals(BIGINT_ZERO)
+        ? BIGINT_ZERO
+        : currentReward
+              .minus(existingReward)
+              .times(_epochTotalStake)
+              .times(RECEIVER_TICKETS_PER_EPOCH)
+              .div(_epochReceiverStake)
+              .div(_totalNetworkRewardsPerEpoch);
 
     let rewardIssued = currentReward.minus(existingReward);
 
