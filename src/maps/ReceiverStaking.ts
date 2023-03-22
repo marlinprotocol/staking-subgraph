@@ -1,7 +1,6 @@
 import {
     Initialized,
     SignerUpdated as SignerUpdated_new,
-    SignerUpdated1 as SignerUpdated_old,
     Transfer
 } from "../../generated/ReceiverStaking/ReceiverStaking";
 import { Param, ReceiverBalance, ReceiverBalanceSnapshot } from "../../generated/schema";
@@ -104,20 +103,5 @@ export function handleSignerUpdated_new(event: SignerUpdated_new): void {
     }
 
     receiver.signer = event.params.to.toHexString();
-    receiver.save();
-}
-
-export function handleSignerUpdated_old(event: SignerUpdated_old): void {
-    let receiverId = event.params.staker.toHexString();
-
-    let receiver = ReceiverBalance.load(receiverId);
-
-    if (!receiver) {
-        receiver = new ReceiverBalance(receiverId);
-        receiver.address = event.params.staker.toHexString();
-        receiver.balance = BIGINT_ZERO;
-    }
-
-    receiver.signer = event.params.signer.toHexString();
     receiver.save();
 }

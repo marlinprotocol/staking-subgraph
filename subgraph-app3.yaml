@@ -8,7 +8,7 @@ dataSources:
     name: ClusterRegistry
     network: arbitrum-goerli
     source:
-      address: "0x5E478CB7576906fe2a443684aDcD9A0dfc547abD"
+      address: "0x1fe9f98C4c0eC29a012f8B8fFDe962a13fCECe1E"
       abi: ClusterRegistry
       startBlock: 4225165
     mapping:
@@ -46,7 +46,7 @@ dataSources:
     name: StakeManager
     network: arbitrum-goerli
     source:
-      address: "0xe43EFeA7f40a885f4B35a149CAB5FC3fE01564C6"
+      address: "0x03040082dc6d47cd9fa4AD474D6d821FD6F0A04C"
       abi: StakeManager
       startBlock: 4225165
     mapping:
@@ -88,7 +88,7 @@ dataSources:
     name: ClusterRewards
     network: arbitrum-goerli
     source:
-      address: "0xF4F4CDBdb0109d1B42B06B36eb0b7d27576f3446"
+      address: "0xf0ac76EB619DA28ed6907965C17eDbFd16B15CE0"
       abi: ClusterRewards
       startBlock: 4225165
     mapping:
@@ -122,7 +122,7 @@ dataSources:
     name: RewardDelegators
     network: arbitrum-goerli
     source:
-      address: "0xDcD2846DCA523Db1C8F3c842a41A58099dE26A0A"
+      address: "0xe62CC1181Fb74c1954f13246b6863A8E26a0D77d"
       abi: RewardDelegators
       startBlock: 4225165
     mapping:
@@ -152,7 +152,7 @@ dataSources:
     name: ReceiverStaking
     network: arbitrum-goerli
     source:
-      address: "0xE554d2Be7E093FBca1FC1D78dbEa7eF145185E85"
+      address: "0x49fB661B8Cd1A76DEF8E11eB6d16e7c61C2C9270"
       abi: ReceiverStaking
       startBlock: 4225191
     mapping:
@@ -172,8 +172,6 @@ dataSources:
           handler: handleReceiverStakingInitialized
         - event: SignerUpdated(indexed address,indexed address,indexed address)
           handler: handleSignerUpdated_new
-        - event: SignerUpdated(address,address)
-          handler: handleSignerUpdated_old
   - kind: ethereum/contract
     name: POND
     network: arbitrum-goerli
