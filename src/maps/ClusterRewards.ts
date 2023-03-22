@@ -63,9 +63,11 @@ export function handleNetworkRewardUpdated(event: NetworkUpdated): void {
     network.clusterSelector = event.params.clusterSelector.toHexString();
     network.save();
 
+
     if (network.clusterSelector) {
         store.remove("Selector", network.clusterSelector as string);
     }
+    ClusterSelector.create(event.params.clusterSelector);
     addClusterSelector(event.params.clusterSelector.toHexString(), event.params.networkId);
 }
 

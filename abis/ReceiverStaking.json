@@ -219,6 +219,23 @@
     "anonymous": false,
     "inputs": [
       {
+        "internalType": "address",
+        "name": "staker",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "signer",
+        "type": "address"
+      }
+    ],
+    "name": "SignerUpdated",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
         "indexed": false,
         "internalType": "uint256",
         "name": "id",
