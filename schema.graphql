@@ -3,6 +3,15 @@ enum Status {
   REGISTERED
 }
 
+type ClusterHistory @entity {
+  id: ID!
+  cluster: String!
+  operation: String!
+  hash: Bytes!
+  timestamp: BigInt!
+  amounts: [BigInt!]
+}
+
 type Cluster @entity {
   id: ID!
   commission: BigInt!
@@ -61,7 +70,7 @@ type Network @entity {
   networkId: Bytes!
   rewardPerEpoch: BigInt
   clusters: [String!]!
-  epochSelector: Selector
+  clusterSelector: Selector
 }
 
 type TokenData @entity {

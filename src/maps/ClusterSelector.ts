@@ -1,4 +1,4 @@
-import { ClusterSelected } from "../../generated/EpochSelector/EpochSelector";
+import { ClusterSelected } from "../../generated/templates/ClusterSelector/ClusterSelector";
 import { SelectedCluster, Selector } from "../../generated/schema";
 
 export function handleClusterSelected(event: ClusterSelected): void {

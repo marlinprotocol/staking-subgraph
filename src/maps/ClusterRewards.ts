@@ -1,4 +1,4 @@
-import { Bytes, store } from "@graphprotocol/graph-ts";
+import { Bytes, store, log } from "@graphprotocol/graph-ts";
 import {
     NetworkAdded,
     NetworkRemoved,
@@ -8,14 +8,14 @@ import {
     ClusterRewarded
 } from "../../generated/ClusterRewards/ClusterRewards";
 import { Network, Selector } from "../../generated/schema";
-import { EpochSelector } from "../../generated/templates";
+import { ClusterSelector } from "../../generated/templates";
 import { updateNetworkClustersReward } from "../utils/helpers";
 import { saveContract, saveTicket } from "./common";
 
 import { ClusterRewards as ClusterRewardsContract } from "../../generated/ClusterRewards/ClusterRewards";
-import { EpochSelector as EpochSelectorContract } from "../../generated/EpochSelector/EpochSelector";
-import { ReceiverStaking as ReceiverStakingContract } from "../../generated/ReceiverStaking/ReceiverStaking";
-import { CLUSTER_REWARD } from "../utils/constants";
+import { ClusterSelector as ClusterSelectorContract } from "../../generated/ClusterRewards/ClusterSelector";
+import { ReceiverStaking as ReceiverStakingContract } from "../../generated/ClusterRewards/ReceiverStaking";
+import { CLUSTER_OPERATION, CLUSTER_REWARD, saveClusterHistory } from "../utils/constants";
 
 export function handleNetworkAdded(event: NetworkAdded): void {
     let id = event.params.networkId.toHexString();
@@ -25,20 +25,20 @@ export function handleNetworkAdded(event: NetworkAdded): void {
         network.networkId = event.params.networkId;
         network.rewardPerEpoch = event.params.rewardPerEpoch;
         network.clusters = [];
-        network.epochSelector = event.params.epochSelector.toHexString();
+        network.clusterSelector = event.params.clusterSelector.toHexString();
         network.save();
     }
 
-    EpochSelector.create(event.params.epochSelector);
-    addEpochSelector(event.params.epochSelector.toHexString(), event.params.networkId);
+    ClusterSelector.create(event.params.clusterSelector);
+    addClusterSelector(event.params.clusterSelector.toHexString(), event.params.networkId);
 }
 
-function addEpochSelector(contractAddress: string, networkId: Bytes): void {
-    let epochSelector = Selector.load(contractAddress);
-    if (!epochSelector) {
-        epochSelector = new Selector(contractAddress);
-        epochSelector.networkId = networkId;
-        epochSelector.save();
+function addClusterSelector(contractAddress: string, networkId: Bytes): void {
+    let clusterSelector = Selector.load(contractAddress);
+    if (!clusterSelector) {
+        clusterSelector = new Selector(contractAddress);
+        clusterSelector.networkId = networkId;
+        clusterSelector.save();
     }
 }
 
@@ -46,8 +46,8 @@ export function handleNetworkRemoved(event: NetworkRemoved): void {
     let id = event.params.networkId.toHexString();
     let network = Network.load(id);
     if (network) {
-        if (network.epochSelector) {
-            store.remove("Selector", network.epochSelector as string);
+        if (network.clusterSelector) {
+            store.remove("Selector", network.clusterSelector as string);
         }
         store.remove("Network", id);
     }
@@ -60,51 +60,69 @@ export function handleNetworkRewardUpdated(event: NetworkUpdated): void {
         network = new Network(id);
     }
     network.rewardPerEpoch = event.params.updatedRewardPerEpoch;
-    network.epochSelector = event.params.epochSelector.toHexString();
+    network.clusterSelector = event.params.clusterSelector.toHexString();
     network.save();
 
-    if (network.epochSelector) {
-        store.remove("Selector", network.epochSelector as string);
+
+    if (network.clusterSelector) {
+        store.remove("Selector", network.clusterSelector as string);
     }
-    addEpochSelector(event.params.epochSelector.toHexString(), event.params.networkId);
+    ClusterSelector.create(event.params.clusterSelector);
+    addClusterSelector(event.params.clusterSelector.toHexString(), event.params.networkId);
 }
 
 export function handleTicketIssued(event: TicketsIssued): void {
     let id = event.params.networkId.toHexString();
 
-    updateNetworkClustersReward(id, event.address);
+    updateNetworkClustersReward(id, event.address, event.transaction.hash, event.block.timestamp);
 
     let clusterReward = ClusterRewardsContract.bind(event.address);
 
-    let epochSelectorContractAddress = clusterReward.epochSelectors(event.params.networkId);
-    let epochSelector = EpochSelectorContract.bind(epochSelectorContractAddress);
+    let clusterSelectorContractAddress = clusterReward.clusterSelectors(event.params.networkId);
+    let clusterSelector = ClusterSelectorContract.bind(clusterSelectorContractAddress);
 
     let receiverStakingContractAddress = clusterReward.receiverStaking();
     let receiverStaking = ReceiverStakingContract.bind(receiverStakingContractAddress);
 
-    let clusters = epochSelector.getClusters(event.params.epoch);
+    let clusters = clusterSelector.getClusters(event.params.epoch);
 
     let _stakeInfo = receiverStaking.getEpochInfo(event.params.epoch);
     let _epochTotalStake = _stakeInfo.value0;
-    let _epochReceiverStakeData = receiverStaking.balanceOfSignerAt(event.params.sender, event.params.epoch);
+    let _epochReceiverStakeData = receiverStaking.balanceOfSignerAt(event.params.user, event.params.epoch);
     let _epochReceiverStake = _epochReceiverStakeData.value0;
 
     let RECEIVER_TICKETS_PER_EPOCH = clusterReward.RECEIVER_TICKETS_PER_EPOCH();
 
-    let _totalNetworkRewardsPerEpoch = clusterReward.getRewardPerEpoch(event.params.networkId);
+    let _totalNetworkRewardsPerEpoch = clusterReward.getRewardForEpoch(event.params.epoch, event.params.networkId);
 
     for (let index = 0; index < clusters.length; index++) {
         const cluster = clusters[index];
-        saveTicket(
+
+        // log.info("RS:hti: {}, {}, {}, {}", [
+        //     _epochTotalStake.toHexString(),
+        //     RECEIVER_TICKETS_PER_EPOCH.toHexString(),
+        //     _epochReceiverStake.toHexString(),
+        //     _totalNetworkRewardsPerEpoch.toHexString()
+        // ]);
+
+        const ticketsIssued = saveTicket(
             event.address,
             event.params.networkId,
             event.params.epoch,
-            event.params.sender,
+            event.params.user,
             cluster,
             _epochTotalStake,
             RECEIVER_TICKETS_PER_EPOCH,
             _epochReceiverStake,
             _totalNetworkRewardsPerEpoch
+        );
+
+        saveClusterHistory(
+            cluster.toHexString(),
+            CLUSTER_OPERATION.CLUSTER_REWARDED_VIA_TICKETS,
+            event.transaction.hash,
+            event.block.timestamp,
+            [ticketsIssued]
         );
     }
 }
@@ -112,7 +130,7 @@ export function handleTicketIssued(event: TicketsIssued): void {
 export function handleClusterRewarded(event: ClusterRewarded): void {
     let id = event.params.networkId.toHexString();
 
-    updateNetworkClustersReward(id, event.address);
+    updateNetworkClustersReward(id, event.address, event.transaction.hash, event.block.timestamp);
 }
 
 export function handleClusterRewardInitialized(event: Upgraded): void {

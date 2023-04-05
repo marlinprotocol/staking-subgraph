@@ -15,7 +15,7 @@ export function saveTicket(
     RECEIVER_TICKETS_PER_EPOCH: BigInt,
     _epochReceiverStake: BigInt,
     _totalNetworkRewardsPerEpoch: BigInt
-): void {
+): BigInt {
     let clusterReward = ClusterRewardsContract.bind(clusterRewardContractAddress);
 
     let currentReward = clusterReward.clusterRewards(cluster);
@@ -27,12 +27,17 @@ export function saveTicket(
     }
 
     // formula to calc tickets issued
-    let ticketsIssued = currentReward
-        .minus(existingReward)
-        .times(_epochTotalStake)
-        .times(RECEIVER_TICKETS_PER_EPOCH)
-        .div(_epochReceiverStake)
-        .div(_totalNetworkRewardsPerEpoch);
+    let ticketsIssued: BigInt;
+    if (_epochReceiverStake.equals(BIGINT_ZERO)) {
+        ticketsIssued = BIGINT_ZERO;
+    } else {
+        ticketsIssued = currentReward
+            .minus(existingReward)
+            .times(_epochTotalStake)
+            .times(RECEIVER_TICKETS_PER_EPOCH)
+            .div(_epochReceiverStake)
+            .div(_totalNetworkRewardsPerEpoch);
+    }
 
     let rewardIssued = currentReward.minus(existingReward);
 
@@ -53,6 +58,8 @@ export function saveTicket(
     ticket.reward = ticket.reward.plus(rewardIssued);
 
     ticket.save();
+
+    return ticketsIssued;
 }
 
 export function saveContract(marker: string, address: string): void {
