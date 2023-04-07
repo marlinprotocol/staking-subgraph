@@ -103,6 +103,10 @@ dataSources:
           file: ./abis/ClusterRewards.json
         - name: RewardDelegators
           file: ./abis/RewardDelegators.json
+        - name: ClusterSelector
+          file: ./abis/ClusterSelector.json
+        - name: ReceiverStaking
+          file: ./abis/ReceiverStaking.json
       eventHandlers:
         - event: NetworkAdded(bytes32,uint256,address)
           handler: handleNetworkAdded
@@ -166,7 +170,7 @@ dataSources:
       eventHandlers:
         - event: Transfer(indexed address,indexed address,uint256)
           handler: handleReceiverTokenTransfer
-        - event: Initialized(uint8)
+        - event: Upgraded(indexed address)
           handler: handleReceiverStakingInitialized
         - event: SignerUpdated(indexed address,indexed address,indexed address)
           handler: handleSignerUpdated
@@ -216,10 +220,10 @@ dataSources:
       file: ./src/mapping.ts
 templates:
   - kind: ethereum/contract
-    name: EpochSelector
+    name: ClusterSelector
     network: arbitrum-one
     source:
-      abi: EpochSelector
+      abi: ClusterSelector
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -228,8 +232,8 @@ templates:
       entities:
         - Cluster
       abis:
-        - name: EpochSelector
-          file: ./abis/EpochSelector.json
+        - name: ClusterSelector
+          file: ./abis/ClusterSelector.json
       eventHandlers:
         - event: ClusterSelected(indexed uint256,indexed address)
           handler: handleClusterSelected      

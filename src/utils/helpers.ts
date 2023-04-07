@@ -1,6 +1,6 @@
 import { log, Bytes, BigInt, store, Address } from "@graphprotocol/graph-ts";
 import { Cluster, Stash, Delegation, TokenData, Delegator, DelegatorToken, Network, State, DelegatorReward } from "../../generated/schema";
-import { ClusterRewards as ClusterRewardsContract } from "../../generated/ClusterRewards/ClusterRewards";
+import { ClusterRewards as ClusterRewardsContract, TicketsIssued } from "../../generated/ClusterRewards/ClusterRewards";
 import { RewardDelegators as RewardDelegatorsContract } from "../../generated/RewardDelegators/RewardDelegators";
 import {
     BIGINT_ZERO,
@@ -500,4 +500,22 @@ export function updateActiveClusterCount(operation: ACTIVE_CLUSTER_COUNT_OPERATI
         state.activeClusterCount = state.activeClusterCount.minus(BIGINT_ONE);
     }
     state.save();
+}
+
+export function isLastEpochOfTx(event: TicketsIssued): boolean {
+    let receipt = event.receipt;
+    if(!receipt) return false;
+    const logs = receipt.logs;
+    const eventTopic = logs[event.logIndex.toU32()].topics[0];
+    let lastEpochIndex: number = -1;
+    for(let i=0; i < logs.length; i++) {
+        if(logs[i].address == event.address && logs[i].topics[0] == eventTopic) {
+            lastEpochIndex = i;
+        }
+    }
+    if(lastEpochIndex != -1 && event.logIndex.toU32() == lastEpochIndex) {
+        return true
+    } else {
+        return false
+    }
 }

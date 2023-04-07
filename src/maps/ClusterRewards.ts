@@ -9,7 +9,7 @@ import {
 } from "../../generated/ClusterRewards/ClusterRewards";
 import { Network, Selector } from "../../generated/schema";
 import { ClusterSelector } from "../../generated/templates";
-import { updateNetworkClustersReward } from "../utils/helpers";
+import { isLastEpochOfTx, updateNetworkClustersReward } from "../utils/helpers";
 import { saveContract, saveTicket } from "./common";
 
 import { ClusterRewards as ClusterRewardsContract } from "../../generated/ClusterRewards/ClusterRewards";
@@ -58,6 +58,8 @@ export function handleNetworkRewardUpdated(event: NetworkUpdated): void {
     let network = Network.load(id);
     if (!network) {
         network = new Network(id);
+        network.networkId = event.params.networkId;
+        network.clusters = [];
     }
     network.rewardPerEpoch = event.params.updatedRewardPerEpoch;
     network.clusterSelector = event.params.clusterSelector.toHexString();
@@ -74,7 +76,10 @@ export function handleNetworkRewardUpdated(event: NetworkUpdated): void {
 export function handleTicketIssued(event: TicketsIssued): void {
     let id = event.params.networkId.toHexString();
 
-    updateNetworkClustersReward(id, event.address, event.transaction.hash, event.block.timestamp);
+    // run only once per tx
+    if(isLastEpochOfTx(event)) {
+        updateNetworkClustersReward(id, event.address, event.transaction.hash, event.block.timestamp);
+    }
 
     let clusterReward = ClusterRewardsContract.bind(event.address);
 

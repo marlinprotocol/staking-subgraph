@@ -171,7 +171,7 @@ dataSources:
         - event: Initialized(uint8)
           handler: handleReceiverStakingInitialized
         - event: SignerUpdated(indexed address,indexed address,indexed address)
-          handler: handleSignerUpdated_new
+          handler: handleSignerUpdated
   - kind: ethereum/contract
     name: POND
     network: arbitrum-goerli

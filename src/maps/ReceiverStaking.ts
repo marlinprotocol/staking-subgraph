@@ -91,7 +91,7 @@ export function handleReceiverStakingInitialized(event: Initialized): void {
     saveParam(START_TIME, receiverStaking.START_TIME().toString());
 }
 
-export function handleSignerUpdated_new(event: SignerUpdated_new): void {
+export function handleSignerUpdated(event: SignerUpdated_new): void {
     let receiverId = event.params.staker.toHexString();
 
     let receiver = ReceiverBalance.load(receiverId);
