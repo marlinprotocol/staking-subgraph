@@ -1,7 +1,9 @@
 import { ClusterSelected } from "../../generated/templates/ClusterSelector/ClusterSelector";
 import { SelectedCluster, Selector } from "../../generated/schema";
+import { updatePendingRewardUpdate } from "../utils/helpers";
 
 export function handleClusterSelected(event: ClusterSelected): void {
+    updatePendingRewardUpdate(event.transaction.hash);
     let selector = Selector.load(event.address.toHexString());
     if (selector) {
         let id = selector.networkId.toHexString() + "#" + event.params.epoch.toHexString() + "#" + event.params.cluster.toHexString();

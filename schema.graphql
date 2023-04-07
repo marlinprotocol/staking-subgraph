@@ -73,6 +73,14 @@ type Network @entity {
   clusterSelector: Selector
 }
 
+type PendingRewardUpdate @entity {
+  id: ID!
+  networkId: Bytes!
+  clusterRewardsAddress: String!
+  hash: Bytes!
+  timestamp: BigInt!
+}
+
 type TokenData @entity {
   id: ID!
   token: Token!

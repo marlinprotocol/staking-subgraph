@@ -9,7 +9,7 @@ import {
 } from "../../generated/ClusterRewards/ClusterRewards";
 import { Network, Selector } from "../../generated/schema";
 import { ClusterSelector } from "../../generated/templates";
-import { isLastEpochOfTx, updateNetworkClustersReward } from "../utils/helpers";
+import { setPendingRewardUpdate, updateNetworkClustersReward } from "../utils/helpers";
 import { saveContract, saveTicket } from "./common";
 
 import { ClusterRewards as ClusterRewardsContract } from "../../generated/ClusterRewards/ClusterRewards";
@@ -76,10 +76,8 @@ export function handleNetworkRewardUpdated(event: NetworkUpdated): void {
 export function handleTicketIssued(event: TicketsIssued): void {
     let id = event.params.networkId.toHexString();
 
-    // run only once per tx
-    if(isLastEpochOfTx(event)) {
-        updateNetworkClustersReward(id, event.address, event.transaction.hash, event.block.timestamp);
-    }
+    // set it to run on next tx
+    setPendingRewardUpdate(id, event.address, event.transaction.hash, event.block.timestamp);
 
     let clusterReward = ClusterRewardsContract.bind(event.address);
 

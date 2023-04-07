@@ -1,5 +1,5 @@
 import { log, Bytes, BigInt, store, Address } from "@graphprotocol/graph-ts";
-import { Cluster, Stash, Delegation, TokenData, Delegator, DelegatorToken, Network, State, DelegatorReward } from "../../generated/schema";
+import { Cluster, Stash, Delegation, TokenData, Delegator, DelegatorToken, Network, State, DelegatorReward, PendingRewardUpdate } from "../../generated/schema";
 import { ClusterRewards as ClusterRewardsContract, TicketsIssued } from "../../generated/ClusterRewards/ClusterRewards";
 import { RewardDelegators as RewardDelegatorsContract } from "../../generated/RewardDelegators/RewardDelegators";
 import {
@@ -502,20 +502,30 @@ export function updateActiveClusterCount(operation: ACTIVE_CLUSTER_COUNT_OPERATI
     state.save();
 }
 
-export function isLastEpochOfTx(event: TicketsIssued): boolean {
-    let receipt = event.receipt;
-    if(!receipt) return false;
-    const logs = receipt.logs;
-    const eventTopic = logs[event.logIndex.toU32()].topics[0];
-    let lastEpochIndex: number = -1;
-    for(let i=0; i < logs.length; i++) {
-        if(logs[i].address == event.address && logs[i].topics[0] == eventTopic) {
-            lastEpochIndex = i;
-        }
+export function setPendingRewardUpdate(networkId: string, clusterRewardsAddress: Address, hash: Bytes, timestamp: BigInt): void {
+    updatePendingRewardUpdate(hash);
+    // TODO: Maintain seperate updates for each network id
+    let pendingReward = PendingRewardUpdate.load("0");
+    if(pendingReward && pendingReward.hash != hash) {
+        log.critical("Unexpected pending reward", []);
     }
-    if(lastEpochIndex != -1 && event.logIndex.toU32() == lastEpochIndex) {
-        return true
-    } else {
-        return false
+    pendingReward = new PendingRewardUpdate("0");
+    pendingReward.networkId = Bytes.fromHexString(networkId);
+    pendingReward.clusterRewardsAddress = clusterRewardsAddress.toHexString();
+    pendingReward.hash = hash;
+    pendingReward.timestamp = timestamp;
+    pendingReward.save();
+}
+
+export function updatePendingRewardUpdate(txHash: Bytes): void {
+    let pendingReward = PendingRewardUpdate.load("0");
+    if(pendingReward && txHash != pendingReward.hash) {
+        updateNetworkClustersReward(
+            pendingReward.networkId.toHexString(), 
+            Address.fromString(pendingReward.clusterRewardsAddress), 
+            pendingReward.hash, 
+            pendingReward.timestamp
+        );
+        store.remove('PendingRewardUpdate', "0");
     }
 }
