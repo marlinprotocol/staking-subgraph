@@ -1,4 +1,4 @@
-import { Address, BigInt, Bytes } from "@graphprotocol/graph-ts";
+import { Address, BigInt, Bytes, log } from "@graphprotocol/graph-ts";
 import { ClusterRewardTracker, ContractStore, Param, TicketsIssued as TicketsIssuedStore } from "../../generated/schema";
 
 import { ClusterRewards as ClusterRewardsContract } from "../../generated/ClusterRewards/ClusterRewards";
@@ -24,7 +24,14 @@ export function saveTicket(
     let existingClusterRewardTracker = ClusterRewardTracker.load(cluster.toHexString());
     if (existingClusterRewardTracker) {
         existingReward = existingClusterRewardTracker.reward;
+    } else {
+        existingClusterRewardTracker = new ClusterRewardTracker(cluster.toHexString())
     }
+
+    log.debug("existing reward {}, current reward {}", [existingReward.toString(), currentReward.toString()])
+
+    existingClusterRewardTracker.reward = currentReward;
+    existingClusterRewardTracker.save();
 
     // formula to calc tickets issued
     let ticketsIssued: BigInt;

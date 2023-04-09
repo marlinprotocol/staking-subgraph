@@ -76,9 +76,6 @@ export function handleNetworkRewardUpdated(event: NetworkUpdated): void {
 export function handleTicketIssued(event: TicketsIssued): void {
     let id = event.params.networkId.toHexString();
 
-    // set it to run on next tx
-    setPendingRewardUpdate(id, event.address, event.transaction.hash, event.block.timestamp);
-
     let clusterReward = ClusterRewardsContract.bind(event.address);
 
     let clusterSelectorContractAddress = clusterReward.clusterSelectors(event.params.networkId);
@@ -100,13 +97,6 @@ export function handleTicketIssued(event: TicketsIssued): void {
 
     for (let index = 0; index < clusters.length; index++) {
         const cluster = clusters[index];
-
-        // log.info("RS:hti: {}, {}, {}, {}", [
-        //     _epochTotalStake.toHexString(),
-        //     RECEIVER_TICKETS_PER_EPOCH.toHexString(),
-        //     _epochReceiverStake.toHexString(),
-        //     _totalNetworkRewardsPerEpoch.toHexString()
-        // ]);
 
         const ticketsIssued = saveTicket(
             event.address,

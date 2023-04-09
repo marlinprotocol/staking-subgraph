@@ -19,7 +19,8 @@
     "codegen-staging": "graph codegen",
     "build-staging": "graph build",
     "deploy-staging": "graph deploy --product hosted-service marlin-staging/staking-arb1 --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/ --access-token",
-    "deploy-staging-cluster-selection": "graph deploy --product hosted-service marlin-staging/staking-cluster-selection subgraph-clusterSelection.yaml --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/ --access-token"
+    "deploy-staging-cluster-selection": "graph deploy --product hosted-service marlin-staging/staking-cluster-selection subgraph-clusterSelection.yaml --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/ --access-token",
+    "deploy-staging-receiver-tickets": "graph deploy --product hosted-service marlin-staging/staking-receiver-tickets subgraph-receiverTickets.yaml --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/ --access-token"
   },
   "devDependencies": {
     "@graphprotocol/graph-cli": "0.35.0",
