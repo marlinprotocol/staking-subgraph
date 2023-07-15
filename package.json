@@ -1,8 +1,8 @@
 {
   "name": "staking",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "scripts": {
-    "prettier":"npx prettier --write ./src/**/* && npx prettier --write ./src/*",
+    "prettier": "npx prettier --write ./src/**/* && npx prettier --write ./src/*",
     "codegen": "graph codegen",
     "build": "graph build",
     "version:bump": "npm version patch",
