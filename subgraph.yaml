@@ -236,6 +236,8 @@ templates:
           file: ./abis/ClusterSelector.json
         - name: ClusterRewards
           file: ./abis/ClusterRewards.json
+        - name: RewardDelegators
+          file: ./abis/RewardDelegators.json
       eventHandlers:
         - event: ClusterSelected(indexed uint256,indexed address)
           handler: handleClusterSelected      

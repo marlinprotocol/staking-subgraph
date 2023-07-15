@@ -1,4 +1,4 @@
-import { Bytes, store, log } from "@graphprotocol/graph-ts";
+import { Bytes, store, log, bigInt } from "@graphprotocol/graph-ts";
 import {
     NetworkAdded,
     NetworkRemoved,
@@ -75,6 +75,9 @@ export function handleNetworkRewardUpdated(event: NetworkUpdated): void {
 
 export function handleTicketIssued(event: TicketsIssued): void {
     let id = event.params.networkId.toHexString();
+    if(event.block.timestamp > bigInt.fromString((Date.now()/1000).toString())) {
+        setPendingRewardUpdate(id, event.address, event.transaction.hash, event.block.timestamp);
+    }
 
     let clusterReward = ClusterRewardsContract.bind(event.address);
 
