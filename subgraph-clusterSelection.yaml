@@ -1,0 +1,55 @@
+specVersion: 0.0.4
+description: Marlin Staking Subgraph
+repository: https://github.com/marlinprotocol/staking-subgraph
+schema:
+  file: ./schema.graphql
+dataSources:
+  - kind: ethereum/contract
+    name: ClusterRewards
+    network: arbitrum-one
+    source:
+      address: "0xc2033B3Ea8C226461ac7408BA948806F09148788"
+      abi: ClusterRewards
+      startBlock: 67408928
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      file: ./src/mapping.ts
+      entities:
+        - Cluster
+      abis:
+        - name: ClusterRewards
+          file: ./abis/ClusterRewards.json
+        - name: RewardDelegators
+          file: ./abis/RewardDelegators.json
+        - name: ClusterSelector
+          file: ./abis/ClusterSelector.json
+        - name: ReceiverStaking
+          file: ./abis/ReceiverStaking.json
+      eventHandlers:
+        - event: NetworkAdded(bytes32,uint256,address)
+          handler: handleNetworkAdded
+        - event: NetworkRemoved(bytes32)
+          handler: handleNetworkRemoved
+        - event: NetworkUpdated(bytes32,uint256,address)
+          handler: handleNetworkRewardUpdated
+templates:
+  - kind: ethereum/contract
+    name: ClusterSelector
+    network: arbitrum-one
+    source:
+      abi: ClusterSelector
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      file: ./src/mapping.ts
+      entities:
+        - Cluster
+      abis:
+        - name: ClusterSelector
+          file: ./abis/ClusterSelector.json
+      eventHandlers:
+        - event: ClusterSelected(indexed uint256,indexed address)
+          handler: handleClusterSelected      

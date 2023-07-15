@@ -1,21 +1,26 @@
 {
   "name": "staking",
-  "version": "0.1.3",
+  "version": "0.1.5",
   "scripts": {
-    "prettier":"npx prettier --write ./src/**/* && npx prettier --write ./src/*",
+    "prettier": "npx prettier --write ./src/**/* && npx prettier --write ./src/*",
     "codegen": "graph codegen",
     "build": "graph build",
     "version:bump": "npm version patch",
-    "deploy": "npm run version:bump && graph deploy marlinprotocol/staking-arb1 --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/ --access-token",
-    "codegen-app3": "graph codegen subgraph-app3.yaml",
-    "build-app3": "graph build subgraph-app3.yaml",
-    "deploy-app3": "graph deploy marlinprotocol/staking-kovan subgraph-app3.yaml --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/ --access-token",
+    "deploy": "graph deploy marlinprotocol/staking-arb1 --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/ --access-token",
+    "codegen-testnet": "graph codegen subgraph-app3.yaml",
+    "build-testnet": "graph build subgraph-app3.yaml",
+    "deploy-testnet": "graph deploy marlin-staging/staking-arb1-goerli subgraph-app3.yaml --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/ --access-token",
     "codegen-rinkeby": "graph codegen subgraph-rinkeby.yaml",
     "build-rinkeby": "graph build subgraph-rinkeby.yaml",
     "deploy-rinkeby": "graph deploy marlinprotocol/staking-rinkeby subgraph-rinkeby.yaml --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/ --access-token",
     "codegen-app2": "graph codegen subgraph-app2.yaml",
     "build-app2": "graph build subgraph-app2.yaml",
-    "deploy-app2": "graph deploy marlinprotocol/staking-dev subgraph-app2.yaml --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/ --access-token"
+    "deploy-app2": "graph deploy marlinprotocol/staking-dev subgraph-app2.yaml --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/ --access-token",
+    "codegen-staging": "graph codegen",
+    "build-staging": "graph build",
+    "deploy-staging": "graph deploy --product hosted-service marlin-staging/staking-arb1 --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/ --access-token",
+    "deploy-staging-cluster-selection": "graph deploy --product hosted-service marlin-staging/staking-cluster-selection subgraph-clusterSelection.yaml --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/ --access-token",
+    "deploy-staging-receiver-tickets": "graph deploy --product hosted-service marlin-staging/staking-receiver-tickets subgraph-receiverTickets.yaml --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/ --access-token"
   },
   "devDependencies": {
     "@graphprotocol/graph-cli": "0.35.0",

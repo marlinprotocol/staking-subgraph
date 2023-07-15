@@ -8,7 +8,7 @@ dataSources:
     name: ClusterRegistry
     network: arbitrum-goerli
     source:
-      address: "0x5E478CB7576906fe2a443684aDcD9A0dfc547abD"
+      address: "0x1fe9f98C4c0eC29a012f8B8fFDe962a13fCECe1E"
       abi: ClusterRegistry
       startBlock: 4225165
     mapping:
@@ -40,11 +40,13 @@ dataSources:
           handler: handleNetworkSwitched
         - event: ClusterUnregistered(indexed address,uint256)
           handler: handleClusterUnregistered
+        - event: Initialized(uint8)
+          handler: handleClusterRegistryInitialized
   - kind: ethereum/contract
     name: StakeManager
     network: arbitrum-goerli
     source:
-      address: "0xe43EFeA7f40a885f4B35a149CAB5FC3fE01564C6"
+      address: "0x03040082dc6d47cd9fa4AD474D6d821FD6F0A04C"
       abi: StakeManager
       startBlock: 4225165
     mapping:
@@ -78,11 +80,15 @@ dataSources:
           handler: handleLockCreated
         - event: LockDeleted(indexed bytes32,indexed bytes32,uint256)
           handler: handleLockDeleted
+        - event: Initialized(uint8)
+          handler: handleStakeManagerInitialized
+        - event: LockWaitTimeUpdated(indexed bytes32,uint256,uint256)
+          handler: handleLockWaitTimeUpdated
   - kind: ethereum/contract
     name: ClusterRewards
     network: arbitrum-goerli
     source:
-      address: "0xF4F4CDBdb0109d1B42B06B36eb0b7d27576f3446"
+      address: "0xf0ac76EB619DA28ed6907965C17eDbFd16B15CE0"
       abi: ClusterRewards
       startBlock: 4225165
     mapping:
@@ -97,8 +103,12 @@ dataSources:
           file: ./abis/ClusterRewards.json
         - name: RewardDelegators
           file: ./abis/RewardDelegators.json
+        - name: ClusterSelector
+          file: ./abis/ClusterSelector.json
+        - name: ReceiverStaking
+          file: ./abis/ReceiverStaking.json
       eventHandlers:
-        - event: NetworkUpdated(bytes32,uint256,address)
+        - event: NetworkAdded(bytes32,uint256,address)
           handler: handleNetworkAdded
         - event: NetworkRemoved(bytes32)
           handler: handleNetworkRemoved
@@ -106,11 +116,13 @@ dataSources:
           handler: handleNetworkRewardUpdated
         - event: TicketsIssued(indexed bytes32,indexed uint256,indexed address)
           handler: handleTicketIssued
+        - event: Initialized(uint8)
+          handler: handleClusterRewardInitialized
   - kind: ethereum/contract
     name: RewardDelegators
     network: arbitrum-goerli
     source:
-      address: "0xDcD2846DCA523Db1C8F3c842a41A58099dE26A0A"
+      address: "0xe62CC1181Fb74c1954f13246b6863A8E26a0D77d"
       abi: RewardDelegators
       startBlock: 4225165
     mapping:
@@ -134,13 +146,15 @@ dataSources:
           handler: handleClusterRewardDistributed
         - event: RewardsWithdrawn(address,address,bytes32[],uint256)
           handler: handleRewardsWithdrawn
+        - event: Initialized(uint8)
+          handler: handleRewardDelegatorsInitialized
   - kind: ethereum/contract
     name: ReceiverStaking
     network: arbitrum-goerli
     source:
-      address: "0xE554d2Be7E093FBca1FC1D78dbEa7eF145185E85"
+      address: "0x49fB661B8Cd1A76DEF8E11eB6d16e7c61C2C9270"
       abi: ReceiverStaking
-      startBlock: 4225165
+      startBlock: 4225191
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -152,16 +166,62 @@ dataSources:
         - name: ReceiverStaking
           file: ./abis/ReceiverStaking.json
       eventHandlers:
-        - event: BalanceUpdate(indexed address,indexed uint256,uint256)
-          handler: handleBalanceUpdate
         - event: Transfer(indexed address,indexed address,uint256)
-          handler: handleTransfer
-templates:
+          handler: handleReceiverTokenTransfer
+        - event: Initialized(uint8)
+          handler: handleReceiverStakingInitialized
+        - event: SignerUpdated(indexed address,indexed address,indexed address)
+          handler: handleSignerUpdated
   - kind: ethereum/contract
-    name: EpochSelector
+    name: POND
     network: arbitrum-goerli
     source:
-      abi: EpochSelector
+      address: '0xa9472a9C135Cb33221de441a4DEd393FD515a69C'
+      abi: POND
+      startBlock: 600000
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - PondUser
+      abis:
+        - name: POND
+          file: ./abis/POND.json
+      eventHandlers:
+        - event: Transfer(indexed address,indexed address,uint256)
+          handler: handlePondTransfer
+        - event: Approval(indexed address,indexed address,uint256)
+          handler: handlePondAllowance
+      file: ./src/mapping.ts
+  - kind: ethereum/contract
+    name: MPondLogic
+    network: arbitrum-goerli
+    source:
+      address: "0x0B3d9b224496C2A2Fa1a4096D8EB4D350eFd9079"
+      abi: MPondLogic
+      startBlock: 600000 
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - MPondUser
+      abis:
+        - name: MPondLogic
+          file: ./abis/MPondLogic.json
+      eventHandlers:
+        - event: Transfer(indexed address,indexed address,uint256)
+          handler: handleMPondTransfer
+        - event: Approval(indexed address,indexed address,uint256)
+          handler: handlePondAllowance
+      file: ./src/mapping.ts
+templates:
+  - kind: ethereum/contract
+    name: ClusterSelector
+    network: arbitrum-goerli
+    source:
+      abi: ClusterSelector
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -170,8 +230,8 @@ templates:
       entities:
         - Cluster
       abis:
-        - name: EpochSelector
-          file: ./abis/EpochSelector.json
+        - name: ClusterSelector
+          file: ./abis/ClusterSelector.json
       eventHandlers:
         - event: ClusterSelected(indexed uint256,indexed address)
           handler: handleClusterSelected      

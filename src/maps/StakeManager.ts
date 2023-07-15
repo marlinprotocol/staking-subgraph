@@ -3,6 +3,7 @@ import { Delegator, Stash, Token } from "../../generated/schema";
 import {
     LockCreated,
     LockDeleted,
+    LockWaitTimeUpdated,
     StashCreated,
     StashDelegated,
     StashDeposit,
@@ -10,10 +11,20 @@ import {
     StashUndelegated,
     StashWithdraw,
     TokenAdded,
-    TokenUpdated
+    TokenUpdated,
+    Upgraded
 } from "../../generated/StakeManager/StakeManager";
-import { BIGINT_ZERO, REDELEGATION_LOCK_SELECTOR } from "../utils/constants";
+
+import {
+    BIGINT_ZERO,
+    CLUSTER_OPERATION,
+    REDELEGATION_LOCK_SELECTOR,
+    REDELEGATION_WAIT_TIME,
+    saveClusterHistory,
+    STAKE_MANAGER
+} from "../utils/constants";
 import { stashDelegation, stashDeposit, stashUndelegation, stashWithdraw } from "../utils/helpers";
+import { saveContract, saveParam } from "./common";
 
 export function handleStashCreated(event: StashCreated): void {
     let id = event.params.stashId.toHexString();
@@ -51,16 +62,16 @@ export function handleStashCreated(event: StashCreated): void {
 export function handleStashDeposit(event: StashDeposit): void {
     let id = event.params.stashId.toHexString();
 
-    let tokens = event.params.tokenIds as Bytes[];
-    let amounts = event.params.amounts as BigInt[];
+    let tokens = event.params.tokenIds;
+    let amounts = event.params.amounts;
     stashDeposit(id, tokens, amounts);
 }
 
 export function handleStashWithdraw(event: StashWithdraw): void {
     let id = event.params.stashId.toHexString();
 
-    let tokens = event.params.tokenIds as Bytes[];
-    let amounts = event.params.amounts as BigInt[];
+    let tokens = event.params.tokenIds;
+    let amounts = event.params.amounts;
     stashWithdraw(id, tokens, amounts);
 }
 
@@ -71,15 +82,23 @@ export function handleStashMove(event: StashMove): void {
     if (!stash) {
         stash = new Stash(fromId);
     }
+    saveClusterHistory(
+        fromId,
+        CLUSTER_OPERATION.MOVED_STASH_FROM_HERE,
+        event.transaction.hash,
+        event.block.timestamp,
+        event.params.amounts
+    );
     let toStash = Stash.load(toId);
     if (!toStash) {
         toStash = new Stash(toId);
     }
+    saveClusterHistory(toId, CLUSTER_OPERATION.MOVED_STASH_TO_HERE, event.transaction.hash, event.block.timestamp, event.params.amounts);
     toStash.delegatedCluster = stash.delegatedCluster;
     toStash.save();
 
-    let tokens = event.params.tokenIds as Bytes[];
-    let amounts = event.params.amounts as BigInt[];
+    let tokens = event.params.tokenIds;
+    let amounts = event.params.amounts;
     stashUndelegation(fromId, stash.delegatedCluster);
     stashWithdraw(fromId, tokens, amounts);
     stashDeposit(toId, tokens, amounts);
@@ -110,6 +129,14 @@ export function handleStashDelegated(event: StashDelegated): void {
                 (stashLog.tokensDelegatedAmount as BigInt[])[i].toHexString()
             ]);
         }
+
+        saveClusterHistory(
+            stashLog.delegatedCluster,
+            CLUSTER_OPERATION.STASH_DELEGATED,
+            event.transaction.hash,
+            event.block.timestamp,
+            stashLog.tokensDelegatedAmount as BigInt[]
+        );
     }
 
     stash.delegatedCluster = delegatedCluster;
@@ -123,6 +150,7 @@ export function handleStashDelegated(event: StashDelegated): void {
         if (!stashLog) {
             stashLog = new Stash(id);
         }
+
         for (let i = 0; i < (stashLog.tokensDelegatedAmount as BigInt[]).length; i++) {
             log.info("HSD2: {}, {}, {}", [
                 stashLog.staker.toHexString(),
@@ -130,6 +158,13 @@ export function handleStashDelegated(event: StashDelegated): void {
                 (stashLog.tokensDelegatedAmount as BigInt[])[i].toHexString()
             ]);
         }
+        saveClusterHistory(
+            stashLog.delegatedCluster,
+            CLUSTER_OPERATION.STASH_DELEGATED,
+            event.transaction.hash,
+            event.block.timestamp,
+            stashLog.tokensDelegatedAmount as BigInt[]
+        );
     }
 }
 
@@ -140,19 +175,20 @@ export function handleStashUndelegated(event: StashUndelegated): void {
         stash = new Stash(id);
     }
 
-    {
-        let stashLog = Stash.load(id);
-        if (!stashLog) {
-            stashLog = new Stash(id);
-        }
-        for (let i = 0; i < (stashLog.tokensDelegatedAmount as BigInt[]).length; i++) {
-            log.info("HSU1: {}, {}, {}", [
-                stashLog.staker.toHexString(),
-                stashLog.delegatedCluster,
-                (stashLog.tokensDelegatedAmount as BigInt[])[i].toHexString()
-            ]);
-        }
-    }
+    // {
+    //     let stashLog = Stash.load(id);
+    //     if (!stashLog) {
+    //         stashLog = new Stash(id);
+    //     }
+
+    //     for (let i = 0; i < (stashLog.tokensDelegatedAmount as BigInt[]).length; i++) {
+    //         log.info("HSU1: {}, {}, {}", [
+    //             stashLog.staker.toHexString(),
+    //             stashLog.delegatedCluster,
+    //             (stashLog.tokensDelegatedAmount as BigInt[])[i].toHexString()
+    //         ]);
+    //     }
+    // }
     stashUndelegation(id, stash.delegatedCluster);
 
     stash = Stash.load(id);
@@ -173,6 +209,7 @@ export function handleStashUndelegated(event: StashUndelegated): void {
                 (stashLog.tokensDelegatedAmount as BigInt[])[i].toHexString()
             ]);
         }
+        saveClusterHistory(stash.delegatedCluster, CLUSTER_OPERATION.STASH_UNDELEGATED, event.transaction.hash, event.block.timestamp);
     }
 }
 
@@ -239,4 +276,14 @@ export function handleLockDeleted(event: LockDeleted): void {
     }
 
     stash.save();
+}
+
+export function handleStakeManagerInitialized(event: Upgraded): void {
+    saveContract(STAKE_MANAGER, event.address.toHexString());
+}
+
+export function handleLockWaitTimeUpdated(event: LockWaitTimeUpdated): void {
+    if (event.params.selector.equals(Bytes.fromHexString(REDELEGATION_LOCK_SELECTOR))) {
+        saveParam(REDELEGATION_WAIT_TIME, event.params.updatedLockTime.toString());
+    }
 }

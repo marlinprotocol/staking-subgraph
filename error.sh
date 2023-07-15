@@ -1,0 +1,1 @@
+curl --location --request POST 'https://api.thegraph.com/index-node/graphql'  --data-raw '{"query":"{ indexingStatusForPendingVersion(subgraphName: \"marlinprotocol/staking-arb1\") { subgraph fatalError { message } nonFatalErrors {message } } }"}'

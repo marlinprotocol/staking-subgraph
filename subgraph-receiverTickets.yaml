@@ -1,0 +1,32 @@
+specVersion: 0.0.4
+description: Marlin Staking Subgraph
+repository: https://github.com/marlinprotocol/staking-subgraph
+schema:
+  file: ./schema.graphql
+dataSources:
+  - kind: ethereum/contract
+    name: ClusterRewards
+    network: arbitrum-one
+    source:
+      address: "0xc2033B3Ea8C226461ac7408BA948806F09148788"
+      abi: ClusterRewards
+      startBlock: 77681400
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      file: ./src/mapping.ts
+      entities:
+        - Cluster
+      abis:
+        - name: ClusterRewards
+          file: ./abis/ClusterRewards.json
+        - name: RewardDelegators
+          file: ./abis/RewardDelegators.json
+        - name: ClusterSelector
+          file: ./abis/ClusterSelector.json
+        - name: ReceiverStaking
+          file: ./abis/ReceiverStaking.json
+      eventHandlers:
+        - event: TicketsIssued(indexed bytes32,indexed uint256,indexed address)
+          handler: handleTicketIssued  

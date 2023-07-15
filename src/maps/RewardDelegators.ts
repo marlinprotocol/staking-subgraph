@@ -4,10 +4,20 @@ import {
     ClusterRewardDistributed,
     RemoveReward,
     RewardsUpdated,
-    RewardsWithdrawn
+    RewardsWithdrawn,
+    Upgraded
 } from "../../generated/RewardDelegators/RewardDelegators";
-import { Cluster, Delegator, DelegatorReward, RewardWithdrawl, Token, ClusterRewardTracker } from "../../generated/schema";
-import { BIGINT_ONE, BIGINT_ZERO, UPDATE_REWARDS_FUNC_SIG, WITHDRAW_REWARDS_FUNC_SIG } from "../utils/constants";
+import { Cluster, ClusterRewardTracker, Delegator, DelegatorReward, RewardWithdrawl, Token } from "../../generated/schema";
+import {
+    BIGINT_ONE,
+    BIGINT_ZERO,
+    CLUSTER_OPERATION,
+    REWARD_DELEGATORS,
+    saveClusterHistory,
+    UPDATE_REWARDS_FUNC_SIG,
+    WITHDRAW_REWARDS_FUNC_SIG
+} from "../utils/constants";
+import { saveContract } from "./common";
 
 export function handleAddReward(event: AddReward): void {
     let id = event.params.tokenId.toHexString();
@@ -77,6 +87,7 @@ export function handleClusterRewardDistributed(event: ClusterRewardDistributed):
     }
 
     tracker.reward = BIGINT_ONE;
+    saveClusterHistory(clusterId, CLUSTER_OPERATION.CLUSTER_REWARD_DISTRIBUTED, event.transaction.hash, event.block.timestamp);
 }
 
 export function handleRewardsWithdrawn(event: RewardsWithdrawn): void {
@@ -134,4 +145,12 @@ export function handleRewardsWithdrawn(event: RewardsWithdrawn): void {
     rewardWithdrawl.timestamp = event.block.timestamp;
     rewardWithdrawl.txHash = txHash;
     rewardWithdrawl.save();
+
+    saveClusterHistory(clusterId, CLUSTER_OPERATION.REWARD_WITHDRAWN, event.transaction.hash, event.block.timestamp, [
+        event.params.rewards
+    ]);
+}
+
+export function handleRewardDelegatorsInitialized(event: Upgraded): void {
+    saveContract(REWARD_DELEGATORS, event.address.toHexString());
 }
