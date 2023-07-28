@@ -1,4 +1,4 @@
-import { Bytes, store, log, bigInt } from "@graphprotocol/graph-ts";
+import { Bytes, store, log, bigInt, Address } from "@graphprotocol/graph-ts";
 import {
     NetworkAdded,
     NetworkRemoved,
@@ -75,7 +75,8 @@ export function handleNetworkRewardUpdated(event: NetworkUpdated): void {
 
 export function handleTicketIssued(event: TicketsIssued): void {
     let id = event.params.networkId.toHexString();
-    if(event.block.timestamp > bigInt.fromString((Date.now()/1000).toString())) {
+    // TODO: remove hardcoding and use timestamp of subgraph deployment
+    if(event.block.timestamp > bigInt.fromString("1690556021")) {
         setPendingRewardUpdate(id, event.address, event.transaction.hash, event.block.timestamp);
     }
 
@@ -87,20 +88,11 @@ export function handleTicketIssued(event: TicketsIssued): void {
     let receiverStakingContractAddress = clusterReward.receiverStaking();
     let receiverStaking = ReceiverStakingContract.bind(receiverStakingContractAddress);
 
-    // TODO: extract sign from subgraph directly
+    // TODO: extract signer from subgraph directly
     // find receiver for signer
     let receiver = receiverStaking.signerToStaker(event.params.user);
     // get reward amount and reward per epoch for receiver
-    let receiverReward = ReceiverReward.load(receiver.toHexString());
-    if (receiverReward) {
-        // update reward amount based on tickets issued
-        if(receiverReward.amount > receiverReward.rewardPerEpoch) {
-            receiverReward.amount = receiverReward.amount.minus(receiverReward.rewardPerEpoch);
-        } else {
-            receiverReward.amount = BIGINT_ZERO;
-        }
-        receiverReward.save();
-    }
+    processReceiverRewardForEpoch(receiver);
 
     let clusters = clusterSelector.getClusters(event.params.epoch);
 
@@ -162,3 +154,15 @@ export function handleClusterRewardInitialized(event: Upgraded): void {
 //     const inputs = call.inputs;
 //     saveTickets(inputs._networkId, inputs._epoch, inputs._clusters, inputs._tickets, call.from);
 // }
+
+function processReceiverRewardForEpoch(receiver: Address): void {
+    let receiverReward = ReceiverReward.load(receiver.toHexString());
+    if (receiverReward) {
+        if(receiverReward.amount > receiverReward.rewardPerEpoch) {
+            receiverReward.amount = receiverReward.amount.minus(receiverReward.rewardPerEpoch);
+        } else {
+            receiverReward.amount = BIGINT_ZERO;
+        }
+        receiverReward.save();
+    }
+}
