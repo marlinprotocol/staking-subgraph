@@ -167,6 +167,12 @@ type ReceiverBalance @entity {
   signer: String
 }
 
+type ReceiverReward @entity {
+  id: ID!, # receiver address
+  rewardPerEpoch: BigInt!,
+  amount: BigInt!
+}
+
 type TicketsIssued @entity {
   id: ID!, # networkId + epoch + cluster + issuedBy is unique
   networkId: Network!

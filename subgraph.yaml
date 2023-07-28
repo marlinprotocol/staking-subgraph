@@ -150,6 +150,10 @@ dataSources:
           handler: handleRewardsWithdrawn
         - event: Upgraded(indexed address)
           handler: handleRewardDelegatorsInitialized
+        - event: ReceiverBalanceAdded(indexed address,uint256)
+          handler: handleReceiverBalanceAdded
+        - event: ReceiverRewardPerEpochUpdated(indexed address,uint256)
+          handler: handleReceiverRewardPerEpochUpdated
   - kind: ethereum/contract
     name: ReceiverStaking
     network: arbitrum-one

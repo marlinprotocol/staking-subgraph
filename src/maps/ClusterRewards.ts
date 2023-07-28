@@ -7,7 +7,7 @@ import {
     Upgraded,
     ClusterRewarded
 } from "../../generated/ClusterRewards/ClusterRewards";
-import { Network, Selector } from "../../generated/schema";
+import { Network, ReceiverReward, Selector } from "../../generated/schema";
 import { ClusterSelector } from "../../generated/templates";
 import { setPendingRewardUpdate, updateNetworkClustersReward } from "../utils/helpers";
 import { saveContract, saveTicket } from "./common";
@@ -15,7 +15,7 @@ import { saveContract, saveTicket } from "./common";
 import { ClusterRewards as ClusterRewardsContract } from "../../generated/ClusterRewards/ClusterRewards";
 import { ClusterSelector as ClusterSelectorContract } from "../../generated/ClusterRewards/ClusterSelector";
 import { ReceiverStaking as ReceiverStakingContract } from "../../generated/ClusterRewards/ReceiverStaking";
-import { CLUSTER_OPERATION, CLUSTER_REWARD, saveClusterHistory } from "../utils/constants";
+import { BIGINT_ZERO, CLUSTER_OPERATION, CLUSTER_REWARD, saveClusterHistory } from "../utils/constants";
 
 export function handleNetworkAdded(event: NetworkAdded): void {
     let id = event.params.networkId.toHexString();
@@ -87,6 +87,21 @@ export function handleTicketIssued(event: TicketsIssued): void {
     let receiverStakingContractAddress = clusterReward.receiverStaking();
     let receiverStaking = ReceiverStakingContract.bind(receiverStakingContractAddress);
 
+    // TODO: extract sign from subgraph directly
+    // find receiver for signer
+    let receiver = receiverStaking.signerToStaker(event.params.user);
+    // get reward amount and reward per epoch for receiver
+    let receiverReward = ReceiverReward.load(receiver.toHexString());
+    if (receiverReward) {
+        // update reward amount based on tickets issued
+        if(receiverReward.amount > receiverReward.rewardPerEpoch) {
+            receiverReward.amount = receiverReward.amount.minus(receiverReward.rewardPerEpoch);
+        } else {
+            receiverReward.amount = BIGINT_ZERO;
+        }
+        receiverReward.save();
+    }
+
     let clusters = clusterSelector.getClusters(event.params.epoch);
 
     let _stakeInfo = receiverStaking.getEpochInfo(event.params.epoch);
@@ -96,7 +111,7 @@ export function handleTicketIssued(event: TicketsIssued): void {
 
     let RECEIVER_TICKETS_PER_EPOCH = clusterReward.RECEIVER_TICKETS_PER_EPOCH();
 
-    let _totalNetworkRewardsPerEpoch = clusterReward.getRewardForEpoch(event.params.epoch, event.params.networkId);
+    let _totalNetworkRewardsPerEpoch = clusterReward.getRewardForEpoch(event.params.networkId);
 
     for (let index = 0; index < clusters.length; index++) {
         const cluster = clusters[index];
@@ -105,7 +120,7 @@ export function handleTicketIssued(event: TicketsIssued): void {
             event.address,
             event.params.networkId,
             event.params.epoch,
-            event.params.user,
+            receiver,
             cluster,
             _epochTotalStake,
             RECEIVER_TICKETS_PER_EPOCH,

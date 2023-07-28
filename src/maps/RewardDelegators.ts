@@ -2,12 +2,14 @@ import { log } from "@graphprotocol/graph-ts";
 import {
     AddReward,
     ClusterRewardDistributed,
+    ReceiverBalanceAdded,
+    ReceiverRewardPerEpochUpdated,
     RemoveReward,
     RewardsUpdated,
     RewardsWithdrawn,
     Upgraded
 } from "../../generated/RewardDelegators/RewardDelegators";
-import { Cluster, ClusterRewardTracker, Delegator, DelegatorReward, RewardWithdrawl, Token } from "../../generated/schema";
+import { Cluster, ClusterRewardTracker, Delegator, DelegatorReward, ReceiverReward, RewardWithdrawl, Token } from "../../generated/schema";
 import {
     BIGINT_ONE,
     BIGINT_ZERO,
@@ -153,4 +155,24 @@ export function handleRewardsWithdrawn(event: RewardsWithdrawn): void {
 
 export function handleRewardDelegatorsInitialized(event: Upgraded): void {
     saveContract(REWARD_DELEGATORS, event.address.toHexString());
+}
+
+export function handleReceiverBalanceAdded(event: ReceiverBalanceAdded): void {
+    let receiverReward = ReceiverReward.load(event.params.receiver.toHexString());
+    if (!receiverReward) {
+        receiverReward = new ReceiverReward(event.params.receiver.toHexString());
+        receiverReward.rewardPerEpoch = BIGINT_ZERO;
+    }
+    receiverReward.amount = event.params.amount;
+    receiverReward.save();
+}
+
+export function handleReceiverRewardPerEpochUpdated(event: ReceiverRewardPerEpochUpdated): void {
+    let receiverReward = ReceiverReward.load(event.params.receiver.toHexString());
+    if (!receiverReward) {
+        receiverReward = new ReceiverReward(event.params.receiver.toHexString());
+        receiverReward.amount = BIGINT_ZERO;
+    }
+    receiverReward.rewardPerEpoch = event.params.amount;
+    receiverReward.save();
 }
