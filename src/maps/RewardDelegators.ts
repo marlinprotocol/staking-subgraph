@@ -162,8 +162,9 @@ export function handleReceiverBalanceAdded(event: ReceiverBalanceAdded): void {
     if (!receiverReward) {
         receiverReward = new ReceiverReward(event.params.receiver.toHexString());
         receiverReward.rewardPerEpoch = BIGINT_ZERO;
+        receiverReward.amount = BIGINT_ZERO;
     }
-    receiverReward.amount = event.params.amount;
+    receiverReward.amount = receiverReward.amount.plus(event.params.amount);
     receiverReward.save();
 }
 

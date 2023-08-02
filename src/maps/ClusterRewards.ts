@@ -103,7 +103,14 @@ export function handleTicketIssued(event: TicketsIssued): void {
 
     let RECEIVER_TICKETS_PER_EPOCH = clusterReward.RECEIVER_TICKETS_PER_EPOCH();
 
-    let _totalNetworkRewardsPerEpoch = clusterReward.getRewardForEpoch(event.params.networkId);
+    let rewardForEpochResult = clusterReward.try_getRewardForEpoch(event.params.networkId);
+    let _totalNetworkRewardsPerEpoch = BIGINT_ZERO;
+
+    if(rewardForEpochResult.reverted) {
+        _totalNetworkRewardsPerEpoch = clusterReward.getRewardForEpoch1(event.params.epoch, event.params.networkId);
+    } else {
+        _totalNetworkRewardsPerEpoch = rewardForEpochResult.value;
+    }
 
     for (let index = 0; index < clusters.length; index++) {
         const cluster = clusters[index];

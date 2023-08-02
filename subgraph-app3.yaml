@@ -148,6 +148,10 @@ dataSources:
           handler: handleRewardsWithdrawn
         - event: Initialized(uint8)
           handler: handleRewardDelegatorsInitialized
+        - event: ReceiverBalanceAdded(indexed address,uint256)
+          handler: handleReceiverBalanceAdded
+        - event: ReceiverRewardPerEpochUpdated(indexed address,uint256)
+          handler: handleReceiverRewardPerEpochUpdated
   - kind: ethereum/contract
     name: ReceiverStaking
     network: arbitrum-goerli
