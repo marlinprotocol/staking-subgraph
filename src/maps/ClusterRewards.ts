@@ -75,9 +75,8 @@ export function handleNetworkRewardUpdated(event: NetworkUpdated): void {
 
 export function handleTicketIssued(event: TicketsIssued): void {
     let id = event.params.networkId.toHexString();
-    if(event.block.timestamp > bigInt.fromString((Date.now()/1000).toString())) {
-        setPendingRewardUpdate(id, event.address, event.transaction.hash, event.block.timestamp);
-    }
+    // TODO: avoid writing same pending reward entry if it exists and same
+    setPendingRewardUpdate(id, event.address, event.transaction.hash, event.block.timestamp);
 
     let clusterReward = ClusterRewardsContract.bind(event.address);
 
