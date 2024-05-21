@@ -7,7 +7,7 @@ import {
     Upgraded,
     ClusterRewarded
 } from "../../generated/ClusterRewards/ClusterRewards";
-import { Network, Selector } from "../../generated/schema";
+import { Network, PendingRewardUpdate, Selector } from "../../generated/schema";
 import { ClusterSelector } from "../../generated/templates";
 import { setPendingRewardUpdate, updateNetworkClustersReward } from "../utils/helpers";
 import { saveContract, saveTicket } from "./common";
@@ -15,7 +15,7 @@ import { saveContract, saveTicket } from "./common";
 import { ClusterRewards as ClusterRewardsContract } from "../../generated/ClusterRewards/ClusterRewards";
 import { ClusterSelector as ClusterSelectorContract } from "../../generated/ClusterRewards/ClusterSelector";
 import { ReceiverStaking as ReceiverStakingContract } from "../../generated/ClusterRewards/ReceiverStaking";
-import { CLUSTER_OPERATION, CLUSTER_REWARD, saveClusterHistory } from "../utils/constants";
+import { BIGINT_ONE, BIGINT_ZERO, CLUSTER_OPERATION, CLUSTER_REWARD, saveClusterHistory } from "../utils/constants";
 
 export function handleNetworkAdded(event: NetworkAdded): void {
     let id = event.params.networkId.toHexString();
@@ -75,7 +75,13 @@ export function handleNetworkRewardUpdated(event: NetworkUpdated): void {
 
 export function handleTicketIssued(event: TicketsIssued): void {
     let id = event.params.networkId.toHexString();
-    if(event.block.timestamp > bigInt.fromString((Date.now()/1000).toString())) {
+    let pendingReward = PendingRewardUpdate.load("0");
+    let lastTimestamp = BIGINT_ZERO;
+
+    if(pendingReward && pendingReward.timestamp) {
+        lastTimestamp = pendingReward.timestamp;
+    }
+    if(event.block.timestamp > lastTimestamp) {
         setPendingRewardUpdate(id, event.address, event.transaction.hash, event.block.timestamp);
     }
 

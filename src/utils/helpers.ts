@@ -94,6 +94,7 @@ export function stashWithdraw(stashId: string, tokens: Bytes[], amounts: BigInt[
 }
 
 export function stashDelegation(stashId: string, cluster: string): void {
+    if(cluster == "") return;
     let stash = Stash.load(stashId);
     if (!stash) {
         stash = new Stash(stashId);
@@ -147,6 +148,7 @@ export function stashDelegation(stashId: string, cluster: string): void {
 }
 
 export function stashUndelegation(stashId: string, cluster: string): void {
+    if(cluster == "") return;
     let stash = Stash.load(stashId);
     if (!stash) {
         stash = new Stash(stashId);
