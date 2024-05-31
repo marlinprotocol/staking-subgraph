@@ -75,6 +75,7 @@ export function handleNetworkRewardUpdated(event: NetworkUpdated): void {
 
 export function handleTicketIssued(event: TicketsIssued): void {
     let id = event.params.networkId.toHexString();
+
     let pendingReward = PendingRewardUpdate.load("0");
     let lastTimestamp = BIGINT_ZERO;
 

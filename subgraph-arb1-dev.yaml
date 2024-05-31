@@ -6,11 +6,11 @@ schema:
 dataSources:
   - kind: ethereum/contract
     name: ClusterRegistry
-    network: arbitrum-goerli
+    network: arbitrum-sepolia
     source:
-      address: "0x1fe9f98C4c0eC29a012f8B8fFDe962a13fCECe1E"
+      address: "0xdcbF33e2e3BAdD7B6Afc8D677175a66D63bE6d9A"
       abi: ClusterRegistry
-      startBlock: 4225165
+      startBlock: 7940440
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -44,11 +44,11 @@ dataSources:
           handler: handleClusterRegistryInitialized
   - kind: ethereum/contract
     name: StakeManager
-    network: arbitrum-goerli
+    network: arbitrum-sepolia
     source:
-      address: "0x03040082dc6d47cd9fa4AD474D6d821FD6F0A04C"
+      address: "0x464d85D3a29A52F15886376823D56aB5D37619AB"
       abi: StakeManager
-      startBlock: 4225165
+      startBlock: 7940440
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -86,11 +86,11 @@ dataSources:
           handler: handleLockWaitTimeUpdated
   - kind: ethereum/contract
     name: ClusterRewards
-    network: arbitrum-goerli
+    network: arbitrum-sepolia
     source:
-      address: "0xf0ac76EB619DA28ed6907965C17eDbFd16B15CE0"
+      address: "0x0266E6D433466D0ff153A4F853bF9C7516512E13"
       abi: ClusterRewards
-      startBlock: 4225165
+      startBlock: 7940440
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -120,11 +120,11 @@ dataSources:
           handler: handleClusterRewardInitialized
   - kind: ethereum/contract
     name: RewardDelegators
-    network: arbitrum-goerli
+    network: arbitrum-sepolia
     source:
-      address: "0xe62CC1181Fb74c1954f13246b6863A8E26a0D77d"
+      address: "0x09c7369e72726dBE24C34e1822D38cC919b793DC"
       abi: RewardDelegators
-      startBlock: 4225165
+      startBlock: 7940440
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -150,11 +150,11 @@ dataSources:
           handler: handleRewardDelegatorsInitialized
   - kind: ethereum/contract
     name: ReceiverStaking
-    network: arbitrum-goerli
+    network: arbitrum-sepolia
     source:
-      address: "0x49fB661B8Cd1A76DEF8E11eB6d16e7c61C2C9270"
+      address: "0x2f2Ee222bfe110E37C4F7b84A542fF53CE8e5C77"
       abi: ReceiverStaking
-      startBlock: 4225191
+      startBlock: 7940440
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -174,11 +174,11 @@ dataSources:
           handler: handleSignerUpdated
   - kind: ethereum/contract
     name: POND
-    network: arbitrum-goerli
+    network: arbitrum-sepolia
     source:
-      address: '0xa9472a9C135Cb33221de441a4DEd393FD515a69C'
+      address: '0x8995673cef56d4cBAE3cE96157a8fc977D4f8525'
       abi: POND
-      startBlock: 600000
+      startBlock: 7938730
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -196,11 +196,11 @@ dataSources:
       file: ./src/mapping.ts
   - kind: ethereum/contract
     name: MPondLogic
-    network: arbitrum-goerli
+    network: arbitrum-sepolia
     source:
-      address: "0x0B3d9b224496C2A2Fa1a4096D8EB4D350eFd9079"
+      address: "0x071BaFF53B0Ca54E4aec59Cda64f9cC5a7205e2c"
       abi: MPondLogic
-      startBlock: 600000 
+      startBlock: 7939120 
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -219,7 +219,7 @@ dataSources:
 templates:
   - kind: ethereum/contract
     name: ClusterSelector
-    network: arbitrum-goerli
+    network: arbitrum-sepolia
     source:
       abi: ClusterSelector
     mapping:
