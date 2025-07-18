@@ -5,7 +5,7 @@ import {
     RemoveReward,
     RewardsUpdated,
     RewardsWithdrawn,
-    Upgraded
+    Upgraded,
 } from "../../generated/RewardDelegators/RewardDelegators";
 import { Cluster, ClusterRewardTracker, Delegator, DelegatorReward, RewardWithdrawl, Token } from "../../generated/schema";
 import {
@@ -15,7 +15,7 @@ import {
     REWARD_DELEGATORS,
     saveClusterHistory,
     UPDATE_REWARDS_FUNC_SIG,
-    WITHDRAW_REWARDS_FUNC_SIG
+    WITHDRAW_REWARDS_FUNC_SIG,
 } from "../utils/constants";
 import { saveContract } from "./common";
 
@@ -54,7 +54,8 @@ export function handleClusterRewardDistributed(event: ClusterRewardDistributed):
     let cluster = Cluster.load(clusterId);
     let txHash = event.transaction.hash.toHexString();
 
-    let id = txHash;
+    // Create a unique ID for cluster reward distribution to avoid conflicts with delegator withdrawals
+    let id = txHash + "-cluster-" + clusterId;
     let clutserRewardWithdrawl = RewardWithdrawl.load(id);
     while (clutserRewardWithdrawl != null) {
         id = id + "0";
@@ -110,12 +111,17 @@ export function handleRewardsWithdrawn(event: RewardsWithdrawn): void {
 
     if (!delegator) {
         delegator = new Delegator(delegatorId);
+        delegator.address = delegatorId;
+        delegator.totalPendingReward = BIGINT_ZERO;
+        delegator.stashes = [];
+        delegator.totalRewardsClaimed = BIGINT_ZERO;
+        delegator.clusters = [];
     }
     if (delegator.totalPendingReward.lt(amount)) {
         log.warning("Amount more than pending reward is withdrawn", [
             delegator.totalPendingReward.toString(),
             amount.toString(),
-            delegator.address.toString()
+            delegator.address.toString(),
         ]);
         amount = delegator.totalPendingReward;
     }
@@ -123,9 +129,17 @@ export function handleRewardsWithdrawn(event: RewardsWithdrawn): void {
     delegator.totalPendingReward = delegator.totalPendingReward.minus(amount);
     delegator.totalRewardsClaimed = delegator.totalRewardsClaimed.plus(amount);
     delegator.save();
+
+    // Log the total rewards claimed for debugging
+    log.info("Total rewards claimed updated: delegator={}, newTotal={}, withdrawalAmount={}", [
+        delegatorId,
+        delegator.totalRewardsClaimed.toString(),
+        amount.toString(),
+    ]);
     let txHash = event.transaction.hash.toHexString();
 
-    let id = txHash;
+    // Create a unique ID that includes the delegator, cluster, and log index to ensure uniqueness
+    let id = txHash + "-" + delegatorId + "-" + clusterId + "-" + event.logIndex.toString();
     let rewardWithdrawl = RewardWithdrawl.load(id);
     while (rewardWithdrawl != null) {
         id = id + "0";
@@ -140,14 +154,23 @@ export function handleRewardsWithdrawn(event: RewardsWithdrawn): void {
     }
 
     rewardWithdrawl.cluster = event.params.cluster.toHexString();
-    rewardWithdrawl.amount = event.params.rewards;
+    // Ensure the withdrawal amount matches the amount being added to totalRewardsClaimed
+    rewardWithdrawl.amount = amount; // Use the validated amount, not event.params.rewards
     rewardWithdrawl.delegator = delegatorId;
     rewardWithdrawl.timestamp = event.block.timestamp;
     rewardWithdrawl.txHash = txHash;
     rewardWithdrawl.save();
 
+    // Log the withdrawal for debugging
+    log.info("Reward withdrawal recorded: delegator={}, cluster={}, amount={}, id={}", [
+        delegatorId,
+        event.params.cluster.toHexString(),
+        amount.toString(),
+        id,
+    ]);
+
     saveClusterHistory(clusterId, CLUSTER_OPERATION.REWARD_WITHDRAWN, event.transaction.hash, event.block.timestamp, [
-        event.params.rewards
+        event.params.rewards,
     ]);
 }
 
