@@ -1,5 +1,16 @@
 import { log, Bytes, BigInt, store, Address } from "@graphprotocol/graph-ts";
-import { Cluster, Stash, Delegation, TokenData, Delegator, DelegatorToken, Network, State, DelegatorReward, PendingRewardUpdate } from "../../generated/schema";
+import {
+    Cluster,
+    Stash,
+    Delegation,
+    TokenData,
+    Delegator,
+    DelegatorToken,
+    Network,
+    State,
+    DelegatorReward,
+    PendingRewardUpdate,
+} from "../../generated/schema";
 import { ClusterRewards as ClusterRewardsContract, TicketsIssued } from "../../generated/ClusterRewards/ClusterRewards";
 import { RewardDelegators as RewardDelegatorsContract } from "../../generated/RewardDelegators/RewardDelegators";
 import {
@@ -12,7 +23,7 @@ import {
     NETWORK_CLUSTER_OPERATION,
     ACTIVE_CLUSTER_COUNT_OPERATION,
     saveClusterHistory,
-    CLUSTER_OPERATION
+    CLUSTER_OPERATION,
 } from "./constants";
 
 export function stashDeposit(stashId: string, tokens: Bytes[], amounts: BigInt[]): void {
@@ -94,7 +105,7 @@ export function stashWithdraw(stashId: string, tokens: Bytes[], amounts: BigInt[
 }
 
 export function stashDelegation(stashId: string, cluster: string): void {
-    if(cluster == "") return;
+    if (cluster == "") return;
     let stash = Stash.load(stashId);
     if (!stash) {
         stash = new Stash(stashId);
@@ -148,7 +159,7 @@ export function stashDelegation(stashId: string, cluster: string): void {
 }
 
 export function stashUndelegation(stashId: string, cluster: string): void {
-    if(cluster == "") return;
+    if (cluster == "") return;
     let stash = Stash.load(stashId);
     if (!stash) {
         stash = new Stash(stashId);
@@ -177,7 +188,7 @@ export function stashUndelegation(stashId: string, cluster: string): void {
             log.info("SU2: {}, {}, {}", [
                 stashLog.staker.toHexString(),
                 tokenIds[i].toHexString(),
-                tokensDelegatedAmountV2[index].toHexString()
+                tokensDelegatedAmountV2[index].toHexString(),
             ]);
         }
 
@@ -190,7 +201,7 @@ export function stashUndelegation(stashId: string, cluster: string): void {
             log.info("SU3: {}, {}, {}", [
                 stashLog.staker.toHexString(),
                 tokenIds[i].toHexString(),
-                tokensDelegatedAmountV2[index].toHexString()
+                tokensDelegatedAmountV2[index].toHexString(),
             ]);
         }
     }
@@ -458,8 +469,16 @@ export function updateClusterDelegatorsReward(clusterId: string, clusterRewardsA
             let delegator = Delegator.load(delegators[i]);
             if (!delegator) {
                 delegator = new Delegator(delegators[i]);
+                delegator.address = delegators[i];
+                delegator.totalPendingReward = BIGINT_ZERO;
+                delegator.stashes = [];
+                delegator.totalRewardsClaimed = BIGINT_ZERO;
+                delegator.clusters = [];
             }
-            delegator.totalPendingReward = delegator.totalPendingReward.plus(reward).minus(delegatorReward.amount);
+
+            // Calculate the difference between new and old reward for this cluster
+            let rewardDifference = reward.minus(delegatorReward.amount);
+            delegator.totalPendingReward = delegator.totalPendingReward.plus(rewardDifference);
 
             delegatorReward.amount = reward;
             delegator.save();
@@ -508,7 +527,7 @@ export function setPendingRewardUpdate(networkId: string, clusterRewardsAddress:
     updatePendingRewardUpdate(hash);
     // TODO: Maintain seperate updates for each network id
     let pendingReward = PendingRewardUpdate.load("0");
-    if(pendingReward && pendingReward.hash != hash) {
+    if (pendingReward && pendingReward.hash != hash) {
         log.critical("Unexpected pending reward", []);
     }
     pendingReward = new PendingRewardUpdate("0");
@@ -521,13 +540,13 @@ export function setPendingRewardUpdate(networkId: string, clusterRewardsAddress:
 
 export function updatePendingRewardUpdate(txHash: Bytes): void {
     let pendingReward = PendingRewardUpdate.load("0");
-    if(pendingReward && txHash != pendingReward.hash) {
+    if (pendingReward && txHash != pendingReward.hash) {
         updateNetworkClustersReward(
-            pendingReward.networkId.toHexString(), 
-            Address.fromString(pendingReward.clusterRewardsAddress), 
-            pendingReward.hash, 
+            pendingReward.networkId.toHexString(),
+            Address.fromString(pendingReward.clusterRewardsAddress),
+            pendingReward.hash,
             pendingReward.timestamp
         );
-        store.remove('PendingRewardUpdate', "0");
+        store.remove("PendingRewardUpdate", "0");
     }
 }
